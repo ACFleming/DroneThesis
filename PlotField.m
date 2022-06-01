@@ -20,6 +20,7 @@ function PlotField(drone_pos, field)
     for dr_num = 1:length(drone_pos)
         scatter(dr_x(dr_num), dr_y(dr_num), 100 , drone_colours(dr_num), 'h', 'LineWidth', 1)
         RSSI = SignalStrength(dr_x(dr_num), dr_y(dr_num), field);
+        RSSI
         for i = 1:length(RSSI)
             drawCircle(dr_x(dr_num), dr_y(dr_num), RSSI(i), drone_colours(dr_num))
         end
@@ -33,5 +34,5 @@ function drawCircle(x,y,radius, colour)
     t = linspace(0,2*pi,n);
     x_points = x + radius*sin(t);
     y_points = y + radius*cos(t);
-    line(x_points,y_points, 'Color', colour, 'LineWidth', (25-radius)/5, 'LineStyle' ,'--')
+    line(x_points,y_points, 'Color', colour, 'LineWidth', 10/radius, 'LineStyle' ,'--')
 end
