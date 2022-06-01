@@ -18,6 +18,7 @@ private:
 public:
     Agent(/* args */);
     ~Agent();
+    Coord attemptMove();
 };
 
 
