@@ -5,7 +5,9 @@
 class Field
 {
 private:
-    /* data */
+    int x_width;
+    int y_height;
+    
 public:
     Field(/* args */);
     ~Field();

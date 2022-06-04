@@ -31,5 +31,12 @@
 *.out
 *.app
 
-# Autosave incomplete m files
+# Autosave Incomplete m files
 *.asv
+
+# Computer Specific Setting files
+*.json
+.gitignore
+
+# Log files
+*.csv
