@@ -14,6 +14,7 @@ int main()
 		std::cout << "Error" << std::endl;
 		exit(1);
 	}
+	
 	engEvalString(m_pEngine, "clc;");
 	engEvalString(m_pEngine, "close all;");
 	engEvalString(m_pEngine, "clear all;");

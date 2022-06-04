@@ -20,9 +20,12 @@ function PlotField(drone_pos, field)
     for dr_num = 1:length(drone_pos)
         scatter(dr_x(dr_num), dr_y(dr_num), 100 , drone_colours(dr_num), 'h', 'LineWidth', 1)
         RSSI = SignalStrength(dr_x(dr_num), dr_y(dr_num), field);
-        RSSI
+        disp(RSSI)
         for i = 1:length(RSSI)
-            drawCircle(dr_x(dr_num), dr_y(dr_num), RSSI(i), drone_colours(dr_num))
+            if RSSI(i) < 100 
+                drawCircle(dr_x(dr_num), dr_y(dr_num), RSSI(i), drone_colours(dr_num))
+            end
+            
         end
     end
     hold off
