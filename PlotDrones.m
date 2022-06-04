@@ -1,16 +1,22 @@
-function PlotDrones(drone_pos)  
-% draw ranges to drones
-    for dr_num = 1:length(drone_pos)
-        scatter(dr_x(dr_num), dr_y(dr_num), 100 , drone_colours(dr_num), 'h', 'LineWidth', 1)
-        RSSI = SignalStrength(dr_x(dr_num), dr_y(dr_num), field);
-        disp(RSSI)
-        for i = 1:length(RSSI)
-            if RSSI(i) < 100 
-                drawCircle(dr_x(dr_num), dr_y(dr_num), RSSI(i), drone_colours(dr_num))
+function PlotDrones() 
+
+    hold on;
+    drone_measurements = readmatrix("Drone1_agent_file.csv", "NumHeaderLines", 1);
+    
+    for row  = 1:size(drone_measurements,1)
+        drone_x = drone_measurements(row,1);
+        drone_y = drone_measurements(row,2);
+        scatter(drone_x, drone_y);
+        cmap = hsv(size(drone_measurements,2)-2);
+        for m = 3:2:size(drone_measurements,2)
+            if(drone_measurements(row,m+1) > 0)
+                drawCircle(drone_x, drone_y,drone_measurements(row,m+1), cmap(floor(m/2),:,:))
             end
-            
         end
+
     end
+
+
     hold off
 end
 
@@ -20,5 +26,5 @@ function drawCircle(x,y,radius, colour)
     t = linspace(0,2*pi,n);
     x_points = x + radius*sin(t);
     y_points = y + radius*cos(t);
-    line(x_points,y_points, 'Color', colour, 'LineWidth', 10/radius, 'LineStyle' ,'--')
+         line(x_points,y_points, 'Color', colour, 'LineWidth', 10/radius, 'LineStyle' ,'--')
 end

@@ -1,18 +1,17 @@
 #include "Field.hpp"
+#include "Agent.hpp"
 
 
 int main (int argc, char* argv[]){
-    Field f = Field(250,300,25);
-    std::cout << f.getSources().size() << std::endl;
+    //seed the random number generator
+    srand(time(0));
+    Field f = Field(1000,1000,15, 10, 500);  
+    Agent a1 = Agent("Drone1", 300, 600);
+    a1.measureSignalStrength(f);
     
 
-    std::pair<int,int> drone_pos = {10,10};
-    std::vector<double> bt_measurements =  f.getMeasurements(drone_pos);
 
-    for(auto &bt : bt_measurements){
-        
-        std::cout << bt << std::endl;
-    }
-    
+
+    a1.logAgent();
     f.logField();
 }
