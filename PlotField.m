@@ -1,41 +1,22 @@
-function PlotField(drone_pos, field)
+function PlotField()
     close all
-    drone_colours = ['r','g','m'];
+
+    source_locations = readmatrix("field_log_file.csv", "NumHeaderLines", 1);
+
     % Draw signal sources
     figure
-
-    [ss_rows,ss_cols] = find(field);
     hold on
-    for ss_n = 1:length(ss_rows)
-        scatter(ss_cols(ss_n), ss_rows(ss_n), 'bo')
+    daspect([1 1 1])
+
+    axis([-10, source_locations(1,1)+10, -10, source_locations(1,2)+10])
+    rectangle('Position',[0 0 source_locations(1,1) source_locations(1,2)])
+
+    for i = 2:length(source_locations)
+        scatter(source_locations(i,1), source_locations(i,2), 'bo')
     end
     
-    % draw drones
-    dr_x = drone_pos(:,1);
-    dr_y = drone_pos(:,2);
 
 
 
-    % draw ranges to drones
-    for dr_num = 1:length(drone_pos)
-        scatter(dr_x(dr_num), dr_y(dr_num), 100 , drone_colours(dr_num), 'h', 'LineWidth', 1)
-        RSSI = SignalStrength(dr_x(dr_num), dr_y(dr_num), field);
-        disp(RSSI)
-        for i = 1:length(RSSI)
-            if RSSI(i) < 100 
-                drawCircle(dr_x(dr_num), dr_y(dr_num), RSSI(i), drone_colours(dr_num))
-            end
-            
-        end
-    end
-    hold off
 end
 
-
-function drawCircle(x,y,radius, colour)
-    n = 100;
-    t = linspace(0,2*pi,n);
-    x_points = x + radius*sin(t);
-    y_points = y + radius*cos(t);
-    line(x_points,y_points, 'Color', colour, 'LineWidth', 10/radius, 'LineStyle' ,'--')
-end
