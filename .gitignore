@@ -31,8 +31,9 @@
 *.out
 *.app
 
-# Autosave Incomplete m files
+# Building Files
 *.asv
+build/*
 
 # Computer Specific Setting files
 *.json
@@ -40,3 +41,4 @@
 
 # Log files
 *.csv
+multiAgent

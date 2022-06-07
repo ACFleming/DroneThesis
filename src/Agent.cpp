@@ -3,6 +3,7 @@
 
 Agent::Agent(std::string name, int x_coord, int y_coord) {
     this->coords = std::make_pair(x_coord, y_coord);
+    this->coord_history.push_back(this->coords);
     this->name = name;
 
 }
@@ -17,13 +18,25 @@ void Agent::measureSignalStrength(Field f) {
 
 void Agent::logAgent() {
     std::ofstream agent_log;
-    agent_log.open(this->name + "_agent_file.csv");
+    agent_log.open("logs/" + this->name + "_agent_file.csv");
     agent_log << "Cols: x,y, id1, dist1, id2, dist2, etc. " << std::endl;
-    agent_log << this->coords.first << "," << this->coords.second;
-    for(auto &timestep: this->measurements){
-        for(auto &measurement: timestep){
+    
+    //For each timestep
+
+    auto it_coords = this->coord_history.begin();
+    auto it_measurements = this->measurements.begin();
+    while(it_coords != this->coord_history.end()  && it_measurements != this->measurements.end()){
+        
+        agent_log << (*it_coords).first << "," << (*it_coords).second;  
+        for(auto &measurement: (*it_measurements)){
             agent_log << "," << measurement.first << "," << measurement.second;
         }
         agent_log << std::endl;
+        it_coords++;
+        it_measurements++;
+        
     }
+    
+    
+
 }

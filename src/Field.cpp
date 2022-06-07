@@ -54,7 +54,7 @@ std::vector<std::pair<std::string,double>> Field::getMeasurements(std::pair<int,
 
 void Field::logField() {
     std::ofstream field_log;
-    field_log.open("field_log_file.csv");
+    field_log.open("logs/field_log_file.csv");
     field_log << "First row is x_width and y_length of the field. The rest are the x and y coords of the sources" << std::endl;
     field_log << this->x_width << "," << this->y_length << std::endl;
     for(auto &source: this->signal_sources){
