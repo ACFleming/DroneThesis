@@ -1,7 +1,7 @@
 function PlotDrones() 
 
     hold on;
-    drone_measurements = readmatrix("Drone1_agent_file.csv", "NumHeaderLines", 1);
+    drone_measurements = readmatrix("../logs/Drone1_agent_file.csv", "NumHeaderLines", 1);
     
     for row  = 1:size(drone_measurements,1)
         drone_x = drone_measurements(row,1);

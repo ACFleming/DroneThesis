@@ -12,6 +12,17 @@ Agent::~Agent() {
     
 }
 
+
+void Agent::takeAction(){
+    //TODO
+    //This is where the logic would be
+
+    this->coords = std::make_pair(this->coords.first+30, this->coords.second);
+    this->coord_history.push_back(this->coords);
+
+
+}
+
 void Agent::measureSignalStrength(Field f) {
     this->measurements.push_back(f.getMeasurements(this->coords));
 }

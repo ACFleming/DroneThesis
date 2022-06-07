@@ -5,9 +5,14 @@
 int main (int argc, char* argv[]){
     //seed the random number generator
     srand(time(0));
-    Field f = Field(1000,1000,15, 10, 500);  
+    Field f = Field(1000,1000,3, 10, 500);  
     Agent a1 = Agent("Drone1", 300, 600);
-    a1.measureSignalStrength(f);
+    
+    for(int i = 0; i < 5; i++){
+        a1.measureSignalStrength(f);
+        a1.takeAction();
+    }
+    
     
 
 

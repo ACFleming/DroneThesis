@@ -1,7 +1,7 @@
 function PlotField()
     close all
 
-    source_locations = readmatrix("field_log_file.csv", "NumHeaderLines", 1);
+    source_locations = readmatrix("../logs/field_log_file.csv", "NumHeaderLines", 1);
 
     % Draw signal sources
     figure
