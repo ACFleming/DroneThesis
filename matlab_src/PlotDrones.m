@@ -1,7 +1,7 @@
-function PlotDrones() 
+function PlotDrones(file_path) 
 
     hold on;
-    drone_measurements = readmatrix("../logs/Drone1_agent_file.csv", "NumHeaderLines", 1);
+    drone_measurements = readmatrix("../" + file_path, "NumHeaderLines", 1);
     
     for row  = 1:size(drone_measurements,1)
         drone_x = drone_measurements(row,1);
@@ -26,5 +26,5 @@ function drawCircle(x,y,radius, colour)
     t = linspace(0,2*pi,n);
     x_points = x + radius*sin(t);
     y_points = y + radius*cos(t);
-         line(x_points,y_points, 'Color', colour, 'LineWidth', 10/radius, 'LineStyle' ,'--')
+    line(x_points,y_points, 'Color', colour, 'LineWidth', 10/radius, 'LineStyle' ,'--')
 end

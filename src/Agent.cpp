@@ -13,24 +13,42 @@ Agent::~Agent() {
 }
 
 
-void Agent::takeAction(){
+std::pair<int,int> Agent::determineAction(){
     //TODO
     //This is where the logic would be
+    std::pair<int,int> next_position;
 
-    this->coords = std::make_pair(this->coords.first+30, this->coords.second);
-    this->coord_history.push_back(this->coords);
+    next_position.first = this->coords.first+30;
+    next_position.second = this->coords.second;
+    
+    return next_position;
+
+
 
 
 }
+
+void Agent::moveToPosition(std::pair<int,int> pos){
+    this->coords = pos;
+    this->coord_history.push_back(this->coords);
+}
+
+
 
 void Agent::measureSignalStrength(Field f) {
     this->measurements.push_back(f.getMeasurements(this->coords));
 }
 
-void Agent::logAgent() {
+std::string Agent::logAgent() {
     std::ofstream agent_log;
-    agent_log.open("logs/" + this->name + "_agent_file.csv");
-    agent_log << "Cols: x,y, id1, dist1, id2, dist2, etc. " << std::endl;
+    std::string file_path = "logs/" + this->name + "_agent_log.csv";
+    agent_log.open(file_path);
+    agent_log << "drone_x, drone_y";
+    //this->measurements[0] is the number of sources
+    for(int i = 0; i < this->measurements[0].size() ; i++){
+        agent_log << ",id" << i << ",dist" << i;
+    }
+    agent_log << std::endl;
     
     //For each timestep
 
@@ -48,6 +66,6 @@ void Agent::logAgent() {
         
     }
     
-    
+    return file_path;
 
 }

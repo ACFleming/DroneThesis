@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -20,9 +22,10 @@ public:
     Agent(std::string name, int x_coord, int y_coord);
     ~Agent();
 
-    void takeAction();
+    std::pair<int,int> determineAction();
+    void moveToPosition(std::pair<int,int> pos) ;
     void measureSignalStrength(Field f);
-    void logAgent();
+    std::string logAgent();
 };
 
 

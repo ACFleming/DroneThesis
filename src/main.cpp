@@ -10,13 +10,23 @@ int main (int argc, char* argv[]){
     
     for(int i = 0; i < 5; i++){
         a1.measureSignalStrength(f);
-        a1.takeAction();
+        a1.moveToPosition(a1.determineAction());
     }
     
     
 
 
 
-    a1.logAgent();
-    f.logField();
+    std::string a1_file_path = a1.logAgent();
+    std::string field_file_path = f.logField();
+
+    std::ofstream file_path_log;
+    file_path_log.open("logs/file_path_log.csv");
+    file_path_log << "File Paths" << std::endl;
+    file_path_log << field_file_path << std::endl;
+    file_path_log << a1_file_path << std::endl;
+    file_path_log.close();
+
+
+
 }

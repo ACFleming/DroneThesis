@@ -9,6 +9,7 @@ Field::Field(int x_width, int y_length, int n_sources, double std_dev, double ra
     this->y_length = y_length;
     this->std_dev = std_dev;
     this->range_cap = range_cap;
+    
 
 
 
@@ -52,13 +53,14 @@ std::vector<std::pair<std::string,double>> Field::getMeasurements(std::pair<int,
     return distances;
 }
 
-void Field::logField() {
+std::string Field::logField() {
     std::ofstream field_log;
-    field_log.open("logs/field_log_file.csv");
-    field_log << "First row is x_width and y_length of the field. The rest are the x and y coords of the sources" << std::endl;
-    field_log << this->x_width << "," << this->y_length << std::endl;
+    std::string file_path = "logs/field_log.csv";
+    field_log.open(file_path);
+    field_log << "Name, x, y" << std::endl;
+    field_log << "Field Dimensions"  << "," << this->x_width << "," << this->y_length <<  std::endl;
     for(auto &source: this->signal_sources){
-        std::pair<int,int> s_coords = source.getCoords();
-        field_log << s_coords.first << "," << s_coords.second << std::endl;
+        field_log << source.getId() << "," << source.getCoords().first << "," << source.getCoords().second << std::endl;
     }
+    return file_path;
 }
