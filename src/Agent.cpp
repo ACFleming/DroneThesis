@@ -18,8 +18,17 @@ std::pair<int,int> Agent::determineAction(){
     //This is where the logic would be
     std::pair<int,int> next_position;
 
-    next_position.first = this->coords.first+30;
-    next_position.second = this->coords.second;
+    if(this->name == "Drone1"){
+        next_position.first = this->coords.first+30;
+        next_position.second = this->coords.second;
+    }
+    if(this->name == "Drone2"){
+        next_position.first = this->coords.first;
+        next_position.second = this->coords.second-30;
+    }
+
+
+
     
     return next_position;
 

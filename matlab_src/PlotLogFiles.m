@@ -2,83 +2,89 @@
 T = readtable("../logs/file_path_log.csv", "VariableNamingRule", "preserve", "Delimiter", ",");
 
 
-%% Plotting the field
-file_path = T.(1){1};
+% Change this to true to remove old plots on changing timestep
+clear_on_update = false;
+
+field_file_path = T.(1){1};
+field = readtable("../" + field_file_path);
+drone_file_path = T.(1){2};
+drone_measurements = readtable("../" + drone_file_path);
+
+num_timesteps = size(drone_measurements,1);
+num_drones = size(T,1)-1;
+num_sources = size(field, 1) -1;
+
 
 clf;
 hFig = figure(1);
 hFig.set("Name", "Field")
 
-source_locations = readtable("../" + file_path);
+timestep = 1;
 
-% Draw signal sources
+hSubplots = zeros(1,num_drones);
 
-hold on
-daspect([1 1 1])
-
-axis([-10, source_locations.x(1)+10, -10, source_locations.y(1)+10])
-rectangle('Position',[0 0 source_locations.x(1) source_locations.y(1)])
-
-for i = 2:size(source_locations,1)
-    scatter(source_locations.x(i), source_locations.y(i), 'bo')
-end
-%% Plotting the drone measurements
-
-
-
-for drone = 2:size(T,1)
-    file_path = T.(1){drone};
-
-    hold on;
-    drone_measurements = readtable("../" + file_path);
-    
-    % FIRST MEASUREMENT
-
-    row = 1;
-
-    drone_x = drone_measurements.drone_x(row);
-    drone_y = drone_measurements.drone_y(row);
-    drone_pos = scatter(drone_x, drone_y);
-    set(drone_pos, "XData",drone_x);
-    set(drone_pos, "YData",drone_y);
-
-
-    % cols of drone measurements are drone x, drone y, id 0, dist 0 etc.
-    % all cols -2 is all measurements. 1 dist per pair of cols
-    num_sources = (size(drone_measurements,2)-2)/2;
-    signal_ranges = zeros(num_sources);
-
-    
-
-    for n= 1:num_sources
-        signal_ranges(n) = line(drone_x,drone_y);
-        radius = drone_measurements.(2*n+2)(row);
-        set(signal_ranges(n), "XData", drone_x + radius*sin(linspace(0,2*pi,100)));
-        set(signal_ranges(n), "YData", drone_y + radius*cos(linspace(0,2*pi,100)));
-        drawnow;
-
+while (timestep <= num_timesteps)
+    if(clear_on_update)
+        for i = 1:num_drones
+            cla(hSubplots(i))
+        end
     end
+    for drone = 1:num_drones
+        
+        %% Plotting the field
 
-    for row  = 2:size(drone_measurements,1)    
-        drone_x = drone_measurements.drone_x(row);
-        drone_y = drone_measurements.drone_y(row);
-        set(drone_pos, "XData",drone_x);
-        set(drone_pos, "YData",drone_y);      
-    
-        for n= 1:num_sources
-            radius = drone_measurements.(2*n+2)(row);
-            set(signal_ranges(n), "XData", drone_x + radius*sin(linspace(0,2*pi,100)));
-            set(signal_ranges(n), "YData", drone_y + radius*cos(linspace(0,2*pi,100)));
-            drawnow;
-    
+        
+        hSubplots(drone) =subplot(num_drones, 1, drone);
+        hold on
+        daspect([1 1 1])
+
+
+        axis([-10, field.x(1)+10, -10, field.y(1)+10])
+        rectangle('Position',[0 0 field.x(1) field.y(1)])
+
+        for i = 1:num_sources
+            scatter(field.x(i+1), field.y(i+1))
         end
 
+        %% Plotting the drone & measurements
+        drone_file_path = T.(1){drone+1};
+    
+        hold on;
+        drone_measurements = readtable("../" + drone_file_path);
+        
+        % FIRST MEASUREMENT
+    
+        
+    
+        drone_x = drone_measurements.drone_x(timestep);
+        drone_y = drone_measurements.drone_y(timestep);
+        drone_pos = scatter(drone_x, drone_y, 'h');
+
+    
+   
+    
+        
+    
+        for n= 1:num_sources
+            radius = drone_measurements.(2*n+2)(timestep);
+            if(radius > 0)
+                line(drone_x + radius*sin(linspace(0,2*pi,100)),drone_y + radius*cos(linspace(0,2*pi,100)));
+            end
+            
+            
+    
+        end
+        
+    
+        hold off
     end
 
-
-    hold off
+    timestep = timestep+1;
 
 end
+
+
+
 
 
 
