@@ -13,13 +13,17 @@ private:
     std::vector<std::pair<int,int>> coord_history;
    
     std::string name;
-    int max_sources;
+    int field_x_width;
+    int field_y_length;
 
     // each pair is an id-measurement pair. Multiple of these pairs are measured each time step, collected in the inside vector.
     // the outside vector is a collection of all timesteps' measurements. 
     std::vector<std::vector<std::pair<std::string,double>>> measurements;
+
+    int clipRange(int lower, int upper, int value);
+
 public:
-    Agent(std::string name, int x_coord, int y_coord);
+    Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length);
     ~Agent();
 
     std::pair<int,int> determineAction();

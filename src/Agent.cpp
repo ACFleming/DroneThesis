@@ -1,15 +1,29 @@
 #include "Agent.hpp"
 
 
-Agent::Agent(std::string name, int x_coord, int y_coord) {
+
+
+Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length) {
     this->coords = std::make_pair(x_coord, y_coord);
     this->coord_history.push_back(this->coords);
     this->name = name;
+    this->field_x_width = field_width;
+    this->field_y_length = field_length;
 
 }
 
 Agent::~Agent() {
     
+}
+
+//clips value in range such that lower <= value < upper
+int Agent::clipRange(int lower, int upper, int value){
+    if(value < lower){
+        value = lower;
+    }else if(value >= upper){
+        value = upper;
+    }
+    return value;
 }
 
 
@@ -38,6 +52,8 @@ std::pair<int,int> Agent::determineAction(){
 }
 
 void Agent::moveToPosition(std::pair<int,int> pos){
+    pos.first = this->clipRange(0, this->field_x_width, pos.first);
+    pos.second = this->clipRange(0, this->field_y_length, pos.second);
     this->coords = pos;
     this->coord_history.push_back(this->coords);
 }

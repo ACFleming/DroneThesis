@@ -34,8 +34,8 @@ std::vector<SignalSource> Field::getSources() {
 
 std::vector<std::pair<std::string,double>> Field::getMeasurements(std::pair<int, int> pos) {
     std::vector<std::pair<std::string,double>> distances;
-    //seed random generator with time
-    std::default_random_engine generator(time(0));
+    //seed random generator with random
+    std::default_random_engine generator(rand());
     for(auto &source : this->signal_sources){
         //hypot(x,y) returns sqrt(x^2 + y^2). Finding true euclidian distance
         std::pair<int,int> s_coords = source.getCoords();

@@ -11,4 +11,6 @@ then run ./multiAgent
 
 OR ./build_and_run
 
+OR g++ src/*.cpp -o main
+
 
