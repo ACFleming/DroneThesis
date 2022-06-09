@@ -8,7 +8,9 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->coord_history.push_back(this->coords);
     this->name = name;
     this->field_x_width = field_width;
-    this->field_y_length = field_length;
+    this->occupancy_grid = std::vector<std::vector<int>> (this->field_x_width, std::vector<int>(this->field_y_length));
+
+
 
 }
 

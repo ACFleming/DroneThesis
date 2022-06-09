@@ -16,6 +16,8 @@ private:
     int field_x_width;
     int field_y_length;
 
+    std::vector<std::vector<int>> occupancy_grid;
+
     // each pair is an id-measurement pair. Multiple of these pairs are measured each time step, collected in the inside vector.
     // the outside vector is a collection of all timesteps' measurements. 
     std::vector<std::vector<std::pair<std::string,double>>> measurements;
@@ -33,3 +35,10 @@ public:
 };
 
 
+enum occ_grid_vals{
+    visited,
+    scanned,
+    unknown,
+    occupied,
+    frontier
+};

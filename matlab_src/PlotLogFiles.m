@@ -3,7 +3,7 @@ T = readtable("../logs/file_path_log.csv", "VariableNamingRule", "preserve", "De
 
 
 % Change this to true to remove old plots on changing timestep
-clear_on_update = false;
+clear_on_update = true;
 
 field_file_path = T.(1){1};
 field = readtable("../" + field_file_path);
@@ -68,7 +68,7 @@ while (timestep <= num_timesteps)
         drone_x = drone_measurements.drone_x(timestep);
         drone_y = drone_measurements.drone_y(timestep);
         drone_pos = scatter(drone_x, drone_y, 'h',"MarkerFaceColor", 'w', "MarkerEdgeColor", drone_colours(drone,:));
-
+        drone_path = line(drone_measurements.drone_x(1:timestep),drone_measurements.drone_y(1:timestep), "Color",drone_colours(drone,:));
     
    
     
