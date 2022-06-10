@@ -10,7 +10,7 @@
 #include <math.h>
 #include <chrono>
 #include "SignalSource.hpp"
-#include <Eigen/Dense>
+
 
 class Field
 {

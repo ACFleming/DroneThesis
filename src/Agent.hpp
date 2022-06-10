@@ -6,6 +6,7 @@
 #include <vector>
 #include "Field.hpp"
 
+
 class Agent
 {
 private:
@@ -15,8 +16,10 @@ private:
     std::string name;
     int field_x_width;
     int field_y_length;
+    int scan_radius;
 
     std::vector<std::vector<int>> occupancy_grid;
+
 
     // each pair is an id-measurement pair. Multiple of these pairs are measured each time step, collected in the inside vector.
     // the outside vector is a collection of all timesteps' measurements. 
@@ -24,21 +27,24 @@ private:
 
     int clipRange(int lower, int upper, int value);
 
+    int markInRadius(occ_grid_vals value, bool justCount);
+
 public:
-    Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length);
+    Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius);
     ~Agent();
 
     std::pair<int,int> determineAction();
     void moveToPosition(std::pair<int,int> pos) ;
     void measureSignalStrength(Field f);
     std::string logAgent();
+    void showOccGrid();
 };
 
 
 enum occ_grid_vals{
-    visited,
-    scanned,
     unknown,
+    scanned,
+    visited,
     occupied,
     frontier
 };
