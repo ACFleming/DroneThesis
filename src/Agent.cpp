@@ -35,6 +35,8 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->field_x_width = field_width;
     this->field_y_length = field_length;
     this->scan_radius = scan_radius;
+
+    this->started_iter_grid = false;
     
     
     int rows = this->field_y_length;
@@ -65,6 +67,43 @@ Agent::~Agent() {
 
 }
 
+
+// for this function the index are returned left to right, middle to top then middle to bottom. For most situation, the order is not important
+int *Agent::nextGridSquare(){
+    static int x;
+    static int y;
+    static int dy;
+    static bool hit_top;
+    static bool hit_bottom; 
+
+    if(!this->started_iter_grid){
+        this->started_iter_grid = true;
+        //left edge of vision circle, clipped by the boundaries of the field;
+        x = this->clipRange(0, this->field_x_width, this->coords.first - this->scan_radius); 
+        y = this->coords.second;
+        dy  = 0;
+        hit_top = false;
+        hit_bottom = false;
+        return &(this->occupancy_grid[x][y]);
+    }
+    //goes all the way to the top;
+    if(!hit_top &&  pow(x,2) + pow(y+dy,2) <= pow(this->scan_radius, 2) && (y+dy) < this->field_y_length){
+            return &(this->occupancy_grid[x][y]);
+            dy++;
+    }else{
+            hit_top = true;
+            dy = 0;
+    }
+    if(!hit_bottom &&  pow(x,2) + pow(y-dy,2) <= pow(this->scan_radius, 2) && (y-dy) < this->field_y_length){
+            return &(this->occupancy_grid[x][y]);
+    }else{
+            hit_top = true;
+    }
+    return nullptr;
+
+}
+
+
 //clips value in range such that lower <= value < upper
 int Agent::clipRange(int lower, int upper, int value){
     if(value < lower){
@@ -75,33 +114,36 @@ int Agent::clipRange(int lower, int upper, int value){
     return value;
 }
 
-int Agent::markInRadius(occ_grid_vals value, bool justCount = false){
-    //for all x values from the current coord +- radius but also clipped by the boundary of the field
-    int counter = 0;
-    for(int x = this->clipRange(0, this->field_x_width, this->coords.first - this->scan_radius) ; x <= this->clipRange(0, this->field_x_width, this->coords.first+this->scan_radius); x++){
-        int dy = 0;
-        int y = this->coords.second;
-        bool hit_top = false;
-        bool hit_bottom = false;
-        while( pow(x,2) + pow(y,2) <= pow(this->scan_radius, 2) ){
-            if(!hit_bottom && (y+dy) < this->field_y_length){
-                counter++;
-                if(justCount == false) this->occupancy_grid[x][y+dy] = value;
-            }else{
-                hit_top = true;
-            }
-            if(!hit_bottom && (y-dy) >= 0){
-                counter++;
-                if(justCount == false) this->occupancy_grid[x][y-dy] = value;
-            }else{
-                hit_bottom = true;
-            }
-            dy++;
+// int Agent::markInRadius(occ_grid_vals value, bool justCount = false){
+//     //for all x values from the current coord +- radius but also clipped by the boundary of the field
+//     int counter = 0;
+//     for(int x = this->clipRange(0, this->field_x_width, this->coords.first - this->scan_radius) ; x <= this->clipRange(0, this->field_x_width, this->coords.first+this->scan_radius); x++){
+//         int dy = 0;
+//         int y = this->coords.second;
+//         bool hit_top = false;
+//         bool hit_bottom = false;
+//         while( pow(x,2) + pow(y+dy,2) <= pow(this->scan_radius, 2) ){
+//             if(!hit_bottom && (y+dy) < this->field_y_length){
+//                 counter++;
+//                 if(justCount == false) this->occupancy_grid[x][y+dy] = value;
+//                 return &(this->occupancy_grid[x][y+dy]);
+                
+//             }else{
+//                 hit_top = true;
+//             }
+//             if(!hit_bottom && (y-dy) >= 0){
+//                 counter++;
+//                 if(justCount == false) this->occupancy_grid[x][y-dy] = value;
+//             }else{
+//                 hit_bottom = true;
+//             }
+//             dy++;
             
-        }
-    }
-    return counter;
-}
+//         }
+    
+//     }
+//     return counter;
+// }
 
 
 std::pair<int,int> Agent::determineAction(){
@@ -139,6 +181,7 @@ void Agent::moveToPosition(std::pair<int,int> pos){
 
 void Agent::measureSignalStrength(Field f) {
     this->measurements.push_back(f.getMeasurements(this->coords));
+    
 }
 
 std::string Agent::logAgent() {

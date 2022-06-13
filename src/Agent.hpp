@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <coroutine>
 #include "Field.hpp"
 
 
@@ -18,6 +19,8 @@ private:
     int field_y_length;
     int scan_radius;
 
+    bool started_iter_grid;
+
     std::vector<std::vector<int>> occupancy_grid;
 
 
@@ -27,7 +30,11 @@ private:
 
     int clipRange(int lower, int upper, int value);
 
+    int *nextGridSquare();
+
     int markInRadius(occ_grid_vals value, bool justCount);
+
+
 
 public:
     Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius);

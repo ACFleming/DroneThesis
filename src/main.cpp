@@ -20,6 +20,7 @@ int main (int argc, char* argv[]){
     for(int i = 0; i < 30; i++){
         a1.measureSignalStrength(f);
         a1.moveToPosition(a1.determineAction());
+        
         // a2.measureSignalStrength(f);
         // a2.moveToPosition(a2.determineAction());
     }
