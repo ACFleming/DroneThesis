@@ -41,4 +41,8 @@ build/*
 
 # Log files
 *.csv
+
+# Exe files
 multiAgent
+main
+*.exe

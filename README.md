@@ -6,12 +6,12 @@ To build (requires cmake)
 cd ./build
 cmake ..
 cmake --build .
-then run ./multiAgent
+then run ./main
 
 
 OR ./build_and_run
 
-OR g++ src/*.cpp -o main
+OR g++ -std=gnu++14 src/*.cpp -o main 
 
 
 FUTHER UPDATE

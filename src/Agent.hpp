@@ -4,8 +4,17 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <coroutine>
 #include "Field.hpp"
+
+
+enum occ_grid_vals{
+    unknown,
+    scanned,
+    visited,
+    occupied,
+    frontier
+};
+
 
 
 class Agent
@@ -48,10 +57,4 @@ public:
 };
 
 
-enum occ_grid_vals{
-    unknown,
-    scanned,
-    visited,
-    occupied,
-    frontier
-};
+

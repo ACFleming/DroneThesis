@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1.9)
 
 
-project(multiAgent)
+project(main)
 # As of R2021a, C++ version ~11 and 14 are supported
 set(CMAKE_CXX_STANDARD 14)
 
@@ -16,4 +16,4 @@ foreach(dir ${dirs})
 endforeach()
 
 # Executable
-add_executable(multiAgent src/Field.cpp src/Agent.cpp src/SignalSource.cpp src/main.cpp)
+add_executable(main src/Field.cpp src/Agent.cpp src/SignalSource.cpp src/main.cpp)

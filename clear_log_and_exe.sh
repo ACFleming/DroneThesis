@@ -4,6 +4,6 @@ cd logs
 rm *.csv
 echo "CLEARING EXE"
 cd ..
-rm multiAgent
+rm main
 
 
