@@ -9,10 +9,10 @@
 
 enum occ_grid_vals{
     unknown,
-    scanned,
-    visited,
-    occupied,
-    frontier
+    scanned = 5,
+    visited = 10,
+    occupied = 200,
+    frontier = 100
 };
 
 
@@ -54,6 +54,7 @@ public:
     void measureSignalStrength(Field f);
     std::string logAgent();
     void showOccGrid();
+    std::vector<std::vector<int>> getOccGrid();
 };
 
 

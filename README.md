@@ -20,3 +20,9 @@ Using Eigen external library
 "g++ -I ext_libs/ src/*.cpp -o main" will compile and run
 Notes on how to change cmake is provided at https://eigen.tuxfamily.org/dox/TopicCMakeGuide.html 
 
+Update
+
+Now also using opencv
+
+
+

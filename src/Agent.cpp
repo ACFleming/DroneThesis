@@ -226,3 +226,7 @@ void Agent::showOccGrid(){
     }
 
 }
+
+std::vector<std::vector<int>> Agent::getOccGrid(){
+    return this->occupancy_grid;
+}

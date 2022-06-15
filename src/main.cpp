@@ -1,5 +1,6 @@
 #include "Field.hpp"
 #include "Agent.hpp"
+#include <opencv4/opencv2/opencv.hpp>
 
 
 int main (int argc, char* argv[]){
@@ -15,7 +16,46 @@ int main (int argc, char* argv[]){
     // Agent a2 = Agent("Drone2", 0.75*field_x_width, 0.75*field_y_length, field_x_width, field_y_length);
     
     std::cout << "Showing grid" << std::endl;
-    a1.showOccGrid();
+    // a1.showOccGrid();
+    std::vector<std::vector<int>> occ_grid = a1.getOccGrid();
+
+
+    // Create a new, _empty_ cv::Mat with the row size of OrigSamples
+
+    const int mySizes[3]={3,field_y_length,field_x_width};
+    cv::Mat image = cv::Mat::zeros(3,mySizes,CV_64F);
+
+    // for(int i = 0; i < field_y_length; i++){
+    //     for(int j = 0; j < field_x_width; j++){
+    //         image.
+    //     }
+    // }
+
+
+
+
+    // cv::Mat dst;
+    
+    // std::cout << dst.size()  << dst.depth() << std::endl;
+
+    // cv::normalize(image, image, 0, 255, cv::NORM_MINMAX);
+
+    
+    image.convertTo(image, CV_32F);
+
+    cv::cvtColor(image,image, cv::COLOR_GRAY2BGR);
+
+    std::cout << image.channels() << std::endl;
+
+
+    cv::resize(image, image, cv::Size(), 5, 5);
+
+
+    cv::namedWindow("Occ Grid");
+    cv::imshow("Occ Grid", image);
+    // cv::resizeWindow("Occ Grid", 600,600);
+    cv::waitKey(0);
+
     
     for(int i = 0; i < 30; i++){
         a1.measureSignalStrength(f);
