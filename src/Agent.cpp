@@ -1,16 +1,9 @@
 #include "Agent.hpp"
 
 
-    /* matricies work in row, col referencing.
-    rows = -y, cols = x
-    y
-    ^ 
-    |
-    |
-    |
-    |
-    * - - - - - > x
+/*
 
+    matricies work in row, col referencing.
     * - - - - - > cols
     |
     |
@@ -20,13 +13,17 @@
     v
     rows
 
-    for indexing use occupancy_grid[y][x]
+    open cv points work x,y but top lef origin
 
+    * - - - - - > x
+    |
+    |
+    |
+    |
+    |
+    v
+    y
     */
-
-
-
-
 
 Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius) {
     this->coords = std::make_pair(x_coord, y_coord);
@@ -39,21 +36,23 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->started_iter_grid = false;
     
     
-    int rows = this->field_y_length;
-    int cols = this->field_x_width;
-    this->occupancy_grid  = std::vector<std::vector<int>>(this->field_y_length, std::vector<int>(this->field_x_width, unknown));
-
-    for(int y = 0; y < this->field_y_length; y++ ){
-        for(int x = 0; x < this->field_x_width; x++){
-            if(x == 0 || x == this->field_x_width-1 || y == 0 || y == this->field_y_length-1){
-                this->occupancy_grid[y][x] = occupied;
-            }
-        }
-    }
 
 
-    //pair is x,y so index [y][x]
-    this->occupancy_grid[this->coords.second][this->coords.first] = visited;
+    this->occupancy_grid = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC1);
+
+        
+    // std::cout << this->occupancy_grid << std::endl;
+
+    cv::Rect boundary(0,0, this->field_x_width-1, this->field_y_length-1);
+
+    cv::rectangle(this->occupancy_grid, boundary, cv::Scalar(blocked, blocked, blocked));
+
+
+    std::cout << this->occupancy_grid.depth() << std::endl;
+
+    this->occupancy_grid.at<uint8_t>(this->coords.second,this->coords.first) = blocked;
+
+
 
 
     
@@ -68,40 +67,42 @@ Agent::~Agent() {
 }
 
 
-// for this function the index are returned left to right, middle to top then middle to bottom. For most situation, the order is not important
-int *Agent::nextGridSquare(){
-    static int x;
-    static int y;
-    static int dy;
-    static bool hit_top;
-    static bool hit_bottom; 
 
-    if(!this->started_iter_grid){
-        this->started_iter_grid = true;
-        //left edge of vision circle, clipped by the boundaries of the field;
-        x = this->clipRange(0, this->field_x_width, this->coords.first - this->scan_radius); 
-        y = this->coords.second;
-        dy  = 0;
-        hit_top = false;
-        hit_bottom = false;
-        return &(this->occupancy_grid[x][y]);
-    }
-    //goes all the way to the top;
-    if(!hit_top &&  pow(x,2) + pow(y+dy,2) <= pow(this->scan_radius, 2) && (y+dy) < this->field_y_length){
-            return &(this->occupancy_grid[x][y]);
-            dy++;
-    }else{
-            hit_top = true;
-            dy = 0;
-    }
-    if(!hit_bottom &&  pow(x,2) + pow(y-dy,2) <= pow(this->scan_radius, 2) && (y-dy) < this->field_y_length){
-            return &(this->occupancy_grid[x][y]);
-    }else{
-            hit_top = true;
-    }
-    return nullptr;
 
-}
+// // for this function the index are returned left to right, middle to top then middle to bottom. For most situation, the order is not important
+// int *Agent::nextGridSquare(){
+//     static int x;
+//     static int y;
+//     static int dy;
+//     static bool hit_top;
+//     static bool hit_bottom; 
+
+//     if(!this->started_iter_grid){
+//         this->started_iter_grid = true;
+//         //left edge of vision circle, clipped by the boundaries of the field;
+//         x = this->clipRange(0, this->field_x_width, this->coords.first - this->scan_radius); 
+//         y = this->coords.second;
+//         dy  = 0;
+//         hit_top = false;
+//         hit_bottom = false;
+//         return &(this->occupancy_grid[x][y]);
+//     }
+//     //goes all the way to the top;
+//     if(!hit_top &&  pow(x,2) + pow(y+dy,2) <= pow(this->scan_radius, 2) && (y+dy) < this->field_y_length){
+//             return &(this->occupancy_grid[x][y]);
+//             dy++;
+//     }else{
+//             hit_top = true;
+//             dy = 0;
+//     }
+//     if(!hit_bottom &&  pow(x,2) + pow(y-dy,2) <= pow(this->scan_radius, 2) && (y-dy) < this->field_y_length){
+//             return &(this->occupancy_grid[x][y]);
+//     }else{
+//             hit_top = true;
+//     }
+//     return nullptr;
+
+// }
 
 
 //clips value in range such that lower <= value < upper
@@ -114,55 +115,37 @@ int Agent::clipRange(int lower, int upper, int value){
     return value;
 }
 
-// int Agent::markInRadius(occ_grid_vals value, bool justCount = false){
-//     //for all x values from the current coord +- radius but also clipped by the boundary of the field
-//     int counter = 0;
-//     for(int x = this->clipRange(0, this->field_x_width, this->coords.first - this->scan_radius) ; x <= this->clipRange(0, this->field_x_width, this->coords.first+this->scan_radius); x++){
-//         int dy = 0;
-//         int y = this->coords.second;
-//         bool hit_top = false;
-//         bool hit_bottom = false;
-//         while( pow(x,2) + pow(y+dy,2) <= pow(this->scan_radius, 2) ){
-//             if(!hit_bottom && (y+dy) < this->field_y_length){
-//                 counter++;
-//                 if(justCount == false) this->occupancy_grid[x][y+dy] = value;
-//                 return &(this->occupancy_grid[x][y+dy]);
-                
-//             }else{
-//                 hit_top = true;
-//             }
-//             if(!hit_bottom && (y-dy) >= 0){
-//                 counter++;
-//                 if(justCount == false) this->occupancy_grid[x][y-dy] = value;
-//             }else{
-//                 hit_bottom = true;
-//             }
-//             dy++;
-            
-//         }
-    
-//     }
-//     return counter;
-// }
+
+
+
+std::vector<cv::Point2i> Agent::getAllGridSquares(int x, int y){
+
+    std::vector<cv::Point2i> locations;
+
+    cv::Mat mask = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC1);
+
+    cv::Point centre(x,y);
+    cv::circle(mask, centre, this->scan_radius, cv::Scalar(255,255,255), -1);
+
+
+    cv::findNonZero(mask, locations);
+
+    return locations;
+
+}
+
+std::vector<cv::Point2i> Agent::getAllGridSquares(std::pair<int,int> coords){
+    return this->getAllGridSquares(coords.first, coords.second);
+}
+
 
 
 std::pair<int,int> Agent::determineAction(){
     //TODO
     //This is where the logic would be
-    std::pair<int,int> next_position;
+    std::pair<int,int> next_position = this->coords;
 
-
-
-    
-
-
-
-
-
-
-
-
-    
+    next_position.first += 10;   
     return next_position;
 
 
@@ -180,8 +163,21 @@ void Agent::moveToPosition(std::pair<int,int> pos){
 
 
 void Agent::measureSignalStrength(Field f) {
+    std::vector<cv::Point> locations = this->getAllGridSquares(this->coords);
+    for(auto &p: locations){
+        if(this->occupancy_grid.at<uint8_t>(p) < scanned){
+            this->occupancy_grid.at<uint8_t>(p) = scanned;
+        }
+    }
+
     this->measurements.push_back(f.getMeasurements(this->coords));
     
+}
+
+
+
+std::pair<int,int> Agent::getCoords(){
+    return this->coords;
 }
 
 std::string Agent::logAgent() {
@@ -218,15 +214,10 @@ std::string Agent::logAgent() {
 
 void Agent::showOccGrid(){
     std::cout << "Occupancy Grid" << std::endl;
-    for(auto &row : this->occupancy_grid){
-        for(auto &col : row){
-            std::cout << col;
-        }
-        std::cout << std::endl;
-    }
+    std::cout << this->occupancy_grid << std::endl;
 
 }
 
-std::vector<std::vector<int>> Agent::getOccGrid(){
+cv::Mat Agent::getOccGrid(){
     return this->occupancy_grid;
 }

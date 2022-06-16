@@ -5,14 +5,15 @@
 #include <fstream>
 #include <vector>
 #include "Field.hpp"
+#include <opencv2/opencv.hpp>
 
 
 enum occ_grid_vals{
-    unknown,
-    scanned = 5,
-    visited = 10,
-    occupied = 200,
-    frontier = 100
+    unknown = 0,
+    frontier = 60,
+    scanned = 120,
+    visited = 180,
+    blocked = 240
 };
 
 
@@ -30,7 +31,7 @@ private:
 
     bool started_iter_grid;
 
-    std::vector<std::vector<int>> occupancy_grid;
+    cv::Mat occupancy_grid;
 
 
     // each pair is an id-measurement pair. Multiple of these pairs are measured each time step, collected in the inside vector.
@@ -39,9 +40,9 @@ private:
 
     int clipRange(int lower, int upper, int value);
 
-    int *nextGridSquare();
+    
 
-    int markInRadius(occ_grid_vals value, bool justCount);
+
 
 
 
@@ -49,12 +50,18 @@ public:
     Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius);
     ~Agent();
 
+
     std::pair<int,int> determineAction();
     void moveToPosition(std::pair<int,int> pos) ;
+
+    std::vector<cv::Point2i> getAllGridSquares(int x, int y);
+    std::vector<cv::Point2i> getAllGridSquares(std::pair<int,int> coords);
     void measureSignalStrength(Field f);
+    
+    std::pair<int,int> getCoords();
     std::string logAgent();
     void showOccGrid();
-    std::vector<std::vector<int>> getOccGrid();
+    cv::Mat getOccGrid();
 };
 
 

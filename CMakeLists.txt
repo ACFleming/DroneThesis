@@ -5,7 +5,7 @@ project(main)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
 if (WIN32)
         set("OpenCV_DIR" "C:/Program Files (x86)/opencv/build/x64/vc15/lib") 
