@@ -2,12 +2,14 @@ cmake_minimum_required(VERSION 3.1.9)
 
  
 project(main)
-# As of R2021a, C++ version ~11 and 14 are supported
+
 set(CMAKE_CXX_STANDARD 14)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
 
-# set("OpenCV_DIR" "/usr/share/OpenCV") 
+if (WIN32)
+        set("OpenCV_DIR" "C:/Program Files (x86)/opencv/build/x64/vc15/lib") 
+endif (WIN32)
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/ext_libs )

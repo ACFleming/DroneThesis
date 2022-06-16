@@ -1,6 +1,6 @@
 #include "Field.hpp"
 #include "Agent.hpp"
-#include <opencv4/opencv2/opencv.hpp>
+#include <opencv2/opencv.hpp>>
 
 
 int main (int argc, char* argv[]){
@@ -34,14 +34,15 @@ int main (int argc, char* argv[]){
 
 
 
-    // cv::Mat dst;
+    cv::Mat dst;
     
-    // std::cout << dst.size()  << dst.depth() << std::endl;
+    std::cout << dst.size()  << dst.depth() << std::endl;
 
-    // cv::normalize(image, image, 0, 255, cv::NORM_MINMAX);
+    cv::normalize(image, image, 0, 255, cv::NORM_MINMAX);
 
     
     image.convertTo(image, CV_32F);
+    
 
     cv::cvtColor(image,image, cv::COLOR_GRAY2BGR);
 

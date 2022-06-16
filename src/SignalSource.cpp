@@ -36,7 +36,7 @@ std::string SignalSource::randomString(std::size_t length)
 
     std::random_device random_device;
     std::mt19937 generator(random_device());
-    std::uniform_int_distribution<> distribution(0, CHARACTERS.size() - 1);
+    std::uniform_int_distribution<> distribution(0, CHARACTERS.size() - (size_t)1);
 
     std::string random_string;
 

@@ -24,5 +24,13 @@ Update
 
 Now also using opencv
 
+Update
+
+For installing opencv on ubuntu, follow:https://medium.com/analytics-vidhya/how-to-install-opencv-for-visual-studio-code-using-ubuntu-os-9398b2f32d53 
+
+For installing opencv on windows, https://dev.to/asmit2952/installing-opencv-on-windows-for-c-326i, then update cmake to include x64/vc15/bin directory
+Make sure you run the install program with admin priviledges 
+
+
 
 

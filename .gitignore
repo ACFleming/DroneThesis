@@ -34,6 +34,7 @@
 # Building Files
 *.asv
 build/*
+Debug/*
 
 # Computer Specific Setting files
 *.json
