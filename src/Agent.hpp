@@ -10,9 +10,8 @@
 
 enum occ_grid_vals{
     unknown = 0,
-    frontier = 60,
-    scanned = 120,
-    visited = 180,
+    frontier = 80,
+    scanned = 160,
     blocked = 240
 };
 
@@ -38,9 +37,7 @@ private:
     // the outside vector is a collection of all timesteps' measurements. 
     std::vector<std::vector<std::pair<std::string,double>>> measurements;
 
-    int clipRange(int lower, int upper, int value);
 
-    
 
 
 
@@ -54,8 +51,20 @@ public:
     std::pair<int,int> determineAction();
     void moveToPosition(std::pair<int,int> pos) ;
 
-    std::vector<cv::Point2i> getAllGridSquares(int x, int y);
-    std::vector<cv::Point2i> getAllGridSquares(std::pair<int,int> coords);
+
+    int clipRange(int lower, int upper, int value);
+
+    cv::Mat rangeMask(cv::Mat image, int x, int y);
+
+
+    std::vector<cv::Point2i> gridSquaresInRange(int x, int y);
+    std::vector<cv::Point2i> gridSquaresInRange(std::pair<int,int> coords);
+    std::vector<cv::Point2i> globalFrontiers();
+
+
+    std::vector<cv::Point2i> updatedScannedGrid(int x, int y);
+    
+    
     void measureSignalStrength(Field f);
     
     std::pair<int,int> getCoords();

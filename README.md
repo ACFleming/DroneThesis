@@ -33,4 +33,6 @@ Make sure you run the install program with admin priviledges
 
 
 
+Update
+No longer including physical boundary. Edge of matrix will count as boundary
 
