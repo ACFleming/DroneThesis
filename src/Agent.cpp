@@ -117,8 +117,7 @@ std::vector<cv::Point2i> Agent::globalFrontiers(){
     frontier_edges.at<uint8_t>(this->coords.second,this->coords.first) = scanned;
 
 
-    cv::imshow("Scanned", frontier_edges);
-    cv::waitKey(0);
+
 
     cv::Canny(frontier_edges, frontier_edges, blocked, scanned);
 
@@ -132,9 +131,9 @@ std::vector<cv::Point2i> Agent::globalFrontiers(){
 
     cv::findNonZero(frontier_edges, locations);
 
-    for(auto &p : locations){
-        std::cout << p << std::endl;
-    }
+    // for(auto &p : locations){
+    //     std::cout << p << std::endl;
+    // }
     return locations;
 
 }
@@ -142,6 +141,14 @@ std::vector<cv::Point2i> Agent::globalFrontiers(){
 std::pair<int,int> Agent::determineAction(){
     //TODO
     //This is where the logic would be
+
+    std::vector<cv::Point2i> frontiers = this->globalFrontiers();
+
+
+
+
+
+
     std::pair<int,int> next_position = this->coords;
 
     next_position.first += 1;   
@@ -170,8 +177,11 @@ void Agent::measureSignalStrength(Field f) {
             this->occupancy_grid.at<uint8_t>(p) = scanned;
         }
     }
-
-    this->measurements.push_back(f.getMeasurements(this->coords));
+    std::vector<std::pair<std::__cxx11::string, double>> measurements = f.getMeasurements(this->coords);
+    for(auto &m: measurements){
+        std::cout << m.first << ": " << m.second << std::endl;
+    }
+    this->measurements.push_back(measurements);
     
 }
 

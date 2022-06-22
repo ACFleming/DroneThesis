@@ -45,9 +45,11 @@ std::vector<std::pair<std::string,double>> Field::getMeasurements(std::pair<int,
         std::normal_distribution<double> distribution(true_distance,this->std_dev);
         double dist_with_noise = distribution(generator);
         // cant have negative distance
-        if(dist_with_noise < 0){ dist_with_noise = 0;}
+        if(dist_with_noise < 0) dist_with_noise = 0;
         // if too far away no signal detected
-        if(dist_with_noise > this->range_cap){ dist_with_noise = 0;}
+        if(dist_with_noise > this->range_cap){ 
+            continue;
+        }
         distances.push_back(std::make_pair(source.getId(), dist_with_noise));
     }
     return distances;
