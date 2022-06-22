@@ -11,8 +11,12 @@ int main (int argc, char* argv[]){
     int num_sources = 3;
     int std_dev_noise = 10;
     int max_range = 40;
+    int speed = 40;
+    int bearing = 90;
+
+
     Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
-    Agent a1 = Agent("Drone1", 20, 20, field_x_width, field_y_length, max_range);
+    Agent a1 = Agent("Drone1", 0, 0, field_x_width, field_y_length, max_range,speed, bearing);
     // Agent a2 = Agent("Drone2", 0.75*field_x_width, 0.75*field_y_length, field_x_width, field_y_length);
     
     std::cout << "Showing grid" << std::endl;
@@ -24,7 +28,7 @@ int main (int argc, char* argv[]){
 
 
     
-    for(int i = 0; i < 100; i++){
+    while(true){
         a1.measureSignalStrength(f);
 
         cv::namedWindow("Occ Grid");
@@ -36,8 +40,10 @@ int main (int argc, char* argv[]){
 
 
 
-
-        a1.moveToPosition(a1.determineAction());
+        std::pair<int,int> action = a1.determineAction();
+        std::cout << action.first << "," << action.second << std::endl;
+        if(action.first == -1 && action.second == -1) break;
+        a1.moveToPosition(action);
     
         
 

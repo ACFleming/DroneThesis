@@ -10,6 +10,7 @@
 
 enum occ_grid_vals{
     unknown = 0,
+    visited = 20,
     frontier = 80,
     scanned = 160,
     blocked = 240
@@ -27,8 +28,10 @@ private:
     int field_x_width;
     int field_y_length;
     int scan_radius;
+    int speed;
+    int bearing;
 
-    bool started_iter_grid;
+    int raster_step_count;
 
     cv::Mat occupancy_grid;
 
@@ -41,10 +44,10 @@ private:
 
 
 
-
+// should probably change these ints to double? the ints is nice for cartesian stuff
 
 public:
-    Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius);
+    Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius, int speed, int bearing);
     ~Agent();
 
 

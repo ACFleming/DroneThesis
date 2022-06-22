@@ -25,15 +25,16 @@
     y
     */
 
-Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius) {
+Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius, int speed, int bearing) {
     this->coords = std::make_pair(x_coord, y_coord);
     this->coord_history.push_back(this->coords);
     this->name = name;
     this->field_x_width = field_width;
     this->field_y_length = field_length;
     this->scan_radius = scan_radius;
-
-    this->started_iter_grid = false;
+    this->speed = speed;
+    this->bearing = bearing;
+    this->raster_step_count = 0;
     
     
 
@@ -74,7 +75,7 @@ int Agent::clipRange(int lower, int upper, int value){
     if(value < lower){
         value = lower;
     }else if(value >= upper){
-        value = upper;
+        value = upper - 1;
     }
     return value;
 }
@@ -139,28 +140,62 @@ std::vector<cv::Point2i> Agent::globalFrontiers(){
 }
 
 std::pair<int,int> Agent::determineAction(){
-    //TODO
-    //This is where the logic would be
-
-    std::vector<cv::Point2i> frontiers = this->globalFrontiers();
 
 
+    //Rastering Assumption
+    //Range of scan >= speed
 
 
 
 
     std::pair<int,int> next_position = this->coords;
 
-    next_position.first += 1;   
-    return next_position;
 
+    
+    std::vector<std::pair<cv::Point2i,double>> cost_vec;
+
+
+    std::vector<cv::Point2i> frontiers = this->globalFrontiers();
+
+
+    //For each frontier point, find how many new grid squares would be uncovered
+    for(auto &f: frontiers){
+        std::vector<cv::Point2i> grid_in_range = this->gridSquaresInRange(f.x, f.y);
+        int unknown_counter = 0;
+        for(auto &p: grid_in_range){
+            if(this->occupancy_grid.at<uint8_t>(p.x,p.y) == unknown) unknown_counter++;
+        }
+        int dist = int(hypot(this->coords.first - f.x, this->coords.second-f.y)); 
+        //Cost function
+        std::cout << "Point:" << f.x <<"," << f.y << " Dist: " << dist << " Unknown count: " << unknown_counter << std::endl;
+        double cost = dist*0.1 -0.01*unknown_counter;
+        cost_vec.push_back(std::make_pair(f, cost));
+        
+    }
+
+
+    //Finf min arg
+    std::pair<cv::Point2i,double>result = *std::min_element(cost_vec.cbegin(), cost_vec.cend(), [](const std::pair<cv::Point2i,double> &lhs, const std::pair<cv::Point2i,double> &rhs) {
+        return lhs.second < rhs.second;    
+    });
+        
+
+    std::cout <<  "BEST! " << "Point:" << result.first.x <<"," << result.first.y << " Cost: " << result.second << std::endl;
+
+    //move in direction of this point
+
+    double mul_factor = this->scan_radius/(hypot(this->coords.first - result.first.x, this->coords.first- result.first.y)); 
+    int x_coord = this->coords.first + int( (this->coords.first - result.first.x)*mul_factor);
+    int y_coord = this->coords.second + int( (this->coords.second - result.first.y)*mul_factor);
+
+    return std::make_pair(x_coord,y_coord);
 
 
 
 }
 
 void Agent::moveToPosition(std::pair<int,int> pos){
-    this->occupancy_grid.at<uint8_t>(this->coords.second, this->coords.first) = scanned;
+    this->occupancy_grid.at<uint8_t>(this->coords.second, this->coords.first) = visited;
     pos.first = this->clipRange(0, this->field_x_width, pos.first);
     pos.second = this->clipRange(0, this->field_y_length, pos.second);
     this->coords = pos;
@@ -178,9 +213,9 @@ void Agent::measureSignalStrength(Field f) {
         }
     }
     std::vector<std::pair<std::__cxx11::string, double>> measurements = f.getMeasurements(this->coords);
-    for(auto &m: measurements){
-        std::cout << m.first << ": " << m.second << std::endl;
-    }
+    // for(auto &m: measurements){
+    //     std::cout << m.first << ": " << m.second << std::endl;
+    // }
     this->measurements.push_back(measurements);
     
 }
