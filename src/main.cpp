@@ -10,8 +10,8 @@ int main (int argc, char* argv[]){
     int field_y_length = 600;
     int num_sources = 3;
     int std_dev_noise = 10;
-    int max_range = 40;
-    int speed = 40;
+    int max_range = 60;
+    int speed = 60;
     int bearing = 90;
 
 
@@ -31,9 +31,8 @@ int main (int argc, char* argv[]){
     while(true){
         a1.measureSignalStrength(f);
 
-        cv::namedWindow("Occ Grid");
         cv::imshow("Occ Grid", a1.getOccGrid());
-        cv::waitKey(0);
+        cv::waitKey(10);
 
         a1.globalFrontiers();
 

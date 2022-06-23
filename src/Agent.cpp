@@ -125,7 +125,7 @@ std::vector<cv::Point2i> Agent::globalFrontiers(){
 
 
     cv::imshow("Frontiers", frontier_edges);
-    cv::waitKey(0);
+    cv::waitKey(10);
     
     std::vector<cv::Point2i> locations;
 
@@ -163,12 +163,18 @@ std::pair<int,int> Agent::determineAction(){
         std::vector<cv::Point2i> grid_in_range = this->gridSquaresInRange(f.x, f.y);
         int unknown_counter = 0;
         for(auto &p: grid_in_range){
-            if(this->occupancy_grid.at<uint8_t>(p.x,p.y) == unknown) unknown_counter++;
+            // if(this->coords.first == 508) {
+            //     std::cout << p.x << " " <<  p.y << std::endl;
+            // }
+        if(this->occupancy_grid.at<uint8_t>(p) == unknown) unknown_counter++;
         }
+
+        
+
         int dist = int(hypot(this->coords.first - f.x, this->coords.second-f.y)); 
         //Cost function
-        std::cout << "Point:" << f.x <<"," << f.y << " Dist: " << dist << " Unknown count: " << unknown_counter << std::endl;
-        double cost = dist*0.1 -0.01*unknown_counter;
+        // std::cout << "Point:" << f.x <<"," << f.y << " Dist: " << dist << " Unknown count: " << unknown_counter << std::endl;
+        double cost = dist*1 -0.01*unknown_counter;
         cost_vec.push_back(std::make_pair(f, cost));
         
     }
@@ -184,9 +190,13 @@ std::pair<int,int> Agent::determineAction(){
 
     //move in direction of this point
 
-    double mul_factor = this->scan_radius/(hypot(this->coords.first - result.first.x, this->coords.first- result.first.y)); 
-    int x_coord = this->coords.first + int( (this->coords.first - result.first.x)*mul_factor);
-    int y_coord = this->coords.second + int( (this->coords.second - result.first.y)*mul_factor);
+    double mul_factor = this->speed/(hypot(this->coords.first - result.first.x, this->coords.second- result.first.y)); 
+    int x_coord = this->coords.first + int( (result.first.x-this->coords.first)*mul_factor);
+    int y_coord = this->coords.second + int(  (result.first.y-this->coords.second)*mul_factor);
+    std::cout << "Mul factor: " << mul_factor <<  " Target: " << x_coord << ", " << y_coord << std::endl;
+    std::cout << "Dist of target point: " << int(hypot(this->coords.first - x_coord, this->coords.second-y_coord)) << std::endl;
+
+
 
     return std::make_pair(x_coord,y_coord);
 
@@ -212,7 +222,7 @@ void Agent::measureSignalStrength(Field f) {
             this->occupancy_grid.at<uint8_t>(p) = scanned;
         }
     }
-    std::vector<std::pair<std::__cxx11::string, double>> measurements = f.getMeasurements(this->coords);
+    std::vector<std::pair<std::string, double>> measurements = f.getMeasurements(this->coords);
     // for(auto &m: measurements){
     //     std::cout << m.first << ": " << m.second << std::endl;
     // }
