@@ -162,18 +162,24 @@ std::pair<int,int> Agent::determineAction(){
     for(auto &f: frontiers){
         std::vector<cv::Point2i> grid_in_range = this->gridSquaresInRange(f.x, f.y);
         int unknown_counter = 0;
+        int dist = this->field_x_width * this->field_y_length;
         for(auto &p: grid_in_range){
             // if(this->coords.first == 508) {
             //     std::cout << p.x << " " <<  p.y << std::endl;
             // }
-        if(this->occupancy_grid.at<uint8_t>(p) == unknown) unknown_counter++;
+            dist = int(hypot(this->coords.first - f.x, this->coords.second-f.y)); 
+            if(dist < 2*this->scan_radius && this->occupancy_grid.at<uint8_t>(p) == unknown){
+                unknown_counter++;
+            }
         }
 
         
-
-        int dist = int(hypot(this->coords.first - f.x, this->coords.second-f.y)); 
+ 
         //Cost function
-        // std::cout << "Point:" << f.x <<"," << f.y << " Dist: " << dist << " Unknown count: " << unknown_counter << std::endl;
+        if(unknown_counter > 0){
+            std::cout << "Point:" << f.x <<"," << f.y << " Dist: " << dist << " Unknown count: " << unknown_counter << std::endl;
+        }
+
         double cost = dist*1 -0.01*unknown_counter;
         cost_vec.push_back(std::make_pair(f, cost));
         
