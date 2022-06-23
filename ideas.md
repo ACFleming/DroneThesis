@@ -41,3 +41,5 @@
 
 
 
+**Note**
+An inscribed octagon has 90% of the area of the circle it enscribes. Thinking of using an octagon to ge
