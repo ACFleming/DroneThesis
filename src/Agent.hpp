@@ -4,9 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "Field.hpp"
 #include <opencv2/opencv.hpp>
-
+#include "Field.hpp"
 
 enum occ_grid_vals{
     unknown = 0,
@@ -16,7 +15,7 @@ enum occ_grid_vals{
     blocked = 240
 };
 
-
+#define PI 3.1415926535
 
 class Agent
 {
@@ -58,6 +57,9 @@ public:
     int clipRange(int lower, int upper, int value);
 
     cv::Mat rangeMask(cv::Mat image, int x, int y);
+
+
+    std::vector<cv::Point2i> getOctagonPoints(int x, int y);
 
 
     std::vector<cv::Point2i> gridSquaresInRange(int x, int y);

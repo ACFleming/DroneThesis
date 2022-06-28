@@ -80,6 +80,8 @@ int Agent::clipRange(int lower, int upper, int value){
     return value;
 }
 
+
+
 cv::Mat Agent::rangeMask(cv::Mat image, int x, int y){
     cv::Mat mask = cv::Mat::zeros(image.size(), CV_8UC1);
     cv::Point centre(x,y);
@@ -87,6 +89,37 @@ cv::Mat Agent::rangeMask(cv::Mat image, int x, int y){
     return mask;
 }
 
+
+std::vector<cv::Point2i> Agent::getOctagonPoints(int x, int y){
+    std::vector<cv::Point2i> clockwise_points;
+    cv::Point2i p;
+    //N
+    p = cv::Point( this->clipRange(0, this->field_x_width, floor(x))                                ,this->clipRange(0, this->field_y_length, floor(y - this->scan_radius)));
+    clockwise_points.push_back(p);
+    //NE
+    p = cv::Point(this->clipRange(0, this->field_x_width,  floor(x + sin(PI/4)*this->scan_radius))  ,this->clipRange(0, this->field_y_length, floor(y - sin(PI/4)*this->scan_radius)));
+    clockwise_points.push_back(p);
+    //E
+    p = cv::Point(this->clipRange(0, this->field_x_width, floor(x + this->scan_radius))             ,this->clipRange(0, this->field_y_length, floor(y)));
+    clockwise_points.push_back(p);
+    //SE
+    p = cv::Point(this->clipRange(0, this->field_x_width, floor(x + sin(PI/4)*this->scan_radius))   ,this->clipRange(0, this->field_y_length, floor(y + sin(PI/4)*this->scan_radius)));
+    clockwise_points.push_back(p);
+    //S
+    p = cv::Point(this->clipRange(0, this->field_x_width, floor(x))                                 ,this->clipRange(0, this->field_y_length, floor(y + this->scan_radius)));
+    clockwise_points.push_back(p);
+    //SW
+    p = cv::Point(this->clipRange(0, this->field_x_width, floor(x - sin(PI/4)*this->scan_radius))   ,this->clipRange(0, this->field_y_length, floor(y + sin(PI/4)*this->scan_radius)));
+    clockwise_points.push_back(p);
+    //W
+    p = cv::Point(this->clipRange(0, this->field_x_width, floor(x - this->scan_radius))             ,this->clipRange(0, this->field_y_length, floor(y)));
+    clockwise_points.push_back(p);
+    //NW
+    p = cv::Point(this->clipRange(0, this->field_x_width, floor(x - sin(PI/4)*this->scan_radius))   ,this->clipRange(0, this->field_y_length, floor(y - sin(PI/4)*this->scan_radius)));
+    clockwise_points.push_back(p);
+    return clockwise_points;
+
+}
 
 std::vector<cv::Point2i> Agent::gridSquaresInRange(int x, int y){
 

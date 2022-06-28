@@ -26,7 +26,7 @@
     v
     rows
 
-    open cv points work x,y but top lef origin
+    open cv points work x,y but top left origin
 
     * - - - - - > x
     |
@@ -42,4 +42,6 @@
 
 
 **Note**
-An inscribed octagon has 90% of the area of the circle it enscribes. Thinking of using an octagon to ge
+An inscribed octagon has 90% of the area of the circle it enscribes. Thinking of using an octagon to get boundary vectors
+
+$$\lfloor
