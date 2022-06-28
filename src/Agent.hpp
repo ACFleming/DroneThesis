@@ -9,9 +9,7 @@
 
 enum occ_grid_vals{
     unknown = 0,
-    visited = 20,
-    frontier = 80,
-    scanned = 160,
+    scanned = 80,
     blocked = 240
 };
 
@@ -33,6 +31,8 @@ private:
     int raster_step_count;
 
     cv::Mat occupancy_grid;
+
+    std::vector<cv::Point2i> frontiers;
 
 
     // each pair is an id-measurement pair. Multiple of these pairs are measured each time step, collected in the inside vector.
@@ -56,7 +56,7 @@ public:
 
     int clipRange(int lower, int upper, int value);
 
-    cv::Mat rangeMask(cv::Mat image, int x, int y);
+    cv::Mat rangeMask(int x, int y, int value);
 
 
     std::vector<cv::Point2i> getOctagonPoints(int x, int y);
@@ -64,18 +64,23 @@ public:
 
     std::vector<cv::Point2i> gridSquaresInRange(int x, int y);
     std::vector<cv::Point2i> gridSquaresInRange(std::pair<int,int> coords);
-    std::vector<cv::Point2i> globalFrontiers();
+    std::vector<cv::Point2i> getNewFrontiers(int x, int y);
 
 
-    std::vector<cv::Point2i> updatedScannedGrid(int x, int y);
+    void updateScannedGrid();
     
     
     void measureSignalStrength(Field f);
+
+
+
+    int run();
     
     std::pair<int,int> getCoords();
     std::string logAgent();
     void showOccGrid();
     cv::Mat getOccGrid();
+    cv::Mat getFrontierMap();
 };
 
 
