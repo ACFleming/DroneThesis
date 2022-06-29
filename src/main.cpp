@@ -18,26 +18,40 @@ int main (int argc, char* argv[]){
     // std::cout << cv::getBuildInformation() << std::endl;
 
     Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
-    Agent a1 = Agent("Drone1", 0, 0, field_x_width, field_y_length, max_range,speed, bearing);
+    Agent a1 = Agent("Drone1", 100, 100, field_x_width, field_y_length, max_range,speed, bearing);
 
 
     //RUN FUNCTION
+
+    cv::Mat path = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
+
+
+    std::pair<int,int> curr = a1.getCoords();
+    int counter = 0;
 
     while(true){
         a1.measureSignalStrength(f);
         a1.updateScannedGrid();
 
-        cv::imshow("OCC GRID", a1.getOccGrid());
+        cv::imshow("Path", path);
         cv::waitKey(0);
 
         
     
-        cv::imshow("Frontier map", a1.getFrontierMap());
-        cv::waitKey(0);
+        // cv::imshow("Frontier map", a1.getFrontierMap());
+        // cv::waitKey(0);
+        
 
 
         std::pair<int,int> dst = a1.determineAction();
         a1.moveToPosition(dst);
+        std::pair<int,int> pos = a1.getCoords();
+        std::cout << "Agent at: " << pos.first << "," << pos.second << std::endl;
+
+        cv::line(path, cv::Point2i(curr.first, curr.second), cv::Point2i(pos.first,pos.second),cv::Scalar(255, 255-counter, counter));
+        curr = pos;
+        counter +=5;
+
     }
 
 

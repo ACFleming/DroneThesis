@@ -32,7 +32,7 @@ private:
 
     cv::Mat occupancy_grid;
 
-    std::vector<cv::Point2i> frontiers;
+    std::vector<std::vector<cv::Point2i>> frontiers;
 
 
     // each pair is an id-measurement pair. Multiple of these pairs are measured each time step, collected in the inside vector.
@@ -64,7 +64,7 @@ public:
 
     std::vector<cv::Point2i> gridSquaresInRange(int x, int y);
     std::vector<cv::Point2i> gridSquaresInRange(std::pair<int,int> coords);
-    std::vector<cv::Point2i> getNewFrontiers(int x, int y);
+    std::vector<std::vector<cv::Point2i>> getNewFrontiers(int x, int y);
 
 
     void updateScannedGrid();

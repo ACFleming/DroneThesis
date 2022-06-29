@@ -44,4 +44,8 @@
 **Note**
 An inscribed octagon has 90% of the area of the circle it enscribes. Thinking of using an octagon to get boundary vectors
 
-$$\lfloor
+
+
+
+
+**Idea** Have been working with contours to combine frontiers. Need to use cv RETR_CCOMP contour detection to find any outside contours of holes, as this will prevent situations where a hole is left during searching
