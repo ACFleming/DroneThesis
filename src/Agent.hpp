@@ -54,9 +54,18 @@ public:
     void moveToPosition(std::pair<int,int> pos) ;
 
 
+    std::pair<int,int> point2Pair(cv::Point p);
+    cv::Point pair2Point(std::pair<int,int> p);
+
     int clipRange(int lower, int upper, int value);
+    double dist(std::pair<int,int> p1, std::pair<int,int> p2);
+
+    double angleInsideArc(std::pair<int,int> c, std::pair<int,int> p1, std::pair<int,int> p2);
+    double angleWithHorizontal(std::pair<int,int>c, std::pair<int,int> p);
 
     cv::Mat rangeMask(int x, int y, int value);
+
+    void drawArc(cv::Mat img, std::pair<int,int> c, std::pair<int,int> p1, std::pair<int,int> p2);
 
 
     std::vector<cv::Point2i> getOctagonPoints(int x, int y);

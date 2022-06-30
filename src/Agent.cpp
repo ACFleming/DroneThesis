@@ -1,6 +1,7 @@
 #include "Agent.hpp"
 
 
+
 /*
 
     matricies work in row, col referencing.
@@ -49,7 +50,7 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     // cv::rectangle(this->occupancy_grid, boundary, cv::Scalar(blocked, blocked, blocked));
 
 
-    std::cout << this->occupancy_grid.depth() << std::endl;
+    // std::cout << this->occupancy_grid.depth() << std::endl;
 
     this->occupancy_grid.at<uint8_t>(this->coords.second,this->coords.first) = blocked;
 
@@ -68,7 +69,13 @@ Agent::~Agent() {
 }
 
 
+std::pair<int,int> Agent::point2Pair(cv::Point2i p){
+    return std::make_pair(p.x, p.y);
+}
 
+cv::Point2i Agent::pair2Point(std::pair<int,int> p){
+    return cv::Point2i(p.first, p.second);
+}
 
 //clips value in range such that lower <= value < upper
 int Agent::clipRange(int lower, int upper, int value){
@@ -80,6 +87,39 @@ int Agent::clipRange(int lower, int upper, int value){
     return value;
 }
 
+double Agent::dist(std::pair<int,int> p1, std::pair<int,int> p2){
+    return hypot(p1.first - p2.first, p1.second-p2.second);
+}
+
+
+double Agent::angleInsideArc(std::pair<int,int> c, std::pair<int,int> p1, std::pair<int,int> p2){
+    double radius = this->dist(c,p1);
+    double dist = this->dist(p1,p2);
+    if(dist == 0) return 0.0;
+    double rad =  acos(1-dist*dist/(2*radius*radius));
+    return rad*180/PI;
+}
+
+double Agent::angleWithHorizontal(std::pair<int,int>c, std::pair<int,int> p){
+    double radius = dist(c,p);
+    double angle = angleInsideArc(c, std::make_pair(c.first+radius, c.second), p);
+    if(p.second < c.second) angle = -1*angle;
+    return angle;
+}
+
+void Agent::drawArc(cv::Mat img, std::pair<int,int> c, std::pair<int,int> p1, std::pair<int,int> p2){
+
+
+
+
+    double axes_angle = this->angleWithHorizontal(c, p1);
+
+    double arc_angle = this->angleInsideArc(c, p1, p2);
+    std::cout << "axes_angle: " << axes_angle << " arc_angle: " << arc_angle << std::endl;
+
+    cv::ellipse(img,this->pair2Point(c), cv::Size(this->dist(c,p1),this->dist(c,p1)), axes_angle, 0, arc_angle,cv::Scalar(255,0,255));
+
+}
 
 
 cv::Mat Agent::rangeMask(int x, int y, int value){
@@ -97,26 +137,26 @@ std::vector<cv::Point2i> Agent::getOctagonPoints(int x, int y){
     p = cv::Point( this->clipRange(0, this->field_x_width, int(x))                                ,this->clipRange(0, this->field_y_length, int(y - this->scan_radius)));
     clockwise_points.push_back(p);
     //NE
-    // p = cv::Point(this->clipRange(0, this->field_x_width, int(x + sin(PI/4)*this->scan_radius))  ,this->clipRange(0, this->field_y_length, int(y - sin(PI/4)*this->scan_radius)));
-    // clockwise_points.push_back(p);
+    p = cv::Point(this->clipRange(0, this->field_x_width, int(x + sin(PI/4)*this->scan_radius))  ,this->clipRange(0, this->field_y_length, int(y - sin(PI/4)*this->scan_radius)));
+    clockwise_points.push_back(p);
     //E
     p = cv::Point(this->clipRange(0, this->field_x_width, int(x + this->scan_radius))             ,this->clipRange(0, this->field_y_length, int(y)));
     clockwise_points.push_back(p);
     //SE
-    // p = cv::Point(this->clipRange(0, this->field_x_width, int(x + sin(PI/4)*this->scan_radius))   ,this->clipRange(0, this->field_y_length, int(y + sin(PI/4)*this->scan_radius)));
-    // clockwise_points.push_back(p);
+    p = cv::Point(this->clipRange(0, this->field_x_width, int(x + sin(PI/4)*this->scan_radius))   ,this->clipRange(0, this->field_y_length, int(y + sin(PI/4)*this->scan_radius)));
+    clockwise_points.push_back(p);
     //S
     p = cv::Point(this->clipRange(0, this->field_x_width, int(x))                                 ,this->clipRange(0, this->field_y_length, int(y + this->scan_radius)));
     clockwise_points.push_back(p);
     //SW
-    // p = cv::Point(this->clipRange(0, this->field_x_width, int(x - sin(PI/4)*this->scan_radius))   ,this->clipRange(0, this->field_y_length, int(y + sin(PI/4)*this->scan_radius)));
-    // clockwise_points.push_back(p);
+    p = cv::Point(this->clipRange(0, this->field_x_width, int(x - sin(PI/4)*this->scan_radius))   ,this->clipRange(0, this->field_y_length, int(y + sin(PI/4)*this->scan_radius)));
+    clockwise_points.push_back(p);
     //W
     p = cv::Point(this->clipRange(0, this->field_x_width, int(x - this->scan_radius))             ,this->clipRange(0, this->field_y_length, int(y)));
     clockwise_points.push_back(p);
     //NW
-    // p = cv::Point(this->clipRange(0, this->field_x_width, int(x - sin(PI/4)*this->scan_radius))   ,this->clipRange(0, this->field_y_length, int(y - sin(PI/4)*this->scan_radius)));
-    // clockwise_points.push_back(p);
+    p = cv::Point(this->clipRange(0, this->field_x_width, int(x - sin(PI/4)*this->scan_radius))   ,this->clipRange(0, this->field_y_length, int(y - sin(PI/4)*this->scan_radius)));
+    clockwise_points.push_back(p);
     return clockwise_points;
 
 }
@@ -155,103 +195,170 @@ void Agent::updateScannedGrid(){
 }
 
 std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
-    // std::vector<cv::Point2i> oct = this->getOctagonPoints(x, y);
 
+    cv::Mat frontier_map = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
 
+    for(auto &v: this->frontiers){
+        this->drawArc(frontier_map, this->point2Pair(v[0]), this->point2Pair(v[1]), this->point2Pair(v[2]));
 
-    // cv::Mat frontier_map = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
-    
-    // std::vector<std::vector<cv::Point2i>> new_frontiers;
-    // new_frontiers.push_back(oct);
-    // // if(!this->frontiers.empty()) new_frontiers.push_back(this->frontiers);
-    // for(auto &f: this->frontiers){
-    //     new_frontiers.push_back(f);
-    // }
-
-    
-    // cv::drawContours(frontier_map, new_frontiers, -1, cv::Scalar(255));
-    
-    // // cv::imshow("Frontier map", frontier_map);
-    // // cv::waitKey(0);
-
-
-    
-    // std::vector<std::vector<cv::Point2i>> found_contours;
-    // std::vector<cv::Vec4i> hierarchy;
-    // cv::findContours(frontier_map,found_contours, hierarchy, cv::RETR_CCOMP,cv::CHAIN_APPROX_SIMPLE);
-
-    // //filter out non-external contours
-
-    // // std::vector<std::vector<cv::Point2i>> ext_contours;
-
-    // // for(auto i = 0; i < hierarchy.size(); i++){
-    // //     if(hierarchy[i][3] == -1){
-    // //         ext_contours.push_back(found_contours[i]);
-    // //     }
-    // // }
-
-
-
-
-
-    // std::vector<std::vector<cv::Point2i>> approx;
-    // // for(auto &e: ext_contours){
-    // std::vector<cv::Point2i> a;
-    // cv::approxPolyDP(found_contours[0], a, 1, true);
-    // approx.push_back(a);
-    // }
-    
-    //OCC CONTOURS
-
-    cv::Mat occ_frontier = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
-
-
-
-    cv::Mat mask = this->rangeMask(x, y, scanned);
-
-    cv::bitwise_or(this->occupancy_grid, mask, occ_frontier);
-
-    std::vector<std::vector<cv::Point2i>> occ_contours;
-    std::vector<cv::Vec4i> occ_hierarchy;
-    cv::findContours(occ_frontier,occ_contours, occ_hierarchy, cv::RETR_LIST,cv::CHAIN_APPROX_SIMPLE);
-
-
-    // cv::drawContours(occ_frontier, occ_contours, -1, cv::Scalar(255));
-    
-    // cv::imshow("OCC Frontier map", occ_frontier);
-    // cv::waitKey(0);
-
-    //filter out non-external contours
-
-
-
-    // for(auto i = 0; i < occ_hierarchy.size(); i++){
-    //     if(occ_hierarchy[i][3] != -1){
-    //         ext_occ_contours.push_back(ext_occ_contours[i]);
-    //     }
-    // }
-
-    
-
-
-
-
-    std::vector<std::vector<cv::Point2i>> occ_approx;
-    for(auto &e: occ_contours){
-        std::vector<cv::Point2i> a;
-        cv::approxPolyDP(e, a, 1, true);
-        occ_approx.push_back(a);
     }
 
-    cv::drawContours(occ_frontier, occ_approx, -1, cv::Scalar(255));
-    
-    cv::imshow("OCC approx map", occ_frontier);
+    this->drawArc(frontier_map, std::make_pair(40,10), std::make_pair(89,0), std::make_pair(0,40));
+
+    cv::rectangle(frontier_map,cv::Point2i(0,0), cv::Point2i(this->field_x_width-1, this->field_y_length-1),cv::Scalar(255));
+
+    cv::imshow("frontier_map", frontier_map);
     cv::waitKey(0);
 
 
 
+
+
+    cv::Mat new_frontier = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);    
+
+    cv::circle(new_frontier,cv::Point2i(x,y),this->scan_radius, cv::Scalar(255));
+
+
+
+
+
+    cv::imshow("new_frontier", new_frontier);
+    cv::waitKey(0);
+
+
+    cv::bitwise_and(frontier_map,new_frontier,frontier_map);
+
     
-    return occ_approx;
+    // cv::findNonZero()
+    
+    cv::imshow("frontier_map", frontier_map);
+    cv::waitKey(0);
+
+
+    std::vector<std::vector<cv::Point2i>> found_contours;
+    // std::vector<cv::Vec4i> hierarchy;
+    // cv::findContours(frontier_map,found_contours, hierarchy, cv::RETR_EXTERNAL,cv::CHAIN_APPROX_SIMPLE);
+
+
+
+    // cv::drawContours(frontier_map, found_contours, -1, cv::Scalar(255));
+    
+
+
+    return found_contours;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // // std::vector<cv::Point2i> oct = this->getOctagonPoints(x, y);
+
+
+
+    // // cv::Mat frontier_map = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
+    
+    // // std::vector<std::vector<cv::Point2i>> new_frontiers;
+    // // new_frontiers.push_back(oct);
+    // // // if(!this->frontiers.empty()) new_frontiers.push_back(this->frontiers);
+    // // for(auto &f: this->frontiers){
+    // //     new_frontiers.push_back(f);
+    // // }
+
+    
+    // // cv::drawContours(frontier_map, new_frontiers, -1, cv::Scalar(255));
+    
+    // // // cv::imshow("Frontier map", frontier_map);
+    // // // cv::waitKey(0);
+
+
+    
+    // std::vector<std::vector<cv::Point2i>> found_contours;
+    // // std::vector<cv::Vec4i> hierarchy;
+    // // cv::findContours(frontier_map,found_contours, hierarchy, cv::RETR_CCOMP,cv::CHAIN_APPROX_SIMPLE);
+
+    // // //filter out non-external contours
+
+    // // // std::vector<std::vector<cv::Point2i>> ext_contours;
+
+    // // // for(auto i = 0; i < hierarchy.size(); i++){
+    // // //     if(hierarchy[i][3] == -1){
+    // // //         ext_contours.push_back(found_contours[i]);
+    // // //     }
+    // // // }
+
+
+
+
+
+    // // std::vector<std::vector<cv::Point2i>> approx;
+    // // // for(auto &e: ext_contours){
+    // // std::vector<cv::Point2i> a;
+    // // cv::approxPolyDP(found_contours[0], a, 1, true);
+    // // approx.push_back(a);
+    
+    
+    // // return approx;
+    // // //OCC CONTOURS
+
+    // cv::Mat occ_frontier = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
+
+
+
+    // cv::Mat mask = this->rangeMask(x, y, scanned);
+
+    // cv::bitwise_or(this->occupancy_grid, mask, occ_frontier);
+
+    // std::vector<std::vector<cv::Point2i>> occ_contours;
+    // std::vector<cv::Vec4i> occ_hierarchy;
+    // cv::findContours(occ_frontier,occ_contours, occ_hierarchy, cv::RETR_LIST,cv::CHAIN_APPROX_SIMPLE);
+
+
+    // // cv::drawContours(occ_frontier, occ_contours, -1, cv::Scalar(255));
+    
+    // // cv::imshow("OCC Frontier map", occ_frontier);
+    // // cv::waitKey(0);
+
+    // //filter out non-external contours
+
+
+
+    // // for(auto i = 0; i < occ_hierarchy.size(); i++){
+    // //     if(occ_hierarchy[i][3] != -1){
+    // //         ext_occ_contours.push_back(ext_occ_contours[i]);
+    // //     }
+    // // }
+
+    
+
+
+
+
+    // std::vector<std::vector<cv::Point2i>> occ_approx;
+    // for(auto &e: occ_contours){
+    //     std::vector<cv::Point2i> a;
+    //     cv::approxPolyDP(e, a, 1, true);
+    //     occ_approx.push_back(a);
+    // }
+
+    // cv::drawContours(occ_frontier, occ_approx, -1, cv::Scalar(255));
+    
+    // cv::imshow("OCC approx map", occ_frontier);
+    // cv::waitKey(0);
+
+
+
+    
+    // return occ_approx;
 
 }
 
@@ -274,7 +381,7 @@ std::pair<int,int> Agent::determineAction(){
     int curr_scanned = cv::countNonZero(this->occupancy_grid);
     int curr_frontier_count = this->frontiers[0].size();
 
-    // std::vector<cv::Point2i> frontiers = this->getNewFrontiers();
+    // std::vector<cv::Point2i> frontiers = this->getNewFrontiers(this->coords.first, this);
     cv::Mat new_cells;
     std::vector<std::vector<cv::Point2i>> new_frontiers;
     for(auto &f: this->frontiers[0] ){
@@ -295,7 +402,7 @@ std::pair<int,int> Agent::determineAction(){
 
 
 
-        // cv::Mat frontier_map = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
+        cv::Mat frontier_map = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
 
         // cv::drawContours(frontier_map, new_frontiers, -1, cv::Scalar(255));
         // cv::imshow("New frontiers", frontier_map);
