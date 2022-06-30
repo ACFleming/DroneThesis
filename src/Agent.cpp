@@ -34,7 +34,7 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->scan_radius = scan_radius;
     this->speed = speed;
     this->bearing = bearing;
-    this->raster_step_count = 0;
+    this->raster_step_direction = -1;
     
     
 
@@ -146,8 +146,8 @@ void Agent::updateScannedGrid(){
 
 
 
-    this->frontiers = this->getNewFrontiers(this->coords.first, this->coords.second);
-    std::cout << "Frontier count: " << this->frontiers.size() << std::endl; 
+    // this->frontiers = this->getNewFrontiers(this->coords.first, this->coords.second);
+    // std::cout << "Frontier count: " << this->frontiers.size() << std::endl; 
 
 
 
@@ -259,75 +259,84 @@ std::pair<int,int> Agent::determineAction(){
 
 
     //Rastering Assumption
-    //Range of scan >= speed
+     
+    //find furthest boundary
 
-    
+    std::pair<int,int> new_pos = this->coords;
 
+    if(this->raster_step_direction == -1){ //need new direction
+        std::vector<std::pair<int,int>> dir_dists;
 
-    std::pair<int,int> next_position = this->coords;
-
-    next_position.first += 50;
-
-    
-    std::vector<std::pair<cv::Point2i,double>> cost_vec;
-
-    int curr_scanned = cv::countNonZero(this->occupancy_grid);
-    int curr_frontier_count = this->frontiers[0].size();
-
-    // std::vector<cv::Point2i> frontiers = this->getNewFrontiers();
-    cv::Mat new_cells;
-    std::vector<std::vector<cv::Point2i>> new_frontiers;
-    for(auto &f: this->frontiers[0] ){
-
-        int dist = int(hypot(this->coords.first - f.x, this->coords.second-f.y));
-        if(dist == 0) continue;
-        cv::bitwise_or(this->occupancy_grid, this->rangeMask(f.x, f.y, 200), new_cells);    
-        int new_scanned_count = cv::countNonZero(new_cells) - curr_scanned;
-
+        dir_dists.push_back(std::make_pair(0,0));
+        for(int x = this->coords.first+1; x < this->field_x_width; x++){
+            if(this->occupancy_grid.at<uint8_t>(this->coords.second, x) >= visited) break;
+            dir_dists.back().second++;
+        }
         
-        
-        // cv::imshow("New cells", new_cells);
-        // cv::waitKey(0);
+        dir_dists.push_back(std::make_pair(1,0));
+        for(int y = this->coords.second+1; y < this->field_y_length; y++){
+            if(this->occupancy_grid.at<uint8_t>(y, this->coords.first) >= visited) break;
+            dir_dists.back().second++;
+        }
 
-        new_frontiers = this->getNewFrontiers(f.x, f.y);
-        int new_frontier_count = new_frontiers.size() - curr_frontier_count;
+        dir_dists.push_back(std::make_pair(2,0));
+        for(int x = this->coords.first-1; x >=0 ; x--){
+            if(this->occupancy_grid.at<uint8_t>(this->coords.second, x) >= visited) break;
+            dir_dists.back().second++;
+        }
 
+        dir_dists.push_back(std::make_pair(3,0));
+        for(int y = this->coords.second-1; y >=0 ; y--){
+            if(this->occupancy_grid.at<uint8_t>(y, this->coords.first) >= visited) break;
+            dir_dists.back().second++;
+        }
+            
+        std::pair<int,int> result = *std::max_element(dir_dists.cbegin(), dir_dists.cend(), [](const std::pair<int,int> &lhs, const std::pair<int,int> &rhs) {
+        return lhs.second < rhs.second;    
+        });
 
-
-
-        // cv::Mat frontier_map = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
-
-        // cv::drawContours(frontier_map, new_frontiers, -1, cv::Scalar(255));
-        // cv::imshow("New frontiers", frontier_map);
-        // cv::waitKey(0);
-
-        
-
-        double score =  - 1*dist ;
-        std::cout << "NSC: " << new_scanned_count << " NFC: " << new_frontier_count << " D: " << dist << " Score: " << score << std::endl;
-
-        cost_vec.push_back(std::make_pair(f, score));
-        
+        this->raster_step_direction = result.first;
+        if(result.second == 0){
+            exit(1);
+        } 
     }
 
+    std::cout << this->raster_step_direction << std::endl;
 
-    //Finf min arg
-    std::pair<cv::Point2i,double>result = *std::max_element(cost_vec.cbegin(), cost_vec.cend(), [](const std::pair<cv::Point2i,double> &lhs, const std::pair<cv::Point2i,double> &rhs) {
-        return lhs.second < rhs.second;    
-    });
+    switch (this->raster_step_direction)
+    {
+    case 0:
+        new_pos.first++;
+        if(new_pos.first +1 >= this->field_x_width || this->occupancy_grid.at<uint8_t>(new_pos.second, new_pos.first+1) >= visited) this->raster_step_direction = -1;
+        break;
+    case 1:
+        new_pos.second++;
+        if(new_pos.second +1 >= this->field_y_length || this->occupancy_grid.at<uint8_t>(new_pos.second+1, new_pos.first) >= visited) this->raster_step_direction = -1;
+        break;
+    case 2:
+        new_pos.first--;
+        if(new_pos.first -1 < 0 || this->occupancy_grid.at<uint8_t>(new_pos.second, new_pos.first-1) >= visited) this->raster_step_direction = -1;
+        break;
+    case 3:
+        new_pos.second--;
+        if(new_pos.second -1 <= 0 || this->occupancy_grid.at<uint8_t>(new_pos.second-1, new_pos.first) >= visited) this->raster_step_direction = -1;
+        break;
+    
+    default:
+        break;
+    }
+
+    return new_pos;
 
 
-    std::cout <<  "BEST! " << "Point:" << result.first.x <<"," << result.first.y << " Score: " << result.second << std::endl;
 
 
-
-    return std::make_pair(result.first.x, result.first.y);
 
 
 }
 
 void Agent::moveToPosition(std::pair<int,int> pos){
-    this->occupancy_grid.at<uint8_t>(this->coords.second, this->coords.first) = scanned;
+    this->occupancy_grid.at<uint8_t>(this->coords.second, this->coords.first) = visited;
     pos.first = this->clipRange(0, this->field_x_width, pos.first);
     pos.second = this->clipRange(0, this->field_y_length, pos.second);
     this->coords = pos;

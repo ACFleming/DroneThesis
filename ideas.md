@@ -49,3 +49,6 @@ An inscribed octagon has 90% of the area of the circle it enscribes. Thinking of
 
 
 **Idea** Have been working with contours to combine frontiers. Need to use cv RETR_CCOMP contour detection to find any outside contours of holes, as this will prevent situations where a hole is left during searching
+
+
+**Note** formula for angle inside arc is acos(1-dist(p1,p2)^2/(2*r^2))

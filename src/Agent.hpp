@@ -10,6 +10,7 @@
 enum occ_grid_vals{
     unknown = 0,
     scanned = 80,
+    visited = 160,
     blocked = 240
 };
 
@@ -28,7 +29,7 @@ private:
     int speed;
     int bearing;
 
-    int raster_step_count;
+    int raster_step_direction;
 
     cv::Mat occupancy_grid;
 
