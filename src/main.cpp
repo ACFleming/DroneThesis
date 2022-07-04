@@ -6,8 +6,8 @@
 int main (int argc, char* argv[]){
     //seed the random number generator
     srand(time(0));
-    int field_x_width = 900;
-    int field_y_length = 600;
+    int field_x_width = 500;
+    int field_y_length = 300;
     int num_sources = 3;
     int std_dev_noise = 10;
     int max_range = 50;

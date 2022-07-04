@@ -309,13 +309,15 @@ std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
     // // return approx;
     // // //OCC CONTOURS
 
-    cv::Mat occ_frontier = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
+    cv::Mat occ_frontier = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC3);
 
 
 
     cv::Mat mask = this->rangeMask(x, y, scanned);
 
-    cv::bitwise_or(this->occupancy_grid, mask, occ_frontier);
+    cv::Mat ctr_img = occ_frontier;
+
+    cv::bitwise_or(this->occupancy_grid, mask, ctr_img);
 
     // cv::rectangle(occ_frontier, cv::Point2i(0,0), cv::Point2i(this->field_x_width, this->field_y_length),cv::Scalar(0));
 
@@ -323,7 +325,7 @@ std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
     // cv::imshow("OCC Frontier map", occ_frontier);
     // cv::waitKey(0);
 
-    cv::Mat ctr_img = occ_frontier;
+    
 
     // cv::threshold(occ_frontier,ctr_img,scanned-1, 255,cv::THRESH_BINARY_INV);
     // cv::imshow("ctr_img", ctr_img);
@@ -346,14 +348,20 @@ std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
 
     std::vector<std::vector<cv::Point2i>> occ_contours;
     std::vector<cv::Vec4i> occ_hierarchy;
-    cv::findContours(ctr_img,occ_contours, occ_hierarchy, cv::RETR_LIST,cv::CHAIN_APPROX_NONE, cv::Point(0,0));
+    cv::findContours(ctr_img,occ_contours, occ_hierarchy, cv::RETR_LIST,cv::CHAIN_APPROX_SIMPLE);
 
+    if(occ_contours.size() > 1){
+        std::cout << occ_contours.size();
+        std::sort(occ_contours.begin(), occ_contours.end(), [](const std::vector<cv::Point2i> &a, const std::vector<cv::Point2i> &b){ return a.size() > b.size(); });
+    }
+
+    for(int i = 0; i < occ_contours.size(); i++){
+        cv::drawContours(occ_frontier, occ_contours, i, cv::Scalar(100, 255-50*(i+1), 50*i+150));
+        cv::imshow("OCC Frontier map", occ_frontier);
+        cv::waitKey(0);
+    }
     
 
-    cv::drawContours(occ_frontier, occ_contours, -1, cv::Scalar(255));
-    
-    // cv::imshow("OCC Frontier map", occ_frontier);
-    // cv::waitKey(0);
 
     //filter out non-external contours
 
@@ -377,13 +385,13 @@ std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
         occ_approx.push_back(a);
     }
 
-    for(int i = 0; i < occ_approx.size(); i++){
-            cv::drawContours(occ_frontier, occ_approx, i, cv::Scalar(50*i+100));
-    }
+    // for(int i = 0; i < occ_approx.size(); i++){
+    //         cv::drawContours(occ_frontier, occ_approx, i, cv::Scalar(50*i+150));
+    // }
 
     
-    cv::imshow("OCC approx map", occ_frontier);
-    cv::waitKey(0);
+    // cv::imshow("OCC approx map", occ_frontier);
+    // cv::waitKey(0);
 
 
 
@@ -429,10 +437,13 @@ std::pair<int,int> Agent::determineAction(){
 
 
     for(auto &f: this->frontiers[0] ){
+        std::cout << "Point: " << f.x << "," << f.y;
+
         double score = 0;
 
         if(std::find(this->coord_history.begin(), this->coord_history.end(), this->point2Pair(f)) != this->coord_history.end()){
             score = -10000;
+            std::cout << " Repeat point penalty!";
         }
         
 
@@ -442,15 +453,19 @@ std::pair<int,int> Agent::determineAction(){
         int dist = int(hypot(this->coords.first - f.x, this->coords.second-f.y));
         if(dist == 0) continue;
 
-
         
-        score -= this->speed * std::floor(dist/this->speed);
+        
+        score -= dist;
 
+
+        std::cout << " Dist penalty: " << dist;
 
         cv::bitwise_or(this->occupancy_grid, this->rangeMask(f.x, f.y, 200), new_cells);    
         int new_scanned_count = cv::countNonZero(new_cells) - curr_scanned;
 
-        // score += 0.001*new_scanned_count;
+        score += 0.001*new_scanned_count;
+
+        std::cout << " New Scanned Cells Reward: " <<  0.01*new_scanned_count;
         
         // cv::imshow("New cells", new_cells);
         // cv::waitKey(0);
@@ -458,9 +473,6 @@ std::pair<int,int> Agent::determineAction(){
 
 
         new_frontiers = this->getNewFrontiers(f.x, f.y);
-        int new_frontier_count = new_frontiers.size() - curr_frontier_count;
-
-        // score -= 10*new_frontier_count;
 
 
         cv::Mat frontier_map = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
@@ -470,18 +482,71 @@ std::pair<int,int> Agent::determineAction(){
         // cv::waitKey(0);
 
         double ctr_area = cv::contourArea(new_frontiers[0]);
+        double ctr_perim = cv::arcLength(new_frontiers[0], true);
         std::vector<cv::Point2i> hull_points;
 
         cv::convexHull(new_frontiers[0], hull_points);
         double hull_area = cv::contourArea(hull_points);
+        double hull_perim = cv::arcLength(hull_points, true);
         if(hull_area == 0){
             std::cout << "HUH?" << std::endl;
             hull_area = cv::contourArea(hull_points);
         }
 
-        double solidity = ctr_area/hull_area;
+        double area_ratio = ctr_area/hull_area;
+        
+        // double perim_ratio = ctr_perim/hull_perim;
 
-        score += 50 * 100*solidity;
+        score += 50 * 100*area_ratio;
+
+        std::cout << " Area ratio reward: " << 50 * 100*area_ratio;
+
+        // score -= 100*perim_ratio;
+
+
+
+
+  
+        // cv::Mat cc; 
+        // int num_connected = cv::connectedComponents(this->occupancy_grid, cc);
+
+        // cv::imshow("OCC GRID", this->occupancy_grid);
+        // cv::waitKey(0);
+
+    
+
+        cv::Mat inverse(new_cells.size(), CV_8UC1);
+        cv::Mat labelImage(new_cells.size(), CV_32S);
+
+        cv::threshold(new_cells, inverse, scanned-1, 255, cv::THRESH_BINARY_INV);
+
+        // cv::imshow( "inverse", inverse );
+        // cv::waitKey(0);
+
+
+
+        int nLabels = connectedComponents(inverse, labelImage, 8);
+        std::vector<cv::Vec3b> colors(nLabels);
+        colors[0] = cv::Vec3b(0, 0, 0);//background
+        for(int label = 1; label < nLabels; ++label){
+            colors[label] = cv::Vec3b( 255, 255 - 50*label, 50*label + 50 );
+        }
+        cv::Mat dst(new_cells.size(), CV_8UC3);
+        for(int r = 0; r < dst.rows; ++r){
+            for(int c = 0; c < dst.cols; ++c){
+                int label = labelImage.at<int>(r, c);
+                cv::Vec3b &pixel = dst.at<cv::Vec3b>(r, c);
+                pixel = colors[label];
+            }
+        }
+        cv::imshow( "Connected Components", dst );
+        cv::waitKey(0);
+
+
+        score -= 1000*nLabels;
+
+        std::cout << " Connected Components Penalty: " << 1000*nLabels;
+
 
 
         cv::Mat hull_img = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
@@ -490,13 +555,13 @@ std::pair<int,int> Agent::determineAction(){
         cv::drawContours(new_cells, h, -1, cv::Scalar(255));
 
         cv::imshow("hull_img", new_cells);
-        cv::waitKey(10);
+        cv::waitKey(0);
 
-  
 
-        std::cout << "Point: " << f.x << "," << f.y << " NSC: " << new_scanned_count << " NFC: " << new_frontier_count << " D: " << dist << " SOL: " << solidity << " Score: " << score <<  std::endl;
 
-        
+
+
+        std::cout  << " Final Score: " << score <<  std::endl;        
         if(score > best_score){
             best_score = score;
             best_point = f;
@@ -528,14 +593,25 @@ void Agent::moveToPosition(std::pair<int,int> pos){
     std::pair<int,int> interpolated_pos = pos;
 
     double factor = this->speed/this->dist(pos, this->coords);
-    std::cout << factor << std::endl;
+    
 
 
     
-        
-    interpolated_pos.first = (pos.first-this->coords.first)*factor + this->coords.first;
-    interpolated_pos.second = (pos.second-this->coords.second)*factor + this->coords.second;
+    if(factor < 1){
+        interpolated_pos.first = (pos.first-this->coords.first)*factor + this->coords.first;
+        interpolated_pos.second = (pos.second-this->coords.second)*factor + this->coords.second;
+    }else{
+        interpolated_pos.first = pos.first;
+        interpolated_pos.second = pos.second;
+    }
+
     
+
+    std::cout << "Interpolation factor: " << factor << " Interpolated point: " << interpolated_pos.first << "," << interpolated_pos.second << std::endl;
+
+
+    interpolated_pos.first = this->clipRange(0, this->field_x_width, interpolated_pos.first);
+    interpolated_pos.second = this->clipRange(0, this->field_y_length, interpolated_pos.second);
 
 
 
