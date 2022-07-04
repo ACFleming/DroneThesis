@@ -187,7 +187,6 @@ void Agent::updateScannedGrid(){
 
 
     this->frontiers = this->getNewFrontiers(this->coords.first, this->coords.second);
-    std::cout << "Frontier count: " << this->frontiers.size() << std::endl; 
 
 
 
@@ -378,10 +377,13 @@ std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
         occ_approx.push_back(a);
     }
 
-    // cv::drawContours(occ_frontier, occ_approx, -1, cv::Scalar(255));
+    for(int i = 0; i < occ_approx.size(); i++){
+            cv::drawContours(occ_frontier, occ_approx, i, cv::Scalar(50*i+100));
+    }
+
     
-    // cv::imshow("OCC approx map", occ_frontier);
-    // cv::waitKey(10);
+    cv::imshow("OCC approx map", occ_frontier);
+    cv::waitKey(0);
 
 
 
@@ -420,6 +422,12 @@ std::pair<int,int> Agent::determineAction(){
     double best_score = DBL_MIN;
     cv::Point2i best_point;
 
+    std::cout << "Frontier chain count: " << this->frontiers.size() << std::endl;    
+    for(auto &v: this->frontiers){
+        std::cout << "Frontier size: " << v.size() << std::endl;
+    }
+
+
     for(auto &f: this->frontiers[0] ){
         double score = 0;
 
@@ -435,14 +443,14 @@ std::pair<int,int> Agent::determineAction(){
         if(dist == 0) continue;
 
 
-
-        score -= 1*dist;
+        
+        score -= this->speed * std::floor(dist/this->speed);
 
 
         cv::bitwise_or(this->occupancy_grid, this->rangeMask(f.x, f.y, 200), new_cells);    
         int new_scanned_count = cv::countNonZero(new_cells) - curr_scanned;
 
-        score += 0.01*new_scanned_count;
+        // score += 0.001*new_scanned_count;
         
         // cv::imshow("New cells", new_cells);
         // cv::waitKey(0);
@@ -452,7 +460,7 @@ std::pair<int,int> Agent::determineAction(){
         new_frontiers = this->getNewFrontiers(f.x, f.y);
         int new_frontier_count = new_frontiers.size() - curr_frontier_count;
 
-        score -= 10*new_frontier_count;
+        // score -= 10*new_frontier_count;
 
 
         cv::Mat frontier_map = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
@@ -503,8 +511,8 @@ std::pair<int,int> Agent::determineAction(){
     // });
 
 
-    std::cout <<  "BEST! " << "Point:" << best_point.x <<"," << best_point.y << " Score: " << best_point << std::endl;
-    cv::waitKey(0);
+    std::cout <<  "BEST! " << "Point:" << best_point.x <<"," << best_point.y << " Score: " << best_score << std::endl;
+    cv::waitKey(10);
 
 
     return this->point2Pair(best_point);
@@ -518,12 +526,16 @@ void Agent::moveToPosition(std::pair<int,int> pos){
     pos.second = this->clipRange(0, this->field_y_length, pos.second);
 
     std::pair<int,int> interpolated_pos = pos;
+
     double factor = this->speed/this->dist(pos, this->coords);
-    if(factor < 1){ // i.e. if dist point is furhter than the speed of one step
+    std::cout << factor << std::endl;
+
+
+    
         
-        interpolated_pos.first = (pos.first-this->coords.first)*factor + this->coords.first;
-        interpolated_pos.second = (pos.second-this->coords.second)*factor + this->coords.second;
-    }
+    interpolated_pos.first = (pos.first-this->coords.first)*factor + this->coords.first;
+    interpolated_pos.second = (pos.second-this->coords.second)*factor + this->coords.second;
+    
 
 
 
