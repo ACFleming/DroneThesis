@@ -352,7 +352,7 @@ std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
 
     if(occ_contours.size() > 1){
         std::cout << occ_contours.size();
-        std::sort(occ_contours.begin(), occ_contours.end(), [](const std::vector<cv::Point2i> &a, const std::vector<cv::Point2i> &b){ return a.size() > b.size(); });
+        std::sort(occ_contours.begin(), occ_contours.end(), [](const std::vector<cv::Point2i> &a, const std::vector<cv::Point2i> &b){ return a.size() < b.size(); });
     }
 
     for(int i = 0; i < occ_contours.size(); i++){
