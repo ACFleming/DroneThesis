@@ -352,14 +352,14 @@ std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
 
     if(occ_contours.size() > 1){
         std::cout << occ_contours.size();
-        std::sort(occ_contours.begin(), occ_contours.end(), [](const std::vector<cv::Point2i> &a, const std::vector<cv::Point2i> &b){ return a.size() < b.size(); });
+        std::sort(occ_contours.begin(), occ_contours.end(), [](const std::vector<cv::Point2i> &a, const std::vector<cv::Point2i> &b){ return a.size() > b.size(); });
     }
 
-    for(int i = 0; i < occ_contours.size(); i++){
-        cv::drawContours(occ_frontier, occ_contours, i, cv::Scalar(100, 255-50*(i+1), 50*i+150));
-        cv::imshow("OCC Frontier map", occ_frontier);
-        cv::waitKey(0);
-    }
+    // for(int i = 0; i < occ_contours.size(); i++){
+    //     cv::drawContours(occ_frontier, occ_contours, i, cv::Scalar(100, 255-50*(i+1), 50*i+150));
+    //     cv::imshow("OCC Frontier map", occ_frontier);
+    //     cv::waitKey(10);
+    // }
     
 
 
@@ -381,17 +381,17 @@ std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
     std::vector<std::vector<cv::Point2i>> occ_approx;
     for(auto &e: occ_contours){
         std::vector<cv::Point2i> a;
-        cv::approxPolyDP(e, a, 1, true);
+        cv::approxPolyDP(e, a, 2, true);
         occ_approx.push_back(a);
     }
 
-    // for(int i = 0; i < occ_approx.size(); i++){
-    //         cv::drawContours(occ_frontier, occ_approx, i, cv::Scalar(50*i+150));
-    // }
+    for(int i = 0; i < occ_approx.size(); i++){
+            cv::drawContours(occ_frontier, occ_approx, i, cv::Scalar(100, 255-30*(i+1), 30*i+150));
+    }
 
     
-    // cv::imshow("OCC approx map", occ_frontier);
-    // cv::waitKey(0);
+    cv::imshow("OCC approx map", occ_frontier);
+    cv::waitKey(10);
 
 
 
@@ -427,7 +427,7 @@ std::pair<int,int> Agent::determineAction(){
     cv::Mat new_cells;
     std::vector<std::vector<cv::Point2i>> new_frontiers;
 
-    double best_score = DBL_MIN;
+    double best_score = INT16_MIN;
     cv::Point2i best_point;
 
     std::cout << "Frontier chain count: " << this->frontiers.size() << std::endl;    
@@ -442,8 +442,9 @@ std::pair<int,int> Agent::determineAction(){
         double score = 0;
 
         if(std::find(this->coord_history.begin(), this->coord_history.end(), this->point2Pair(f)) != this->coord_history.end()){
-            score = -10000;
-            std::cout << " Repeat point penalty!";
+            double repeat_point_mod = -10000;
+            score += repeat_point_mod;
+            std::cout << " Repeat point!";
         }
         
 
@@ -454,18 +455,28 @@ std::pair<int,int> Agent::determineAction(){
         if(dist == 0) continue;
 
         
+        double dist_mod = -1.0;
         
-        score -= dist;
+        score += dist_mod * dist;
 
 
-        std::cout << " Dist penalty: " << dist;
+        std::cout << " Dist contribution: " << dist_mod * dist;
 
         cv::bitwise_or(this->occupancy_grid, this->rangeMask(f.x, f.y, 200), new_cells);    
         int new_scanned_count = cv::countNonZero(new_cells) - curr_scanned;
 
-        score += 0.001*new_scanned_count;
+        if(new_scanned_count == 0){
+            std::cout << "No information gain here!"<< std::endl;
+            score -= 500;
+        }
 
-        std::cout << " New Scanned Cells Reward: " <<  0.01*new_scanned_count;
+        double new_scanned_ratio = new_scanned_count/(PI*this->scan_radius*this->scan_radius);
+
+        double scanned_mod = 10;;
+
+        score += scanned_mod * new_scanned_ratio;
+
+        std::cout << " New Scanned Cells Contribution: " <<  scanned_mod  *new_scanned_count;
         
         // cv::imshow("New cells", new_cells);
         // cv::waitKey(0);
@@ -495,13 +506,19 @@ std::pair<int,int> Agent::determineAction(){
 
         double area_ratio = ctr_area/hull_area;
         
-        // double perim_ratio = ctr_perim/hull_perim;
+        double perim_ratio = ctr_perim/hull_perim;
 
-        score += 50 * 100*area_ratio;
+        double area_rt_mod = 50*100;
 
-        std::cout << " Area ratio reward: " << 50 * 100*area_ratio;
+        score += area_rt_mod * area_ratio;
 
-        // score -= 100*perim_ratio;
+        std::cout << " Area Ratio Contribution: " << area_rt_mod * area_ratio;
+
+        // double perim_rt_mod = -50*100;
+
+        // score += perim_rt_mod * perim_ratio;
+            
+        // std::cout << " Perim Ratio Contribution: " << perim_rt_mod * perim_ratio;
 
 
 
@@ -525,10 +542,10 @@ std::pair<int,int> Agent::determineAction(){
 
 
 
-        int nLabels = connectedComponents(inverse, labelImage, 8);
-        std::vector<cv::Vec3b> colors(nLabels);
+        int connected_count = connectedComponents(inverse, labelImage, 8);
+        std::vector<cv::Vec3b> colors(connected_count);
         colors[0] = cv::Vec3b(0, 0, 0);//background
-        for(int label = 1; label < nLabels; ++label){
+        for(int label = 1; label < connected_count; ++label){
             colors[label] = cv::Vec3b( 255, 255 - 50*label, 50*label + 50 );
         }
         cv::Mat dst(new_cells.size(), CV_8UC3);
@@ -540,12 +557,13 @@ std::pair<int,int> Agent::determineAction(){
             }
         }
         cv::imshow( "Connected Components", dst );
-        cv::waitKey(0);
+        cv::waitKey(10);
 
+        double connected_mod = -500;
 
-        score -= 1000*nLabels;
+        score += connected_mod * connected_count;
 
-        std::cout << " Connected Components Penalty: " << 1000*nLabels;
+        std::cout << " Connected Components Penalty: " << connected_mod * connected_count;
 
 
 
@@ -555,7 +573,7 @@ std::pair<int,int> Agent::determineAction(){
         cv::drawContours(new_cells, h, -1, cv::Scalar(255));
 
         cv::imshow("hull_img", new_cells);
-        cv::waitKey(0);
+        cv::waitKey(10);
 
 
 
@@ -624,10 +642,32 @@ void Agent::moveToPosition(std::pair<int,int> pos){
 
 void Agent::measureSignalStrength(Field f) {
     std::vector<std::pair<std::string, double>> measurements = f.getMeasurements(this->coords);
-    // for(auto &m: measurements){
-    //     std::cout << m.first << ": " << m.second << std::endl;
-    // }
+    std::vector<Ring> curr_est;
+    for(auto &m: measurements){
+        std::cout << m.first << ": " << m.second << std::endl;
+        
+        
+        Ring r = Ring(this->field_x_width, this->field_y_length, this->coords.first, this->coords.second,m.second, 10, m.first ); //Note: 10 is the empirical measurement for std dev for signal
+        r.drawRing();
+        cv::Mat img = r.getCanvas();
+        cv::imshow("New Measurement", img);
+        cv::waitKey(0);
+        
+        if(this->signal_estimations[r.getName()].size() == 0){
+            this->signal_estimations[r.getName()] = curr_est;
+        }
+        this->signal_estimations[r.getName()].push_back(r);
+
+
+    }
     this->measurements.push_back(measurements);
+
+    for(auto &key_val: this->signal_estimations){
+        cv::Mat img = Ring::intersectRings(key_val.second);
+        cv::imshow(key_val.first, img);
+        cv::waitKey(0);
+    }
+
     
 }
 

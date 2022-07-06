@@ -6,6 +6,7 @@
 #include <vector>
 #include <opencv2/opencv.hpp>
 #include "Field.hpp"
+#include "Ring.hpp"
 
 enum occ_grid_vals{
     unknown = 0,
@@ -38,6 +39,7 @@ private:
     // each pair is an id-measurement pair. Multiple of these pairs are measured each time step, collected in the inside vector.
     // the outside vector is a collection of all timesteps' measurements. 
     std::vector<std::vector<std::pair<std::string,double>>> measurements;
+    std::map<std::string, std::vector<Ring>> signal_estimations;
 
 
 
