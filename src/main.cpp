@@ -10,7 +10,7 @@ int main (int argc, char* argv[]){
     int field_x_width = 400;
     int field_y_length = 400;
     int num_sources = 3;
-    int std_dev_noise = 10;
+    int std_dev_noise = 5;
     int max_range = 30;
     int speed = 30;
     int bearing = 90;
@@ -19,7 +19,7 @@ int main (int argc, char* argv[]){
     // std::cout << cv::getBuildInformation() << std::endl;
 
     Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
-    Agent a1 = Agent("Drone1", 0, 0, field_x_width, field_y_length, max_range,speed, bearing);
+    Agent a1 = Agent("Drone1", 50, 0, field_x_width, field_y_length, max_range,speed, bearing);
 
 
     // Ring r1 = Ring(field_x_width, field_y_length, 10, 90, sqrt(3400), 10);

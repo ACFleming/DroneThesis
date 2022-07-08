@@ -647,7 +647,7 @@ void Agent::measureSignalStrength(Field f) {
         std::cout << m.first << ": " << m.second << std::endl;
         
         
-        Ring r = Ring(this->field_x_width, this->field_y_length, this->coords.first, this->coords.second,m.second, 10, m.first ); //Note: 10 is the empirical measurement for std dev for signal
+        Ring r = Ring(this->field_x_width, this->field_y_length, this->coords.first, this->coords.second,m.second, 1, m.first ); //Note: 10 is the empirical measurement for std dev for signal
         r.drawRing();
         cv::Mat img = r.getCanvas();
         cv::imshow("New Measurement", img);

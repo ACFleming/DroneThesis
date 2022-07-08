@@ -1,9 +1,9 @@
 #include "Ring.hpp"
 
 cv::Mat Ring::intersectRings(std::vector<Ring> other_rings){
-    cv::Mat ret = cv::Mat(other_rings[0].y_length, other_rings[0].x_width, CV_8UC1, 255);
+    cv::Mat ret = cv::Mat::zeros(other_rings[0].y_length, other_rings[0].x_width, CV_8UC1);
     for(int i = 0; i  < other_rings.size(); i++){
-       cv::bitwise_and(other_rings[i].getCanvas(), ret, ret);
+       cv::bitwise_or(other_rings[i].getCanvas(), ret, ret);
     }
     return ret;
 }
