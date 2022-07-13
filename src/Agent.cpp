@@ -381,7 +381,7 @@ std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
     std::vector<std::vector<cv::Point2i>> occ_approx;
     for(auto &e: occ_contours){
         std::vector<cv::Point2i> a;
-        cv::approxPolyDP(e, a, 2, true);
+        cv::approxPolyDP(e, a, 1, true);
         occ_approx.push_back(a);
     }
 
@@ -411,6 +411,9 @@ std::pair<int,int> Agent::determineAction(){
     //Range of scan >= speed
 
     
+
+
+
 
 
     std::pair<int,int> next_position = this->coords;
@@ -548,16 +551,16 @@ std::pair<int,int> Agent::determineAction(){
         for(int label = 1; label < connected_count; ++label){
             colors[label] = cv::Vec3b( 255, 255 - 50*label, 50*label + 50 );
         }
-        cv::Mat dst(new_cells.size(), CV_8UC3);
-        for(int r = 0; r < dst.rows; ++r){
-            for(int c = 0; c < dst.cols; ++c){
-                int label = labelImage.at<int>(r, c);
-                cv::Vec3b &pixel = dst.at<cv::Vec3b>(r, c);
-                pixel = colors[label];
-            }
-        }
-        cv::imshow( "Connected Components", dst );
-        cv::waitKey(10);
+        // cv::Mat dst(new_cells.size(), CV_8UC3);
+        // for(int r = 0; r < dst.rows; ++r){
+        //     for(int c = 0; c < dst.cols; ++c){
+        //         int label = labelImage.at<int>(r, c);
+        //         cv::Vec3b &pixel = dst.at<cv::Vec3b>(r, c);
+        //         pixel = colors[label];
+        //     }
+        // }
+        // cv::imshow( "Connected Components", dst );
+        // cv::waitKey(10);
 
         double connected_mod = -500;
 
@@ -665,7 +668,7 @@ void Agent::measureSignalStrength(Field f) {
     for(auto &key_val: this->signal_estimations){
         cv::Mat img = Ring::intersectRings(key_val.second);
         cv::imshow(key_val.first, img);
-        cv::waitKey(0);
+        cv::waitKey(10);
     }
 
     

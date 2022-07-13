@@ -40,6 +40,7 @@ private:
     // the outside vector is a collection of all timesteps' measurements. 
     std::vector<std::vector<std::pair<std::string,double>>> measurements;
     std::map<std::string, std::vector<Ring>> signal_estimations;
+    std::map<std::string, cv::Mat > signal_locations;
 
 
 

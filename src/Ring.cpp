@@ -76,7 +76,11 @@ Ring::~Ring() {
 }
 
 void Ring::drawRing(){
-    cv::circle(this->canvas, cv::Point2i(this->centre_x, this->centre_y), this->middle_radius+ring_width*0.5, cv::Scalar(255),this->ring_width);
+    // cv::circle(this->canvas, cv::Point2i(this->centre_x, this->centre_y), this->middle_radius, cv::Scalar(255),0);
+    cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y), this->middle_radius+0.5*this->ring_width, cv::Scalar(255), -1);
+    cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y), this->middle_radius-0.5*this->ring_width, cv::Scalar(0), -1);
+
+
 }
 
 cv::Mat Ring::getCanvas(){

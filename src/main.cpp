@@ -11,22 +11,46 @@ int main (int argc, char* argv[]){
     int field_y_length = 400;
     int num_sources = 3;
     int std_dev_noise = 5;
-    int max_range = 30;
-    int speed = 30;
+    int max_range = 20;
+    int speed = 20;
     int bearing = 90;
 
 
     // std::cout << cv::getBuildInformation() << std::endl;
 
     Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
-    Agent a1 = Agent("Drone1", 50, 0, field_x_width, field_y_length, max_range,speed, bearing);
+    Agent a1 = Agent("Drone1", 0, 0, field_x_width, field_y_length, max_range,speed, bearing);
 
 
-    // Ring r1 = Ring(field_x_width, field_y_length, 10, 90, sqrt(3400), 10);
-    // r1.drawRing();
-    // cv::Mat m1 = r1.getCanvas();
+    cv::Mat gray = cv::Mat::ones(field_y_length, field_x_width, CV_8UC1)*127;
 
-    // cv::imshow("m1", m1);
+
+
+
+    // cv::circle(gray, cv::Point2i(200,200), 20, cv::Scalar(255), 0);
+
+    cv::imshow("Gray", gray);
+    cv::waitKey(0);
+
+
+
+    cv::Mat m2;
+    
+    cv::Mat m1;
+    // cv::bitwise_and(gray, m1, m2);
+    for(int i = 0; i< 1; i++){
+        Ring r1 = Ring(field_x_width, field_y_length, 50, i, sqrt(3400), 0);
+        r1.drawRing();
+        m1 = r1.getCanvas();
+        cv::addWeighted(gray, 0, m1, 1, 0, gray);
+
+        cv::imshow("gray", gray);
+        cv::waitKey(0);
+
+    }
+
+
+    // cv::imshow("m2", m2);
     // cv::waitKey(0);
 
 
@@ -67,59 +91,59 @@ int main (int argc, char* argv[]){
 
     // RUN FUNCTION
 
-    cv::Mat path = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
+    // cv::Mat path = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
 
 
 
-    cv::imshow("Path", path);
-    cv::waitKey(0);
+    // cv::imshow("Path", path);
+    // cv::waitKey(0);
 
 
 
-    std::pair<int,int> curr = a1.getCoords();
-    int counter = 0;
+    // std::pair<int,int> curr = a1.getCoords();
+    // int counter = 0;
 
-    while(true){
-        cv::circle(path, cv::Point2i(curr.first,curr.second),2,cv::Scalar(0,255,255));
-        a1.measureSignalStrength(f);
-        a1.updateScannedGrid();
+    // while(true){
+    //     cv::circle(path, cv::Point2i(curr.first,curr.second),2,cv::Scalar(0,255,255));
+    //     a1.measureSignalStrength(f);
+    //     a1.updateScannedGrid();
 
-        std::pair<int,int> pos = a1.getCoords();
-        cv::Mat occ_grid = a1.getOccGrid();
-        std::cout << "Agent at: " << pos.first << "," << pos.second << std::endl;
-
-
+    //     std::pair<int,int> pos = a1.getCoords();
+    //     cv::Mat occ_grid = a1.getOccGrid();
+    //     std::cout << "Agent at: " << pos.first << "," << pos.second << std::endl;
 
 
-        cv::line(path, cv::Point2i(curr.first, curr.second), cv::Point2i(pos.first,pos.second),cv::Scalar(255, 255-counter, counter));
-
-        curr = pos;
-        counter +=1;
-
-        cv::Mat img = cv::Mat(occ_grid.size(), CV_8UC3);
-        cv::cvtColor(occ_grid, occ_grid, cv::COLOR_GRAY2BGR);
 
 
-        cv::bitwise_or(path, occ_grid, img);
+    //     cv::line(path, cv::Point2i(curr.first, curr.second), cv::Point2i(pos.first,pos.second),cv::Scalar(255, 255-counter, counter));
 
-        cv::imshow("Path", img);
-        cv::waitKey(10);
+    //     curr = pos;
+    //     counter +=1;
+
+    //     cv::Mat img = cv::Mat(occ_grid.size(), CV_8UC3);
+    //     cv::cvtColor(occ_grid, occ_grid, cv::COLOR_GRAY2BGR);
+
+
+    //     cv::bitwise_or(path, occ_grid, img);
+
+    //     cv::imshow("Path", img);
+    //     cv::waitKey(10);
 
 
 
         
     
-        // cv::imshow("Frontier map", a1.getFrontierMap());
-        // cv::waitKey(0);
+    //     // cv::imshow("Frontier map", a1.getFrontierMap());
+    //     // cv::waitKey(0);
         
 
 
-        std::pair<int,int> dst = a1.determineAction();
-        a1.moveToPosition(dst);
+    //     std::pair<int,int> dst = a1.determineAction();
+    //     a1.moveToPosition(dst);
 
 
 
-    }
+    // }
 
 
 
