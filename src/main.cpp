@@ -39,7 +39,7 @@ int main (int argc, char* argv[]){
     cv::Mat m1;
     // cv::bitwise_and(gray, m1, m2);
     for(int i = 0; i< 1; i++){
-        Ring r1 = Ring(field_x_width, field_y_length, 50, i, sqrt(3400), 0);
+        Ring r1 = Ring(field_x_width, field_y_length, 50, 50, 50, -1);
         r1.drawRing();
         m1 = r1.getCanvas();
         cv::addWeighted(gray, 0, m1, 1, 0, gray);
