@@ -1,10 +1,10 @@
 #include "Ring.hpp"
 
 cv::Mat Ring::intersectRings(std::vector<Ring> other_rings){
-    cv::Mat ret = cv::Mat::zeros(other_rings[0].y_length, other_rings[0].x_width, CV_8UC1);
+    cv::Mat ret = cv::Mat::zeros(other_rings[0].y_length, other_rings[0].x_width, CV_8UC1)*255;
     for(int i = 0; i  < other_rings.size(); i++){
         other_rings[i].drawRing();
-        cv::bitwise_or(other_rings[i].getCanvas(), ret, ret);
+        cv::bitwise_or(ret, other_rings[i].getCanvas(), ret);
     }
     return ret;
 }
@@ -51,7 +51,7 @@ Ring::Ring(int x_width, int y_length, int centre_x, int centre_y, double middle_
     this->y_length = y_length;
     this->centre_x = centre_x;
     this->centre_y = centre_y;
-    this->middle_radius = std::max(middle_radius, 1.0);     
+    this->middle_radius = middle_radius;  
     this->ring_width = ring_width;
     this->canvas = cv::Mat::zeros(cv::Size(this->x_width, this->y_length), CV_8UC1);
     this->name = name;
@@ -79,10 +79,12 @@ Ring::~Ring() {
 
 void Ring::drawRing(){
     // cv::circle(this->canvas, cv::Point2i(this->centre_x, this->centre_y), this->middle_radius, cv::Scalar(255),0);
-    std::cout << "RADIUS IS " << this->middle_radius << std::endl;
-    cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y),  this->middle_radius+0.5*this->ring_width, cv::Scalar(255), -1);
-    if(this->ring_width > 0 && this->middle_radius > 0.5*ring_width){
-        cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y), this->middle_radius-0.5*this->ring_width, cv::Scalar(0), -1);
+    int outer_radius =  std::max(this->middle_radius+0.5*this->ring_width, 1.0);
+    int inner_radius =  std::max(this->middle_radius-0.5*this->ring_width, 0.0);
+    //both outer and inner are at least 1;
+    cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y),  outer_radius, cv::Scalar(target), -1);
+    if(this->ring_width > 0 && inner_radius>=1){//if not asked to fill
+        cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y), inner_radius, cv::Scalar(0), -1);
 
     }
 

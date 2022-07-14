@@ -10,8 +10,8 @@ int main (int argc, char* argv[]){
     int field_x_width = 400;
     int field_y_length = 400;
     int num_sources = 0;
-    int std_dev_noise = 5;
-    int max_range = 20;
+    int std_dev_noise = 3;
+    int max_range = 50;
     int speed = 20;
     int bearing = 90;
 
@@ -19,7 +19,7 @@ int main (int argc, char* argv[]){
     // std::cout << cv::getBuildInformation() << std::endl;
 
     Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
-    Agent a1 = Agent("Drone1", 0, 10+field_y_length/2, field_x_width, field_y_length, max_range,speed, bearing);
+    Agent a1 = Agent("Drone1", 0, -10+field_y_length/2, field_x_width, field_y_length, max_range,speed, bearing);
 
 
     // cv::Mat gray = cv::Mat::ones(field_y_length, field_x_width, CV_8UC1)*127;
@@ -105,11 +105,16 @@ int main (int argc, char* argv[]){
 
     while(true){
         cv::circle(path, cv::Point2i(curr.first,curr.second),2,cv::Scalar(0,255,255));
-        a1.updateCertainty(f);
+        std::pair<int,int> p = a1.updateCertainty(f);
+
 
         std::pair<int,int> pos = a1.getCoords();
         cv::Mat cert_grid = a1.getCertGrid();
         std::cout << "Agent at: " << pos.first << "," << pos.second << std::endl;
+
+        std::pair<int,int> c = f.getSources()[0].getCoords();
+
+        cv::circle(cert_grid, cv::Point2i(c.first, c.second), 1, 255 );
 
         cv::imshow("Cert", cert_grid);
         cv::waitKey(0);
@@ -137,10 +142,14 @@ int main (int argc, char* argv[]){
         // cv::imshow("Frontier map", a1.getFrontierMap());
         // cv::waitKey(0);
         
+        if(p.first == -1){
+            std::pair<int,int> dst = a1.determineAction();
+            a1.moveToPosition(dst);
+        }else{
+            a1.moveToPosition(p);
+        }
 
 
-        std::pair<int,int> dst = a1.determineAction();
-        a1.moveToPosition(dst);
 
 
 

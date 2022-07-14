@@ -42,8 +42,6 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
 
     this->certainty_grid = cv::Mat(this->field_y_length, this->field_x_width, CV_8UC1, cv::Scalar(unknown));
 
-    cv::imshow("INIT", this->certainty_grid);
-    cv::waitKey(0);
 
 
 
@@ -148,6 +146,15 @@ std::vector<cv::Point2i> Agent::gridSquaresInRange(std::pair<int,int> coords){
 
 std::pair<int,int> Agent::updateCertainty(Field f){
 
+    std::pair<int,int> ret = std::make_pair(-1,-1);
+
+    for(auto &kv_pair: this->has_new_measurement){
+        kv_pair.second = false;
+
+    }
+
+    
+
     //step 1 get any signal measurements
 
 
@@ -156,7 +163,7 @@ std::pair<int,int> Agent::updateCertainty(Field f){
 
     for(auto &m: measurements){
         std::cout << m.first << ": " << m.second << std::endl;
-
+        this->has_new_measurement[m.first] = true;
 
 
         
@@ -169,24 +176,12 @@ std::pair<int,int> Agent::updateCertainty(Field f){
             this->signal_estimations[m.first] = empty_ring_vec;
             this->signal_locations[m.first] = this->certainty_grid.clone();
             
+            
         }
-        this->signal_estimations[m.first].push_back(Ring(this->field_x_width, this->field_y_length, this->coords.first, this->coords.second,m.second, 5, m.first ));
-
-
-
-        cv::Mat intersect = Ring::intersectRings(this->signal_estimations[m.first]);
-        cv::imshow("intersect", intersect);
-        cv::waitKey(0);
-
-
-
-
-        cv::bitwise_and(intersect, this->certainty_grid, this->signal_locations[m.first]);
-        cv::threshold(this->signal_locations[m.first], this->signal_locations[m.first], unknown-1, target, CV_8UC1);
-
-        //visualsing
-
-
+        
+        Ring r =  Ring(this->field_x_width, this->field_y_length, this->coords.first, this->coords.second,m.second, 6*3, m.first );
+        r.drawRing();
+        this->signal_estimations[m.first].push_back(r);
 
 
 
@@ -195,6 +190,80 @@ std::pair<int,int> Agent::updateCertainty(Field f){
 
 
 
+    // for(auto &kv_pair: this->signal_estimations){
+        
+    //     this->signal_locations[kv_pair.first] = Ring::intersectRings(this->signal_estimations[kv_pair.first]);
+    //     cv::imshow(kv_pair.first, this->signal_locations[kv_pair.first]);
+    //     cv::waitKey(0);
+    //     std::vector<cv::Point2i> target_loc;
+    //     cv::findNonZero(this->signal_locations[kv_pair.first],target_loc);
+
+    //     int random = rand() % target_loc.size();
+    //     ret = this->point2Pair(target_loc[random]);
+
+
+    // }   
+
+
+
+
+//needs to be better. Using dumb algorithm
+
+    for(auto &kv_pair: this->has_new_measurement){
+        // cv::Mat intersect = Ring::intersectRings(this->signal_estimations[kv_pair.first]); //all measurements to date
+        cv::imshow(kv_pair.first, Ring::intersectRings(this->signal_estimations[kv_pair.first]));
+        cv::waitKey(0);
+
+
+
+
+        if(kv_pair.second == true){ // i.e there is new info
+            //and drawing with latest update
+
+            cv::imshow("new measurement", this->signal_estimations[kv_pair.first].back().getCanvas());
+            cv::waitKey(0);
+
+            cv::imshow("existing",this->signal_locations[kv_pair.first] );
+            cv::waitKey(0);
+
+
+            cv::bitwise_and(this->signal_locations[kv_pair.first], this->signal_estimations[kv_pair.first].back().getCanvas(), this->signal_locations[kv_pair.first]);
+        }else{  //i.e this new scan of nothing is new info
+            cv::Mat inv = this->rangeMask(this->coords.first, this->coords.second, target);
+            cv::bitwise_not(inv, inv);
+            cv::imshow("inv", inv);
+            cv::waitKey(0);
+            cv::bitwise_and(inv, this->signal_locations[kv_pair.first],this->signal_locations[kv_pair.first]);
+            // cv::subtract( this->signal_locations[kv_pair.first], inv, this->signal_locations[kv_pair.first]);
+        }
+
+        
+
+        cv::imshow("after update", this->signal_locations[kv_pair.first]);
+        cv::waitKey(0);
+
+        std::vector<cv::Point2i> target_loc;
+
+        cv::findNonZero(this->signal_locations[kv_pair.first],target_loc);
+
+        int random = rand() % target_loc.size();
+
+        cv::Point2i target_point = target_loc[random];
+
+        cv::Mat acceptance_criteria = this->signal_locations[kv_pair.first].clone();
+
+        cv::circle(acceptance_criteria, target_point, 10, cv::Scalar(0), -1);
+        cv::imshow("acceptance_criteria",acceptance_criteria);
+        cv::waitKey(0);
+        if(cv::countNonZero(acceptance_criteria) < 10){
+            exit(45);
+        }
+
+
+
+
+        ret = this->point2Pair(target_loc[random]);
+    }
 
 
 
@@ -210,19 +279,19 @@ std::pair<int,int> Agent::updateCertainty(Field f){
 
 
 
-    for(auto &kv_pair: this->signal_locations){
-        cv::imshow(kv_pair.first, kv_pair.second);
-        cv::waitKey(0);
+    // for(auto &kv_pair: this->signal_locations){
+
 
         
 
-        cv::Mat img2;
+    //     // cv::Mat img2;
 
-        cv::addWeighted(this->certainty_grid, 1, kv_pair.second, 1, 0, img2);
-        cv::imshow("Full", img2);
-        cv::waitKey(0);
-    }
+    //     // cv::addWeighted(this->certainty_grid, 1, kv_pair.second, 1, 0, img2);
+    //     // cv::imshow("Full", img2);
+    //     // cv::waitKey(0);
+    // }
 
+    return ret;
 
     
 

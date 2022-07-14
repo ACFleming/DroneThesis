@@ -7,12 +7,8 @@
 #include <opencv2/opencv.hpp>
 #include "Field.hpp"
 #include "Ring.hpp"
+#include "GridValues.hpp"
 
-enum occ_grid_vals{
-    empty = 0,
-    unknown = 80,
-    target = 240
-};
 
 #define PI 3.1415926535
 
@@ -41,6 +37,7 @@ private:
     std::vector<std::vector<std::pair<std::string,double>>> measurements;
     std::map<std::string, std::vector<Ring>> signal_estimations;
     std::map<std::string, cv::Mat > signal_locations;
+    std::map<std::string, bool> has_new_measurement;
 
 
 
