@@ -9,9 +9,9 @@
 #include "Ring.hpp"
 
 enum occ_grid_vals{
-    unknown = 0,
-    scanned = 80,
-    blocked = 240
+    empty = 0,
+    unknown = 80,
+    target = 240
 };
 
 #define PI 3.1415926535
@@ -31,7 +31,7 @@ private:
 
     int raster_step_count;
 
-    cv::Mat occupancy_grid;
+    cv::Mat certainty_grid;
 
     std::vector<std::vector<cv::Point2i>> frontiers;
 
@@ -79,6 +79,9 @@ public:
     std::vector<std::vector<cv::Point2i>> getNewFrontiers(int x, int y);
 
 
+    std::pair<int,int> updateCertainty(Field f); // this will be changed to read bluetooth signals
+
+
     void updateScannedGrid();
     
     
@@ -91,7 +94,7 @@ public:
     std::pair<int,int> getCoords();
     std::string logAgent();
     void showOccGrid();
-    cv::Mat getOccGrid();
+    cv::Mat getCertGrid();
     cv::Mat getFrontierMap();
 };
 
