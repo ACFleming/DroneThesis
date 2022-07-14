@@ -252,10 +252,10 @@ std::pair<int,int> Agent::updateCertainty(Field f){
 
         cv::Mat acceptance_criteria = this->signal_locations[kv_pair.first].clone();
 
-        cv::circle(acceptance_criteria, target_point, 10, cv::Scalar(0), -1);
+        cv::circle(acceptance_criteria, target_point, 15, cv::Scalar(0), -1);
         cv::imshow("acceptance_criteria",acceptance_criteria);
         cv::waitKey(0);
-        if(cv::countNonZero(acceptance_criteria) < 10){
+        if(cv::countNonZero(acceptance_criteria) < 50){
             exit(45);
         }
 
