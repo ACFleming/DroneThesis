@@ -7,9 +7,9 @@
 int main (int argc, char* argv[]){
     //seed the random number generator
     srand(time(0));
-    int field_x_width = 400;
-    int field_y_length = 400;
-    int num_sources = 0;
+    int field_x_width = 300;
+    int field_y_length = 300;
+    int num_sources = 2;
     int std_dev_noise = 3;
     int max_range = 50;
     int speed = 20;
@@ -19,7 +19,7 @@ int main (int argc, char* argv[]){
     // std::cout << cv::getBuildInformation() << std::endl;
 
     Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
-    Agent a1 = Agent("Drone1", 0, -10+field_y_length/2, field_x_width, field_y_length, max_range,speed, bearing);
+    Agent a1 = Agent("Drone1", 0, 0, field_x_width, field_y_length, max_range,speed, bearing);
 
 
     // cv::Mat gray = cv::Mat::ones(field_y_length, field_x_width, CV_8UC1)*127;
@@ -91,12 +91,20 @@ int main (int argc, char* argv[]){
 
     // RUN FUNCTION
 
-    cv::Mat path = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
+    cv::Mat map = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
+
+
+    std::pair<int,int> c = f.getSources()[0].getCoords();
+    for(auto &c: f.getSources()){
+        cv::circle(map, cv::Point2i(c.getCoords().first, c.getCoords().second), 1, cv::Scalar(0,0,255) );
+    }
 
 
 
-    // cv::imshow("Path", path);
-    // cv::waitKey(0);
+    cv::imshow("map", map);
+    cv::waitKey(0);
+
+
 
 
 
@@ -104,7 +112,7 @@ int main (int argc, char* argv[]){
     int counter = 0;
 
     while(true){
-        cv::circle(path, cv::Point2i(curr.first,curr.second),2,cv::Scalar(0,255,255));
+        cv::circle(map, cv::Point2i(curr.first,curr.second),2,cv::Scalar(0,255,255));
         std::pair<int,int> p = a1.updateCertainty(f);
 
 
@@ -112,28 +120,27 @@ int main (int argc, char* argv[]){
         cv::Mat cert_grid = a1.getCertGrid();
         std::cout << "Agent at: " << pos.first << "," << pos.second << std::endl;
 
-        std::pair<int,int> c = f.getSources()[0].getCoords();
 
-        cv::circle(cert_grid, cv::Point2i(c.first, c.second), 1, 255 );
 
-        cv::imshow("Cert", cert_grid);
+
+        cv::imshow("Certainty grid", cert_grid);
         cv::waitKey(0);
 
 
 
-        // cv::line(path, cv::Point2i(curr.first, curr.second), cv::Point2i(pos.first,pos.second),cv::Scalar(255, 255-counter, counter));
+        cv::line(map, cv::Point2i(curr.first, curr.second), cv::Point2i(pos.first,pos.second),cv::Scalar(255, 255-counter, counter));
 
-        // curr = pos;
-        // counter +=1;
+        curr = pos;
+        counter +=1;
 
-        // cv::Mat img = cv::Mat(cert_grid.size(), CV_8UC3);
-        // cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
+        cv::Mat img = cv::Mat(cert_grid.size(), CV_8UC3);
+        cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
 
 
-        // cv::bitwise_or(path, cert_grid, img);
+        cv::bitwise_or(map, cert_grid, img);
 
-        // cv::imshow("Path", img);
-        // cv::waitKey(10);
+        cv::imshow("map", img);
+        cv::waitKey(10);
 
 
 

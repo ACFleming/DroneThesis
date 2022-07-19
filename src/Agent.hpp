@@ -37,7 +37,7 @@ private:
     std::vector<std::vector<std::pair<std::string,double>>> measurements;
     std::map<std::string, std::vector<Ring>> signal_estimations;
     std::map<std::string, cv::Mat > signal_locations;
-    std::map<std::string, bool> has_new_measurement;
+    std::map<std::string, bool> is_found;
 
 
 

@@ -1,6 +1,7 @@
 #include "Agent.hpp"
 
 
+// #define COST_VEC_PRINT
 
 /*
 
@@ -148,10 +149,12 @@ std::pair<int,int> Agent::updateCertainty(Field f){
 
     std::pair<int,int> ret = std::make_pair(-1,-1);
 
-    for(auto &kv_pair: this->has_new_measurement){
-        kv_pair.second = false;
+    std::map<std::string, bool> has_new_measurement;
 
-    }
+    // for(auto &kv_pair: this->has_new_measurement){
+    //     kv_pair.second = false;
+
+    // }
 
     
 
@@ -163,7 +166,7 @@ std::pair<int,int> Agent::updateCertainty(Field f){
 
     for(auto &m: measurements){
         std::cout << m.first << ": " << m.second << std::endl;
-        this->has_new_measurement[m.first] = true;
+        has_new_measurement[m.first] = true;
 
 
         
@@ -207,23 +210,22 @@ std::pair<int,int> Agent::updateCertainty(Field f){
 
 
 
-//needs to be better. Using dumb algorithm
 
-    for(auto &kv_pair: this->has_new_measurement){
-        // cv::Mat intersect = Ring::intersectRings(this->signal_estimations[kv_pair.first]); //all measurements to date
-        cv::imshow(kv_pair.first, Ring::intersectRings(this->signal_estimations[kv_pair.first]));
-        cv::waitKey(0);
+
+    for(auto &kv_pair: this->signal_estimations){
+        
 
 
 
 
-        if(kv_pair.second == true){ // i.e there is new info
-            //and drawing with latest update
+
+        if(has_new_measurement[kv_pair.first]){ // i.e there is new info
+            
 
             cv::imshow("new measurement", this->signal_estimations[kv_pair.first].back().getCanvas());
             cv::waitKey(0);
 
-            cv::imshow("existing",this->signal_locations[kv_pair.first] );
+            cv::imshow("current",this->signal_locations[kv_pair.first] );
             cv::waitKey(0);
 
 
@@ -234,7 +236,6 @@ std::pair<int,int> Agent::updateCertainty(Field f){
             cv::imshow("inv", inv);
             cv::waitKey(0);
             cv::bitwise_and(inv, this->signal_locations[kv_pair.first],this->signal_locations[kv_pair.first]);
-            // cv::subtract( this->signal_locations[kv_pair.first], inv, this->signal_locations[kv_pair.first]);
         }
 
         
@@ -256,13 +257,15 @@ std::pair<int,int> Agent::updateCertainty(Field f){
         cv::imshow("acceptance_criteria",acceptance_criteria);
         cv::waitKey(0);
         if(cv::countNonZero(acceptance_criteria) < 50){
-            exit(45);
+            std::cout << "Signal found at or near: " << target_point.x  << "," << target_point.y << std::endl;
+            this->is_found[kv_pair.first] = true;
+            ret = std::make_pair(-1,-1); // might change this to keep looking after search is done
+        }else{
+            ret = this->point2Pair(target_loc[random]);
         }
 
 
-
-
-        ret = this->point2Pair(target_loc[random]);
+        
     }
 
 
@@ -277,6 +280,12 @@ std::pair<int,int> Agent::updateCertainty(Field f){
     cv::waitKey(0);
     cv::subtract(this->certainty_grid, mask, this->certainty_grid);
 
+
+
+    //step 3 get new frontiers
+
+
+    this->frontiers = this->getNewFrontiers(this->coords.first, this->coords.second);
 
 
     // for(auto &kv_pair: this->signal_locations){
@@ -313,32 +322,27 @@ std::pair<int,int> Agent::updateCertainty(Field f){
 
 // }
 
-// std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
+std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
 
 
 
-//     cv::Mat occ_frontier = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC3);
-
-
-
-//     cv::Mat mask = this->rangeMask(x, y, scanned);
-
-//     cv::Mat ctr_img = occ_frontier;
-
-//     cv::bitwise_or(this->certainty_grid, mask, ctr_img);
+    cv::Mat frontier_img = this->certainty_grid.clone();
 
 
 
 
 
-//     std::vector<std::vector<cv::Point2i>> occ_contours;
-//     std::vector<cv::Vec4i> occ_hierarchy;
-//     cv::findContours(ctr_img,occ_contours, occ_hierarchy, cv::RETR_LIST,cv::CHAIN_APPROX_SIMPLE);
+    std::vector<std::vector<cv::Point2i>> contours;
+    std::vector<cv::Vec4i> hierarchy;
 
-//     if(occ_contours.size() > 1){
-//         std::cout << occ_contours.size();
-//         std::sort(occ_contours.begin(), occ_contours.end(), [](const std::vector<cv::Point2i> &a, const std::vector<cv::Point2i> &b){ return a.size() > b.size(); });
-//     }
+    cv::threshold(frontier_img, frontier_img, unknown-1, unknown, cv::THRESH_BINARY_INV);
+
+    cv::findContours(frontier_img,contours, hierarchy, cv::RETR_LIST,cv::CHAIN_APPROX_SIMPLE);
+
+    if(contours.size() > 1){
+        std::cout << contours.size();
+        std::sort(contours.begin(), contours.end(), [](const std::vector<cv::Point2i> &a, const std::vector<cv::Point2i> &b){ return a.size() > b.size(); });
+    }
 
 
     
@@ -346,20 +350,20 @@ std::pair<int,int> Agent::updateCertainty(Field f){
 
 
 
-//     std::vector<std::vector<cv::Point2i>> occ_approx;
-//     for(auto &e: occ_contours){
-//         std::vector<cv::Point2i> a;
-//         cv::approxPolyDP(e, a, 1, true);
-//         occ_approx.push_back(a);
-//     }
+    std::vector<std::vector<cv::Point2i>> ctr_approx;
+    for(auto &e: contours){
+        std::vector<cv::Point2i> a;
+        cv::approxPolyDP(e, a, 1, true);
+        ctr_approx.push_back(a);
+    }
 
-//     for(int i = 0; i < occ_approx.size(); i++){
-//             cv::drawContours(occ_frontier, occ_approx, i, cv::Scalar(100, 255-30*(i+1), 30*i+150));
-//     }
+    for(int i = 0; i < ctr_approx.size(); i++){
+            cv::drawContours(frontier_img, ctr_approx, i, cv::Scalar(255,255,255));
+    }
 
     
-//     cv::imshow("OCC approx map", occ_frontier);
-//     cv::waitKey(10);
+    cv::imshow("OCC approx map", frontier_img);
+    cv::waitKey(10);
 
 
 
@@ -368,9 +372,9 @@ std::pair<int,int> Agent::updateCertainty(Field f){
     
 
     
-//     return occ_approx;
+    return ctr_approx;
 
-// }
+}
 
 std::pair<int,int> Agent::determineAction(){
 
@@ -389,23 +393,23 @@ std::pair<int,int> Agent::determineAction(){
 
     //dummy move
 
-    next_position.first += this->speed;
-    return next_position;
+    // next_position.first += this->speed;
+    // return next_position;
 
     
 
     
-    // std::vector<std::pair<cv::Point2i,double>> cost_vec;
+    std::vector<std::pair<cv::Point2i,double>> cost_vec;
 
-    // int curr_scanned = cv::countNonZero(this->certainty_grid);
+    int curr_scanned = cv::countNonZero(this->certainty_grid);
     // int curr_frontier_count = this->frontiers[0].size();
 
-    // // std::vector<cv::Point2i> frontiers = this->getNewFrontiers(this->coords.first, this);
-    // cv::Mat new_cells;
-    // std::vector<std::vector<cv::Point2i>> new_frontiers;
+    // std::vector<cv::Point2i> frontiers = this->getNewFrontiers(this->coords.first, this);
+    cv::Mat new_cells;
+    std::vector<std::vector<cv::Point2i>> new_frontiers;
 
-    // double best_score = INT16_MIN;
-    // cv::Point2i best_point;
+    double best_score = INT16_MIN;
+    cv::Point2i best_point;
 
     // std::cout << "Frontier chain count: " << this->frontiers.size() << std::endl;    
     // for(auto &v: this->frontiers){
@@ -413,169 +417,176 @@ std::pair<int,int> Agent::determineAction(){
     // }
 
 
-    // for(auto &f: this->frontiers[0] ){
-    //     std::cout << "Point: " << f.x << "," << f.y;
+    for(auto &f: this->frontiers[0] ){
+#ifdef COST_VEC_PRINT
+            std::cout << "Point: " << f.x << "," << f.y;
+#endif
+        double score = 0;
 
-    //     double score = 0;
-
-    //     if(std::find(this->coord_history.begin(), this->coord_history.end(), this->point2Pair(f)) != this->coord_history.end()){
-    //         double repeat_point_mod = -10000;
-    //         score += repeat_point_mod;
-    //         std::cout << " Repeat point!";
-    //     }
+        if(std::find(this->coord_history.begin(), this->coord_history.end(), this->point2Pair(f)) != this->coord_history.end()){
+            double repeat_point_mod = -10000;
+            score += repeat_point_mod;
+            std::cout << " Repeat point!";
+        }
         
 
 
 
 
-    //     int dist = int(hypot(this->coords.first - f.x, this->coords.second-f.y));
-    //     if(dist == 0) continue;
+        int dist = int(hypot(this->coords.first - f.x, this->coords.second-f.y));
+        if(dist == 0) continue;
 
         
-    //     double dist_mod = -1.0;
+        double dist_mod = -1.0;
         
-    //     score += dist_mod * dist;
+        score += dist_mod * dist;
+
+#ifdef COST_VEC_PRINT
+        std::cout << " Dist contribution: " << dist_mod * dist;
+#endif
+
+        cv::bitwise_or(this->certainty_grid, this->rangeMask(f.x, f.y, 200), new_cells);    
+        int new_scanned_count = cv::countNonZero(new_cells) - curr_scanned;
+
+        if(new_scanned_count == 0){
+#ifdef COST_VEC_PRINT
+            std::cout << "No information gain here!"<< std::endl;
+#endif
+            score -= 500;
+        }
+
+        double new_scanned_ratio = new_scanned_count/(PI*this->scan_radius*this->scan_radius);
+
+        double scanned_mod = 10;;
+
+        score += scanned_mod * new_scanned_ratio;
+#ifdef COST_VEC_PRINT
+        std::cout << " New Scanned Cells Contribution: " <<  scanned_mod  *new_scanned_count;
+#endif
+        // cv::imshow("New cells", new_cells);
+        // cv::waitKey(0);
 
 
-    //     std::cout << " Dist contribution: " << dist_mod * dist;
 
-    //     cv::bitwise_or(this->certainty_grid, this->rangeMask(f.x, f.y, 200), new_cells);    
-    //     int new_scanned_count = cv::countNonZero(new_cells) - curr_scanned;
+        new_frontiers = this->getNewFrontiers(f.x, f.y);
 
-    //     if(new_scanned_count == 0){
-    //         std::cout << "No information gain here!"<< std::endl;
-    //         score -= 500;
-    //     }
 
-    //     double new_scanned_ratio = new_scanned_count/(PI*this->scan_radius*this->scan_radius);
+        cv::Mat frontier_map = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
 
-    //     double scanned_mod = 10;;
+        cv::drawContours(frontier_map, new_frontiers, -1, cv::Scalar(255));
+        // cv::imshow("New frontiers", frontier_map);
+        // cv::waitKey(0);
 
-    //     score += scanned_mod * new_scanned_ratio;
+        double ctr_area = cv::contourArea(new_frontiers[0]);
+        double ctr_perim = cv::arcLength(new_frontiers[0], true);
+        std::vector<cv::Point2i> hull_points;
 
-    //     std::cout << " New Scanned Cells Contribution: " <<  scanned_mod  *new_scanned_count;
+        cv::convexHull(new_frontiers[0], hull_points);
+        double hull_area = cv::contourArea(hull_points);
+        double hull_perim = cv::arcLength(hull_points, true);
+        if(hull_area == 0){
+            std::cout << "HUH?" << std::endl;
+            hull_area = cv::contourArea(hull_points);
+        }
+
+        cv::Mat hull_img = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
+        std::vector<std::vector<cv::Point2i>> h;
+        h.push_back(hull_points);
+        cv::drawContours(new_cells, h, -1, cv::Scalar(255));
+
+        cv::imshow("hull_img", new_cells);
+        cv::waitKey(0);
+
+        double area_ratio = ctr_area/hull_area;
         
-    //     // cv::imshow("New cells", new_cells);
-    //     // cv::waitKey(0);
+        double perim_ratio = ctr_perim/hull_perim;
 
+        double area_rt_mod = 50*100;
 
+        score += area_rt_mod * area_ratio;
+#ifdef COST_VEC_PRINT
+        std::cout << " Area Ratio Contribution: " << area_rt_mod * area_ratio;
+#endif
+        // double perim_rt_mod = -50*100;
 
-    //     new_frontiers = this->getNewFrontiers(f.x, f.y);
-
-
-    //     cv::Mat frontier_map = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
-
-    //     cv::drawContours(frontier_map, new_frontiers, -1, cv::Scalar(255));
-    //     // cv::imshow("New frontiers", frontier_map);
-    //     // cv::waitKey(0);
-
-    //     double ctr_area = cv::contourArea(new_frontiers[0]);
-    //     double ctr_perim = cv::arcLength(new_frontiers[0], true);
-    //     std::vector<cv::Point2i> hull_points;
-
-    //     cv::convexHull(new_frontiers[0], hull_points);
-    //     double hull_area = cv::contourArea(hull_points);
-    //     double hull_perim = cv::arcLength(hull_points, true);
-    //     if(hull_area == 0){
-    //         std::cout << "HUH?" << std::endl;
-    //         hull_area = cv::contourArea(hull_points);
-    //     }
-
-    //     double area_ratio = ctr_area/hull_area;
-        
-    //     double perim_ratio = ctr_perim/hull_perim;
-
-    //     double area_rt_mod = 50*100;
-
-    //     score += area_rt_mod * area_ratio;
-
-    //     std::cout << " Area Ratio Contribution: " << area_rt_mod * area_ratio;
-
-    //     // double perim_rt_mod = -50*100;
-
-    //     // score += perim_rt_mod * perim_ratio;
+        // score += perim_rt_mod * perim_ratio;
             
-    //     // std::cout << " Perim Ratio Contribution: " << perim_rt_mod * perim_ratio;
+        // std::cout << " Perim Ratio Contribution: " << perim_rt_mod * perim_ratio;
 
 
 
 
   
-    //     // cv::Mat cc; 
-    //     // int num_connected = cv::connectedComponents(this->certainty_grid, cc);
+        // cv::Mat cc; 
+        // int num_connected = cv::connectedComponents(this->certainty_grid, cc);
 
-    //     // cv::imshow("OCC GRID", this->certainty_grid);
-    //     // cv::waitKey(0);
+        // cv::imshow("OCC GRID", this->certainty_grid);
+        // cv::waitKey(0);
 
     
 
-    //     cv::Mat inverse(new_cells.size(), CV_8UC1);
-    //     cv::Mat labelImage(new_cells.size(), CV_32S);
+        cv::Mat inverse(new_cells.size(), CV_8UC1);
+        cv::Mat labelImage(new_cells.size(), CV_32S);
 
-    //     cv::threshold(new_cells, inverse, unknown-1, 255, cv::THRESH_BINARY_INV);
+        cv::threshold(new_cells, inverse, unknown-1, 255, cv::THRESH_BINARY_INV);
 
-    //     // cv::imshow( "inverse", inverse );
-    //     // cv::waitKey(0);
-
-
-
-    //     int connected_count = connectedComponents(inverse, labelImage, 8);
-    //     std::vector<cv::Vec3b> colors(connected_count);
-    //     colors[0] = cv::Vec3b(0, 0, 0);//background
-    //     for(int label = 1; label < connected_count; ++label){
-    //         colors[label] = cv::Vec3b( 255, 255 - 50*label, 50*label + 50 );
-    //     }
-    //     // cv::Mat dst(new_cells.size(), CV_8UC3);
-    //     // for(int r = 0; r < dst.rows; ++r){
-    //     //     for(int c = 0; c < dst.cols; ++c){
-    //     //         int label = labelImage.at<int>(r, c);
-    //     //         cv::Vec3b &pixel = dst.at<cv::Vec3b>(r, c);
-    //     //         pixel = colors[label];
-    //     //     }
-    //     // }
-    //     // cv::imshow( "Connected Components", dst );
-    //     // cv::waitKey(10);
-
-    //     double connected_mod = -500;
-
-    //     score += connected_mod * connected_count;
-
-    //     std::cout << " Connected Components Penalty: " << connected_mod * connected_count;
+        // cv::imshow( "inverse", inverse );
+        // cv::waitKey(0);
 
 
 
-    //     cv::Mat hull_img = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
-    //     std::vector<std::vector<cv::Point2i>> h;
-    //     h.push_back(hull_points);
-    //     cv::drawContours(new_cells, h, -1, cv::Scalar(255));
+        int connected_count = connectedComponents(inverse, labelImage, 8);
+        std::vector<cv::Vec3b> colors(connected_count);
+        colors[0] = cv::Vec3b(0, 0, 0);//background
+        for(int label = 1; label < connected_count; ++label){
+            colors[label] = cv::Vec3b( 255, 255 - 50*label, 50*label + 50 );
+        }
+        cv::Mat dst(new_cells.size(), CV_8UC3);
+        for(int r = 0; r < dst.rows; ++r){
+            for(int c = 0; c < dst.cols; ++c){
+                int label = labelImage.at<int>(r, c);
+                cv::Vec3b &pixel = dst.at<cv::Vec3b>(r, c);
+                pixel = colors[label];
+            }
+        }
+        cv::imshow( "Connected Components", dst );
+        cv::waitKey(0);
 
-    //     cv::imshow("hull_img", new_cells);
-    //     cv::waitKey(10);
+        double connected_mod = -500;
+
+        score += connected_mod * connected_count;
+#ifdef COST_VEC_PRINT
+        std::cout << " Connected Components Penalty: " << connected_mod * connected_count;
+#endif
 
 
 
 
 
-    //     std::cout  << " Final Score: " << score <<  std::endl;        
-    //     if(score > best_score){
-    //         best_score = score;
-    //         best_point = f;
-    //     }
+
+
+#ifdef COST_VEC_PRINT
+        std::cout  << " Final Score: " << score <<  std::endl;  
+#endif      
+        if(score > best_score){
+            best_score = score;
+            best_point = f;
+        }
         
-    // }
+    }
 
 
-    // // //Finf min arg
-    // // std::pair<cv::Point2i,double>result = *std::max_element(cost_vec.cbegin(), cost_vec.cend(), [](const std::pair<cv::Point2i,double> &lhs, const std::pair<cv::Point2i,double> &rhs) {
-    // //     return lhs.second < rhs.second;    
-    // // });
+    // //Finf min arg
+    // std::pair<cv::Point2i,double>result = *std::max_element(cost_vec.cbegin(), cost_vec.cend(), [](const std::pair<cv::Point2i,double> &lhs, const std::pair<cv::Point2i,double> &rhs) {
+    //     return lhs.second < rhs.second;    
+    // });
 
 
-    // std::cout <<  "BEST! " << "Point:" << best_point.x <<"," << best_point.y << " Score: " << best_score << std::endl;
-    // cv::waitKey(10);
+    std::cout <<  "BEST! " << "Point:" << best_point.x <<"," << best_point.y << " Score: " << best_score << std::endl;
+    cv::waitKey(10);
 
 
-    // return this->point2Pair(best_point);
+    return this->point2Pair(best_point);
 
 
 }
