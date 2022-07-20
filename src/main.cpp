@@ -11,7 +11,7 @@ int main (int argc, char* argv[]){
     int field_y_length = 300;
     int num_sources = 2;
     int std_dev_noise = 3;
-    int max_range = 50;
+    int max_range = 20;
     int speed = 20;
     int bearing = 90;
 

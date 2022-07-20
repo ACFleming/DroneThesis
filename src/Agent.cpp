@@ -1,7 +1,7 @@
 #include "Agent.hpp"
 
 
-// #define COST_VEC_PRINT
+#define COST_VEC_PRINT
 
 /*
 
@@ -307,28 +307,18 @@ std::pair<int,int> Agent::updateCertainty(Field f){
 }
 
 
-// void Agent::updateScannedGrid(){
-
-//     cv::Mat mask = this->rangeMask(this->coords.first, this->coords.second, empty);
-
-//     cv::bitwise_or(this->certainty_grid, mask, this->certainty_grid);
-
-
-
-//     this->frontiers = this->getNewFrontiers(this->coords.first, this->coords.second);
-
-
-
-
-// }
 
 std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
 
 
-
+    
     cv::Mat frontier_img = this->certainty_grid.clone();
+    cv::Mat mask = this->rangeMask(x, y, empty);
+    cv::bitwise_or(frontier_img, mask, frontier_img);
 
 
+    cv::imshow("New frontiers", frontier_img);
+    cv::waitKey(0);
 
 
 
@@ -363,7 +353,7 @@ std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
 
     
     cv::imshow("OCC approx map", frontier_img);
-    cv::waitKey(10);
+    cv::waitKey(0);
 
 
 
@@ -445,7 +435,11 @@ std::pair<int,int> Agent::determineAction(){
         std::cout << " Dist contribution: " << dist_mod * dist;
 #endif
 
-        cv::bitwise_or(this->certainty_grid, this->rangeMask(f.x, f.y, 200), new_cells);    
+        cv::bitwise_or(this->certainty_grid, this->rangeMask(f.x, f.y, 200), new_cells);  
+        cv::imshow("new_cells", new_cells);
+        cv::waitKey(0);
+
+
         int new_scanned_count = cv::countNonZero(new_cells) - curr_scanned;
 
         if(new_scanned_count == 0){
@@ -457,7 +451,7 @@ std::pair<int,int> Agent::determineAction(){
 
         double new_scanned_ratio = new_scanned_count/(PI*this->scan_radius*this->scan_radius);
 
-        double scanned_mod = 10;;
+        double scanned_mod = 0.0;
 
         score += scanned_mod * new_scanned_ratio;
 #ifdef COST_VEC_PRINT
@@ -474,8 +468,7 @@ std::pair<int,int> Agent::determineAction(){
         cv::Mat frontier_map = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
 
         cv::drawContours(frontier_map, new_frontiers, -1, cv::Scalar(255));
-        // cv::imshow("New frontiers", frontier_map);
-        // cv::waitKey(0);
+
 
         double ctr_area = cv::contourArea(new_frontiers[0]);
         double ctr_perim = cv::arcLength(new_frontiers[0], true);
@@ -489,12 +482,12 @@ std::pair<int,int> Agent::determineAction(){
             hull_area = cv::contourArea(hull_points);
         }
 
-        cv::Mat hull_img = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
+        cv::Mat hull_img = new_cells;
         std::vector<std::vector<cv::Point2i>> h;
         h.push_back(hull_points);
-        cv::drawContours(new_cells, h, -1, cv::Scalar(255));
+        cv::drawContours(hull_img, h, -1, cv::Scalar(255));
 
-        cv::imshow("hull_img", new_cells);
+        cv::imshow("hull_img", hull_img);
         cv::waitKey(0);
 
         double area_ratio = ctr_area/hull_area;
@@ -527,11 +520,17 @@ std::pair<int,int> Agent::determineAction(){
 
         cv::Mat inverse(new_cells.size(), CV_8UC1);
         cv::Mat labelImage(new_cells.size(), CV_32S);
+        cv::bitwise_not(this->certainty_grid, inverse);
+        cv::threshold(inverse, inverse, target, 255, cv::THRESH_BINARY);
 
-        cv::threshold(new_cells, inverse, unknown-1, 255, cv::THRESH_BINARY_INV);
+        cv::bitwise_or(inverse, this->rangeMask(f.x, f.y, 255), inverse);
 
-        // cv::imshow( "inverse", inverse );
-        // cv::waitKey(0);
+        // cv::threshold(new_cells, inverse, unknown-1, 255, cv::THRESH_BINARY_INV);
+        cv::bitwise_not(inverse, inverse);
+        
+
+        cv::imshow( "inverse", inverse );
+        cv::waitKey(0);
 
 
 
