@@ -3,6 +3,6 @@
 
 enum grid_vals{
     empty = 0,
-    unknown = 80,
-    target = 240
+    searching = 100,
+    unknown = 200
 };

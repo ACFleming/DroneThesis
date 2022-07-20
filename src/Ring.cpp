@@ -82,7 +82,7 @@ void Ring::drawRing(){
     int outer_radius =  std::max(this->middle_radius+0.5*this->ring_width, 1.0);
     int inner_radius =  std::max(this->middle_radius-0.5*this->ring_width, 0.0);
     //both outer and inner are at least 1;
-    cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y),  outer_radius, cv::Scalar(target), -1);
+    cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y),  outer_radius, cv::Scalar(255), -1);
     if(this->ring_width > 0 && inner_radius>=1){//if not asked to fill
         cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y), inner_radius, cv::Scalar(0), -1);
 

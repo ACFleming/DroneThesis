@@ -96,7 +96,7 @@ int main (int argc, char* argv[]){
 
     std::pair<int,int> c = f.getSources()[0].getCoords();
     for(auto &c: f.getSources()){
-        cv::circle(map, cv::Point2i(c.getCoords().first, c.getCoords().second), 1, cv::Scalar(0,0,255) );
+        cv::circle(map, cv::Point2i(c.getCoords().first, c.getCoords().second), 3, cv::Scalar(255,0,255) );
     }
 
 
@@ -123,8 +123,8 @@ int main (int argc, char* argv[]){
 
 
 
-        cv::imshow("Certainty grid", cert_grid);
-        cv::waitKey(0);
+        // cv::imshow("Certainty grid", cert_grid);
+        // cv::waitKey(0);
 
 
 
@@ -136,8 +136,8 @@ int main (int argc, char* argv[]){
         cv::Mat img = cv::Mat(cert_grid.size(), CV_8UC3);
         cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
 
-
-        cv::bitwise_or(map, cert_grid, img);
+        cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
+        // cv::bitwise_or(map, cert_grid, img);
 
         cv::imshow("map", img);
         cv::waitKey(10);

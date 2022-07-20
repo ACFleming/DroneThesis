@@ -73,7 +73,7 @@ public:
 
     std::vector<cv::Point2i> gridSquaresInRange(int x, int y);
     std::vector<cv::Point2i> gridSquaresInRange(std::pair<int,int> coords);
-    std::vector<std::vector<cv::Point2i>> getNewFrontiers(int x, int y);
+    std::vector<std::vector<cv::Point2i>> getImageFrontiers(cv::Mat frontier_img);
 
 
     std::pair<int,int> updateCertainty(Field f); // this will be changed to read bluetooth signals

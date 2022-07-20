@@ -3,6 +3,8 @@
 
 #define COST_VEC_PRINT
 
+#define WAITKEY_DELAY 10
+
 /*
 
     matricies work in row, col referencing.
@@ -223,25 +225,25 @@ std::pair<int,int> Agent::updateCertainty(Field f){
             
 
             cv::imshow("new measurement", this->signal_estimations[kv_pair.first].back().getCanvas());
-            cv::waitKey(0);
+            cv::waitKey(WAITKEY_DELAY);
 
             cv::imshow("current",this->signal_locations[kv_pair.first] );
-            cv::waitKey(0);
+            cv::waitKey(WAITKEY_DELAY);
 
 
             cv::bitwise_and(this->signal_locations[kv_pair.first], this->signal_estimations[kv_pair.first].back().getCanvas(), this->signal_locations[kv_pair.first]);
         }else{  //i.e this new scan of nothing is new info
-            cv::Mat inv = this->rangeMask(this->coords.first, this->coords.second, target);
+            cv::Mat inv = this->rangeMask(this->coords.first, this->coords.second, 255);
             cv::bitwise_not(inv, inv);
             cv::imshow("inv", inv);
-            cv::waitKey(0);
+            cv::waitKey(WAITKEY_DELAY);
             cv::bitwise_and(inv, this->signal_locations[kv_pair.first],this->signal_locations[kv_pair.first]);
         }
 
         
 
-        cv::imshow("after update", this->signal_locations[kv_pair.first]);
-        cv::waitKey(0);
+        cv::imshow(kv_pair.first, this->signal_locations[kv_pair.first]);
+        cv::waitKey(WAITKEY_DELAY);
 
         std::vector<cv::Point2i> target_loc;
 
@@ -255,7 +257,7 @@ std::pair<int,int> Agent::updateCertainty(Field f){
 
         cv::circle(acceptance_criteria, target_point, 15, cv::Scalar(0), -1);
         cv::imshow("acceptance_criteria",acceptance_criteria);
-        cv::waitKey(0);
+        cv::waitKey(WAITKEY_DELAY);
         if(cv::countNonZero(acceptance_criteria) < 50){
             std::cout << "Signal found at or near: " << target_point.x  << "," << target_point.y << std::endl;
             this->is_found[kv_pair.first] = true;
@@ -277,15 +279,17 @@ std::pair<int,int> Agent::updateCertainty(Field f){
     cv::Mat mask = this->rangeMask(this->coords.first, this->coords.second, unknown);
 
     cv::imshow("mask", mask);
-    cv::waitKey(0);
+    cv::waitKey(WAITKEY_DELAY);
     cv::subtract(this->certainty_grid, mask, this->certainty_grid);
 
 
 
     //step 3 get new frontiers
 
+    cv::Mat seen;
+    cv::threshold(this->certainty_grid, seen,unknown-1, unknown, cv::THRESH_BINARY_INV);
 
-    this->frontiers = this->getNewFrontiers(this->coords.first, this->coords.second);
+    this->frontiers = this->getImageFrontiers(seen);
 
 
     // for(auto &kv_pair: this->signal_locations){
@@ -308,26 +312,23 @@ std::pair<int,int> Agent::updateCertainty(Field f){
 
 
 
-std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
-
-
-    
-    cv::Mat frontier_img = this->certainty_grid.clone();
-    cv::Mat mask = this->rangeMask(x, y, empty);
-    cv::bitwise_or(frontier_img, mask, frontier_img);
-
-
-    cv::imshow("New frontiers", frontier_img);
-    cv::waitKey(0);
 
 
 
+
+std::vector<std::vector<cv::Point2i>> Agent::getImageFrontiers(cv::Mat frontier_img){
     std::vector<std::vector<cv::Point2i>> contours;
     std::vector<cv::Vec4i> hierarchy;
 
-    cv::threshold(frontier_img, frontier_img, unknown-1, unknown, cv::THRESH_BINARY_INV);
+    
+    cv::imshow("frontier_img", frontier_img);
+    cv::waitKey(WAITKEY_DELAY);
+
+
+
 
     cv::findContours(frontier_img,contours, hierarchy, cv::RETR_LIST,cv::CHAIN_APPROX_SIMPLE);
+    
 
     if(contours.size() > 1){
         std::cout << contours.size();
@@ -343,7 +344,7 @@ std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
     std::vector<std::vector<cv::Point2i>> ctr_approx;
     for(auto &e: contours){
         std::vector<cv::Point2i> a;
-        cv::approxPolyDP(e, a, 1, true);
+        cv::approxPolyDP(e, a, 1.5, true);
         ctr_approx.push_back(a);
     }
 
@@ -353,7 +354,7 @@ std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
 
     
     cv::imshow("OCC approx map", frontier_img);
-    cv::waitKey(0);
+    cv::waitKey(WAITKEY_DELAY);
 
 
 
@@ -363,7 +364,6 @@ std::vector<std::vector<cv::Point2i>> Agent::getNewFrontiers(int x, int y){
 
     
     return ctr_approx;
-
 }
 
 std::pair<int,int> Agent::determineAction(){
@@ -392,25 +392,28 @@ std::pair<int,int> Agent::determineAction(){
     std::vector<std::pair<cv::Point2i,double>> cost_vec;
 
     int curr_scanned = cv::countNonZero(this->certainty_grid);
-    // int curr_frontier_count = this->frontiers[0].size();
 
-    // std::vector<cv::Point2i> frontiers = this->getNewFrontiers(this->coords.first, this);
     cv::Mat new_cells;
     std::vector<std::vector<cv::Point2i>> new_frontiers;
 
     double best_score = INT16_MIN;
     cv::Point2i best_point;
 
-    // std::cout << "Frontier chain count: " << this->frontiers.size() << std::endl;    
-    // for(auto &v: this->frontiers){
-    //     std::cout << "Frontier size: " << v.size() << std::endl;
-    // }
+
 
 
     for(auto &f: this->frontiers[0] ){
 #ifdef COST_VEC_PRINT
             std::cout << "Point: " << f.x << "," << f.y;
 #endif
+        
+        cv::Mat seen;
+
+        cv::threshold(this->certainty_grid, seen,unknown-1, unknown, cv::THRESH_BINARY_INV);
+
+        cv::imshow("seen", seen);
+        cv::waitKey(WAITKEY_DELAY);
+
         double score = 0;
 
         if(std::find(this->coord_history.begin(), this->coord_history.end(), this->point2Pair(f)) != this->coord_history.end()){
@@ -427,17 +430,18 @@ std::pair<int,int> Agent::determineAction(){
         if(dist == 0) continue;
 
         
-        double dist_mod = -1.0;
+        double dist_mod = -10;
         
-        score += dist_mod * dist;
+        // score += dist_mod * dist;
+        score += dist_mod*exp(floor(dist/this->scan_radius));
 
 #ifdef COST_VEC_PRINT
         std::cout << " Dist contribution: " << dist_mod * dist;
 #endif
 
-        cv::bitwise_or(this->certainty_grid, this->rangeMask(f.x, f.y, 200), new_cells);  
+        cv::bitwise_or(seen, this->rangeMask(f.x, f.y, searching), new_cells);  
         cv::imshow("new_cells", new_cells);
-        cv::waitKey(0);
+        cv::waitKey(WAITKEY_DELAY);
 
 
         int new_scanned_count = cv::countNonZero(new_cells) - curr_scanned;
@@ -451,19 +455,17 @@ std::pair<int,int> Agent::determineAction(){
 
         double new_scanned_ratio = new_scanned_count/(PI*this->scan_radius*this->scan_radius);
 
-        double scanned_mod = 0.0;
+        double scanned_mod = 10;
 
         score += scanned_mod * new_scanned_ratio;
 #ifdef COST_VEC_PRINT
         std::cout << " New Scanned Cells Contribution: " <<  scanned_mod  *new_scanned_count;
 #endif
-        // cv::imshow("New cells", new_cells);
-        // cv::waitKey(0);
 
 
 
-        new_frontiers = this->getNewFrontiers(f.x, f.y);
 
+        new_frontiers = this->getImageFrontiers(new_cells);
 
         cv::Mat frontier_map = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
 
@@ -482,13 +484,13 @@ std::pair<int,int> Agent::determineAction(){
             hull_area = cv::contourArea(hull_points);
         }
 
-        cv::Mat hull_img = new_cells;
+        cv::Mat hull_img = new_cells.clone();
         std::vector<std::vector<cv::Point2i>> h;
         h.push_back(hull_points);
         cv::drawContours(hull_img, h, -1, cv::Scalar(255));
 
         cv::imshow("hull_img", hull_img);
-        cv::waitKey(0);
+        cv::waitKey(WAITKEY_DELAY);
 
         double area_ratio = ctr_area/hull_area;
         
@@ -520,21 +522,21 @@ std::pair<int,int> Agent::determineAction(){
 
         cv::Mat inverse(new_cells.size(), CV_8UC1);
         cv::Mat labelImage(new_cells.size(), CV_32S);
-        cv::bitwise_not(this->certainty_grid, inverse);
-        cv::threshold(inverse, inverse, target, 255, cv::THRESH_BINARY);
+        // cv::bitwise_not(this->certainty_grid, inverse);
+        // cv::threshold(inverse, inverse, 255, 255, cv::THRESH_BINARY);
 
-        cv::bitwise_or(inverse, this->rangeMask(f.x, f.y, 255), inverse);
+        // cv::bitwise_or(inverse, this->rangeMask(f.x, f.y, 255), inverse);
 
-        // cv::threshold(new_cells, inverse, unknown-1, 255, cv::THRESH_BINARY_INV);
-        cv::bitwise_not(inverse, inverse);
+        // // cv::threshold(new_cells, inverse, unknown-1, 255, cv::THRESH_BINARY_INV);
+        // cv::bitwise_not(inverse, inverse);
         
 
-        cv::imshow( "inverse", inverse );
-        cv::waitKey(0);
+        // cv::imshow( "inverse", inverse );
+        // cv::waitKey(0);
 
 
 
-        int connected_count = connectedComponents(inverse, labelImage, 8);
+        int connected_count = connectedComponents(new_cells, labelImage, 8);
         std::vector<cv::Vec3b> colors(connected_count);
         colors[0] = cv::Vec3b(0, 0, 0);//background
         for(int label = 1; label < connected_count; ++label){
@@ -549,7 +551,7 @@ std::pair<int,int> Agent::determineAction(){
             }
         }
         cv::imshow( "Connected Components", dst );
-        cv::waitKey(0);
+        cv::waitKey(WAITKEY_DELAY);
 
         double connected_mod = -500;
 
@@ -582,7 +584,10 @@ std::pair<int,int> Agent::determineAction(){
 
 
     std::cout <<  "BEST! " << "Point:" << best_point.x <<"," << best_point.y << " Score: " << best_score << std::endl;
-    cv::waitKey(10);
+    cv::Mat best = this->certainty_grid.clone();
+    cv::circle(best, best_point, 3, cv::Scalar(255));
+    cv::imshow("best", best);
+    cv::waitKey(WAITKEY_DELAY);
 
 
     return this->point2Pair(best_point);
@@ -638,7 +643,7 @@ void Agent::measureSignalStrength(Field f) {
         r.drawRing();
         cv::Mat img = r.getCanvas();
         cv::imshow("New Measurement", img);
-        cv::waitKey(0);
+        cv::waitKey(WAITKEY_DELAY);
         
         if(this->signal_estimations[r.getName()].size() == 0){
             this->signal_estimations[r.getName()] = curr_est;
@@ -652,7 +657,7 @@ void Agent::measureSignalStrength(Field f) {
     for(auto &key_val: this->signal_estimations){
         cv::Mat img = Ring::intersectRings(key_val.second);
         cv::imshow(key_val.first, img);
-        cv::waitKey(10);
+        cv::waitKey(WAITKEY_DELAY);
     }
 
     
