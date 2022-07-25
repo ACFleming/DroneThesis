@@ -217,7 +217,9 @@ std::pair<int,int> Agent::updateCertainty(Field f){
     for(auto &kv_pair: this->signal_estimations){
         
 
-        if(this->is_found[kv_pair.first]) continue;
+        // if(this->is_found[kv_pair.first]) continue;
+        std::cout << this->is_found[kv_pair.first] << std::endl;
+        cv::waitKey(0);
 
 
 
