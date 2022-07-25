@@ -11,17 +11,20 @@ Field::Field(int x_width, int y_length, int n_sources, double std_dev, double ra
     this->range_cap = range_cap;
     
 
+    
 
-
-    if(n_sources == 0){
+    if(n_sources < 0){
         this->signal_sources.push_back(SignalSource(int(x_width/2),int(y_length/2),"DEAD CENTRE"));
     }else{
 
         //place all the random sources
+        std::vector<SignalSource> mt;
+        this->signal_sources = mt;
         for(int i = 0; i < n_sources; i++){
             this->signal_sources.push_back(SignalSource(this->x_width, this->y_length));
         }
     }
+    
 }
 
 Field::~Field() {

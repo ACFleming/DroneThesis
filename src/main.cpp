@@ -11,12 +11,12 @@ int main (int argc, char* argv[]){
     int field_y_length = 300;
     int num_sources = 2;
     int std_dev_noise = 3;
-    int max_range = 20;
-    int speed = 20;
+    int max_range = 30;
+    int speed = 30;
     int bearing = 90;
 
 
-    // std::cout << cv::getBuildInformation() << std::endl;
+
 
     Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
     Agent a1 = Agent("Drone1", 0, 0, field_x_width, field_y_length, max_range,speed, bearing);
@@ -94,10 +94,11 @@ int main (int argc, char* argv[]){
     cv::Mat map = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
 
 
-    std::pair<int,int> c = f.getSources()[0].getCoords();
+    // std::pair<int,int> c = f.getSources()[0].getCoords();
     for(auto &c: f.getSources()){
         cv::circle(map, cv::Point2i(c.getCoords().first, c.getCoords().second), 3, cv::Scalar(255,0,255) );
     }
+    std::cout << "HERE2" << std::endl;
 
 
 

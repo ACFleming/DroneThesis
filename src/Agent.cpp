@@ -3,7 +3,7 @@
 
 #define COST_VEC_PRINT
 
-#define WAITKEY_DELAY 10
+#define WAITKEY_DELAY 2
 
 /*
 
@@ -217,7 +217,7 @@ std::pair<int,int> Agent::updateCertainty(Field f){
     for(auto &kv_pair: this->signal_estimations){
         
 
-
+        if(this->is_found[kv_pair.first]) continue;
 
 
 
@@ -319,6 +319,7 @@ std::pair<int,int> Agent::updateCertainty(Field f){
 std::vector<std::vector<cv::Point2i>> Agent::getImageFrontiers(cv::Mat frontier_img){
     std::vector<std::vector<cv::Point2i>> contours;
     std::vector<cv::Vec4i> hierarchy;
+    cv::Mat approx_img = frontier_img.clone();
 
     
     cv::imshow("frontier_img", frontier_img);
@@ -344,16 +345,16 @@ std::vector<std::vector<cv::Point2i>> Agent::getImageFrontiers(cv::Mat frontier_
     std::vector<std::vector<cv::Point2i>> ctr_approx;
     for(auto &e: contours){
         std::vector<cv::Point2i> a;
-        cv::approxPolyDP(e, a, 1.5, true);
+        cv::approxPolyDP(e, a, 2, true);
         ctr_approx.push_back(a);
     }
 
     for(int i = 0; i < ctr_approx.size(); i++){
-            cv::drawContours(frontier_img, ctr_approx, i, cv::Scalar(255,255,255));
+            cv::drawContours(approx_img, ctr_approx, i, cv::Scalar(255,255,255));
     }
 
     
-    cv::imshow("OCC approx map", frontier_img);
+    cv::imshow("OCC approx map", approx_img);
     cv::waitKey(WAITKEY_DELAY);
 
 
@@ -396,7 +397,7 @@ std::pair<int,int> Agent::determineAction(){
     cv::Mat new_cells;
     std::vector<std::vector<cv::Point2i>> new_frontiers;
 
-    double best_score = INT16_MIN;
+    double best_score = LONG_MIN;
     cv::Point2i best_point;
 
 
@@ -417,7 +418,7 @@ std::pair<int,int> Agent::determineAction(){
         double score = 0;
 
         if(std::find(this->coord_history.begin(), this->coord_history.end(), this->point2Pair(f)) != this->coord_history.end()){
-            double repeat_point_mod = -10000;
+            double repeat_point_mod = -100000;
             score += repeat_point_mod;
             std::cout << " Repeat point!";
         }
@@ -426,7 +427,8 @@ std::pair<int,int> Agent::determineAction(){
 
 
 
-        int dist = int(hypot(this->coords.first - f.x, this->coords.second-f.y));
+        int dist = this->dist(this->coords, this->point2Pair(f));
+        // int(hypot(this->coords.first - f.x, this->coords.second-f.y));
         if(dist == 0) continue;
 
         
@@ -502,12 +504,12 @@ std::pair<int,int> Agent::determineAction(){
 #ifdef COST_VEC_PRINT
         std::cout << " Area Ratio Contribution: " << area_rt_mod * area_ratio;
 #endif
-        // double perim_rt_mod = -50*100;
+        double perim_rt_mod = -0*100;
 
-        // score += perim_rt_mod * perim_ratio;
-            
-        // std::cout << " Perim Ratio Contribution: " << perim_rt_mod * perim_ratio;
-
+        score += perim_rt_mod * perim_ratio;
+#ifdef COST_VEC_PRINT   
+        std::cout << " Perim Ratio Contribution: " << perim_rt_mod * perim_ratio;
+#endif
 
 
 
@@ -518,6 +520,9 @@ std::pair<int,int> Agent::determineAction(){
         // cv::imshow("OCC GRID", this->certainty_grid);
         // cv::waitKey(0);
 
+        cv::imshow("new_cells", new_cells);
+        cv::waitKey(WAITKEY_DELAY);
+
     
 
         cv::Mat inverse(new_cells.size(), CV_8UC1);
@@ -527,21 +532,22 @@ std::pair<int,int> Agent::determineAction(){
 
         // cv::bitwise_or(inverse, this->rangeMask(f.x, f.y, 255), inverse);
 
-        // // cv::threshold(new_cells, inverse, unknown-1, 255, cv::THRESH_BINARY_INV);
-        // cv::bitwise_not(inverse, inverse);
+        cv::threshold(new_cells, inverse, searching-1, 255, cv::THRESH_BINARY);
+        cv::bitwise_not(inverse, inverse);
         
 
-        // cv::imshow( "inverse", inverse );
-        // cv::waitKey(0);
+        cv::imshow( "inverse", inverse );
+        cv::waitKey(WAITKEY_DELAY);
 
 
 
-        int connected_count = connectedComponents(new_cells, labelImage, 8);
+        int connected_count = connectedComponents(inverse, labelImage, 8);
         std::vector<cv::Vec3b> colors(connected_count);
         colors[0] = cv::Vec3b(0, 0, 0);//background
-        for(int label = 1; label < connected_count; ++label){
+        for(int label = 0; label < connected_count; ++label){
             colors[label] = cv::Vec3b( 255, 255 - 50*label, 50*label + 50 );
         }
+        
         cv::Mat dst(new_cells.size(), CV_8UC3);
         for(int r = 0; r < dst.rows; ++r){
             for(int c = 0; c < dst.cols; ++c){
@@ -550,6 +556,7 @@ std::pair<int,int> Agent::determineAction(){
                 pixel = colors[label];
             }
         }
+        // std::cout << "CONNECTED COUNT: " << connected_count << std::endl;
         cv::imshow( "Connected Components", dst );
         cv::waitKey(WAITKEY_DELAY);
 
@@ -574,6 +581,27 @@ std::pair<int,int> Agent::determineAction(){
             best_point = f;
         }
         
+    }
+
+    if(best_score < -90000){ //repeat point
+        std::cout << "SHOULD BE DONE!" << std::endl;
+        std::vector<cv::Point2i> missed_spots;
+
+        cv::findNonZero(this->certainty_grid,missed_spots);
+
+        if(missed_spots.size() == 0){ //fully explored
+            std::cout <<"DONE!" << std::endl;
+            cv::waitKey(0);
+            exit(0);
+        }//else find 
+
+        double missed_p_dist = this->field_x_width*this->field_x_width + this->field_y_length*this->field_y_length;
+        for(auto &p: missed_spots){
+            if(missed_p_dist > this->dist(this->coords, this->point2Pair(p))){
+                best_point = p;
+                missed_p_dist = this->dist(this->coords, this->point2Pair(p));
+            }
+        }
     }
 
 
