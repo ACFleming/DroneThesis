@@ -4,10 +4,13 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <unordered_set>
 #include <opencv2/opencv.hpp>
+#include <set>
 #include "Field.hpp"
 #include "Ring.hpp"
 #include "GridValues.hpp"
+#include "BoundingPoints.hpp"
 
 
 #define PI 3.1415926535
@@ -35,9 +38,10 @@ private:
     // each pair is an id-measurement pair. Multiple of these pairs are measured each time step, collected in the inside vector.
     // the outside vector is a collection of all timesteps' measurements. 
     std::vector<std::vector<std::pair<std::string,double>>> measurements;
-    std::map<std::string, std::vector<Ring>> signal_estimations;
-    std::map<std::string, cv::Mat > signal_locations;
-    std::map<std::string, bool> is_found;
+    std::map<std::string, Ring> signal_estimations;
+    std::map<std::string, cv::Mat > signal_likelihood;
+    std::map<std::string, BoundingPoints> signal_bounds;
+    std::unordered_set<std::string> found;
 
 
 
@@ -51,7 +55,7 @@ public:
 
 
     std::pair<int,int> determineAction();
-    void moveToPosition(std::pair<int,int> pos) ;
+    std::pair<int,int> moveToPosition(std::pair<int,int> pos) ;
 
 
     std::pair<int,int> point2Pair(cv::Point p);
@@ -76,10 +80,10 @@ public:
     std::vector<std::vector<cv::Point2i>> getImageFrontiers(cv::Mat frontier_img);
 
 
-    std::pair<int,int> updateCertainty(Field f); // this will be changed to read bluetooth signals
+    void updateCertainty(Field f); // this will be changed to read bluetooth signals
 
 
-    void updateScannedGrid();
+    // void updateScannedGrid();
     
     
     void measureSignalStrength(Field f);

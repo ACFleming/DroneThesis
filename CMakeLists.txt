@@ -29,5 +29,5 @@ foreach(dir ${dirs})
 endforeach()
 
 # Executable
-add_executable(main src/Field.cpp src/Agent.cpp src/SignalSource.cpp src/main.cpp src/Ring.cpp)
+add_executable(main src/Field.cpp src/Agent.cpp src/SignalSource.cpp src/main.cpp src/Ring.cpp src/BoundingPoints.cpp)
 target_link_libraries(main ${OpenCV_LIBS})

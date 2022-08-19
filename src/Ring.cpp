@@ -46,6 +46,8 @@ std::vector<std::pair<bool, cv::Point2i>> Ring::centroidOfIntersections(cv::Mat 
 
 
 
+
+
 Ring::Ring(int x_width, int y_length, int centre_x, int centre_y, double middle_radius, double ring_width, std::string name){
     this->x_width = x_width;
     this->y_length = y_length;
@@ -70,6 +72,17 @@ Ring::Ring(int x_width, int y_length, int centre_x, int centre_y, double middle_
     this->name = "Dummy";
 
     
+}
+
+Ring::Ring(){
+    this->x_width = 1;
+    this->y_length = 1;
+    this->centre_x = 0;
+    this->centre_y = 0;
+    this->middle_radius = 0;
+    this->ring_width = 0;
+    this->canvas = cv::Mat::zeros(cv::Size(this->x_width, this->y_length), CV_8UC1);
+    this->name = "";
 }
 
 Ring::~Ring() {
@@ -100,4 +113,9 @@ cv::Mat Ring::getCanvas(){
 
 std::string Ring::getName() {
     return this->name;
+}
+
+bool Ring::isNull(){
+    return this->name == "" ? true : false;
+    
 }

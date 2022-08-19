@@ -49,3 +49,9 @@ An inscribed octagon has 90% of the area of the circle it enscribes. Thinking of
 
 
 **Idea** Have been working with contours to combine frontiers. Need to use cv RETR_CCOMP contour detection to find any outside contours of holes, as this will prevent situations where a hole is left during searching
+
+
+
+
+**Note**
+Making assumption that the two drones will start at approximately the same location. This saves me from dealing with two distinct frontiers, but it is also a valid assumption because in reality both drones should be launched near each other
