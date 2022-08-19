@@ -19,7 +19,7 @@ int main (int argc, char* argv[]){
 
 
     Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
-    Agent a1 = Agent("Drone1", 299 , 299, field_x_width, field_y_length, max_range,speed, bearing);
+    Agent a1 = Agent("Drone1", 0 , 50, field_x_width, field_y_length, max_range,speed, bearing);
     // Agent a2 = Agent("Drone2", 50, 0, field_x_width, field_y_length, max_range,speed, bearing);
 
     

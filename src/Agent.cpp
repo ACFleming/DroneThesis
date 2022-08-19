@@ -169,7 +169,7 @@ void Agent::updateCertainty(Field f){
 
 
 
-        cv::waitKey(0);
+        // cv::waitKey(0);
 
 
 
@@ -457,7 +457,7 @@ std::pair<int,int> Agent::determineAction(){
 
     cv::imshow("Filtered Frontiers", priority_img);
 
-    cv::waitKey(0);
+    // cv::waitKey(0);
 
 
 
@@ -691,7 +691,7 @@ std::pair<int,int> Agent::determineAction(){
         }
 
 
-        cv::waitKey(0);
+        // cv::waitKey(0);
         
     }
 
