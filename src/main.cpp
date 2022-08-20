@@ -1,7 +1,10 @@
 #include "Field.hpp"
 #include "Agent.hpp"
 #include "Ring.hpp"
+#include "Grid.hpp"
 #include <opencv2/core.hpp>
+#include <map>
+#include <string>
 
 
 int main (int argc, char* argv[]){
@@ -9,17 +12,37 @@ int main (int argc, char* argv[]){
     srand(time(0));
     int field_x_width = 300;
     int field_y_length = 300;
-    int num_sources = 2;
+    int num_sources = 7;
     int std_dev_noise = 3;
     int max_range = 30;
     int speed = 30;
     int bearing = 90;
 
+    std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
+
+
+    // cv::Mat image = cv::Mat(300,300,CV_8UC1, cv::Scalar(200));
+
+    // cv::Mat image2 = cv::Mat(300,300,CV_8UC1, cv::Scalar(0));
+
+    // cv::circle(image2, cv::Point(150,150), 50, cv::Scalar(255), -1);
+
+    // cv::bitwise_not(image2, image2);
+    // cv::bitwise_and(image,image2, image);
+    
+
+
+
+    // cv::imshow("and", image);
+    // cv::waitKey(0);
+
+
+
 
 
 
     Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
-    Agent a1 = Agent("Drone1", 0 , 50, field_x_width, field_y_length, max_range,speed, bearing);
+    Agent a1 = Agent("Drone1", 0 , 50, field_x_width, field_y_length, max_range,speed, &certainty_grids);
     // Agent a2 = Agent("Drone2", 50, 0, field_x_width, field_y_length, max_range,speed, bearing);
 
     

@@ -3,7 +3,8 @@
 
 #define COST_VEC_PRINT
 
-#define WAITKEY_DELAY 2
+
+
 
 /*
 
@@ -29,7 +30,7 @@
     y
     */
 
-Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius, int speed, int bearing) {
+Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius, int speed, std::map<std::string, Grid> *certainty_grids) {
     this->coords = std::make_pair(x_coord, y_coord);
     this->coord_history.push_back(this->coords);
     this->name = name;
@@ -37,25 +38,8 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->field_y_length = field_length;
     this->scan_radius = scan_radius;
     this->speed = speed;
-    this->bearing = bearing;
-    this->raster_step_count = 0;
-    
-    
-
-
-    this->certainty_grid = cv::Mat(this->field_y_length, this->field_x_width, CV_8UC1, cv::Scalar(unknown));
-
-
-
-
-    // this->certainty_grid.at<uint8_t>(this->coords.second,this->coords.first) = scanned;
-
-
-
-
-    
-
-
+    this->certainty_grids = certainty_grids;
+    this->certainty_grids->insert(std::pair<std::string, Grid>(BASE,Grid(this->field_x_width, this->field_y_length) ));
 
 }
 
@@ -100,36 +84,23 @@ cv::Mat Agent::rangeMask(int x, int y, int value){
 
 
 
-std::vector<cv::Point2i> Agent::gridSquaresInRange(int x, int y){
-
-    std::vector<cv::Point2i> locations;
-
-    cv::Mat mask = this->rangeMask(x, y, 255);
 
 
-    cv::findNonZero(mask, locations);
 
-    return locations;
-
-}
-
-std::vector<cv::Point2i> Agent::gridSquaresInRange(std::pair<int,int> coords){
-    return this->gridSquaresInRange(coords.first, coords.second);
-}
 
 
 
 void Agent::updateCertainty(Field f){
 
-    std::pair<int,int> ret = std::make_pair(-1,-1);
+
 
     //step 0 clear old measurements
 
-    for(auto& kv_name_est: this->signal_estimations){
-        Ring null_ring = Ring();
-        this->signal_estimations[kv_name_est.first] = null_ring;
-    }
 
+
+    for(auto &kv_name_grid: *(this->certainty_grids)){
+        kv_name_grid.second.prepareForUpdate(this->coords, this->scan_radius);
+    }
     
 
     //step 1 get any signal measurements
@@ -140,228 +111,31 @@ void Agent::updateCertainty(Field f){
 
     for(auto &m: measurements){
 
-        //update signal estimation
-        std::cout << m.first << ": " << m.second << std::endl; 
-        Ring r =  Ring(this->field_x_width, this->field_y_length, this->coords.first, this->coords.second,m.second, 15, m.first );
-        r.drawRing();
-        this->signal_estimations[m.first] = r;
-
-
-
-        if(this->signal_likelihood.count(m.first) == 0){ //if no existing likelihood region
-            this->signal_likelihood[m.first] = this->certainty_grid.clone();
+        if(this->certainty_grids->count(m.first) == 0){ //if no existing grid region
+            this->certainty_grids->insert(std::pair<std::string, Grid> (m.first, Grid(m.first, this->certainty_grids->at(BASE).getLikelihood())));
+            this->certainty_grids->at(m.first).prepareForUpdate(this->coords, this->scan_radius);
         }
-    }
-    this->measurements.push_back(measurements);
+        this->certainty_grids->at(m.first).receiveMeasurement(m.second);
 
-
-
-    //step 2 update likelihood
-
-    for(auto &kv_name_ests: this->signal_estimations){
-        
-        
-        std::cout << this->found.count(kv_name_ests.first) << std::endl;
-        if(this->found.count(kv_name_ests.first) != 0){//if signal localised, skip
-            continue;
-        }
-
-
-
-
-        // cv::waitKey(0);
-
-
-
-        if(kv_name_ests.second.isNull()){ //i.e no new info
-
-            cv::Mat inv = this->rangeMask(this->coords.first, this->coords.second, 255);
-            cv::bitwise_not(inv, inv);
-            cv::imshow("inv", inv);
-            cv::waitKey(WAITKEY_DELAY);
-            cv::bitwise_and(inv, this->signal_likelihood[kv_name_ests.first],this->signal_likelihood[kv_name_ests.first]);
-
-        }else{  // i.e there is new info
-            //show most recent measurement ring
-            cv::imshow("new measurement", this->signal_estimations[kv_name_ests.first].getCanvas());
-            cv::waitKey(WAITKEY_DELAY);
-            //show current likelihood region
-            cv::imshow("current",this->signal_likelihood[kv_name_ests.first] );
-            cv::waitKey(WAITKEY_DELAY);
-            
-            cv::bitwise_and(this->signal_likelihood[kv_name_ests.first], this->signal_estimations[kv_name_ests.first].getCanvas(), this->signal_likelihood[kv_name_ests.first]);
-        }
-
-        
-
-        cv::imshow(kv_name_ests.first, this->signal_likelihood[kv_name_ests.first]);
-        cv::waitKey(WAITKEY_DELAY);
-
-
-        //step 2.1 find edges of the likelihood region
-
-         
-
-        this->signal_bounds[kv_name_ests.first] = BoundingPoints(this->signal_likelihood[kv_name_ests.first]);
-
- 
-
-
-        //GIVE THIS TO DETERMINE ACTION??
-
-        std::cout << kv_name_ests.first << " likelihood area: " << signal_bounds[kv_name_ests.first].getArea() << std::endl;
-        if(this->signal_bounds[kv_name_ests.first].getArea() < 200){ //if likelihood region smaller thatn acceptance criteria
-            std::cout << "Signal found at or near: " << this->signal_bounds[kv_name_ests.first].getCentre().x  << "," << this->signal_bounds[kv_name_ests.first].getCentre().y << std::endl;
-            this->found.insert(kv_name_ests.first);
-        }
-
-        // std::vector<cv::Point2i> target_loc;
-
-        // likelihood_boundary.a
-
-
-
-        // cv::findNonZero(this->signal_likelihood[kv_name_ests.first],target_loc);
-
-        // 
-
-        // cv::Point2i target_point = target_loc[random];
-
-        // cv::Mat acceptance_criteria = this->signal_likelihood[kv_name_ests.first].clone();
-
-        // cv::circle(acceptance_criteria, target_point, 15, cv::Scalar(0), -1);
-        // cv::imshow("acceptance_criteria",acceptance_criteria);
-        // cv::waitKey(WAITKEY_DELAY);
-
-
-
-        // if(cv::countNonZero(acceptance_criteria) < 50){
-        //     std::cout << "Signal found at or near: " << target_point.x  << "," << target_point.y << std::endl;
-        //     this->found.insert(kv_name_ests.first);
-        //     ret = std::make_pair(-1,-1); // might change this to keep looking after search is done
-        // }else{
-        //     ret = this->point2Pair(target_loc[random]);
-        // }
-
-
-        
     }
 
-
-
-
-
-    //step 2 classify all other areas as not signals
-
-    cv::Mat mask = this->rangeMask(this->coords.first, this->coords.second, unknown);
-
-    cv::imshow("mask", mask);
-    cv::waitKey(WAITKEY_DELAY);
-    cv::subtract(this->certainty_grid, mask, this->certainty_grid);
-
-
-
-    //step 3 get new frontiers
-
-    cv::Mat seen;
-    cv::threshold(this->certainty_grid, seen,unknown-1, unknown, cv::THRESH_BINARY_INV);
-
-    this->frontiers = this->getImageFrontiers(seen);
-
-
-    // for(auto &kv_pair: this->signal_locations){
-
-
-        
-
-    //     // cv::Mat img2;
-
-    //     // cv::addWeighted(this->certainty_grid, 1, kv_pair.second, 1, 0, img2);
-    //     // cv::imshow("Full", img2);
-    //     // cv::waitKey(0);
-    // }
-
-
+    for(auto &kv_name_grid: *(this->certainty_grids)){
+        kv_name_grid.second.updateCertainty();
+    }
 
     
 
 }
 
 
-
-
-
-
-std::vector<std::vector<cv::Point2i>> Agent::getImageFrontiers(cv::Mat frontier_img){
-    std::vector<std::vector<cv::Point2i>> contours;
-    std::vector<cv::Vec4i> hierarchy;
-    cv::Mat approx_img = frontier_img.clone();
-
-    
-    cv::imshow("frontier_img", frontier_img);
-    cv::waitKey(WAITKEY_DELAY);
-
-
-
-
-    cv::findContours(frontier_img,contours, hierarchy, cv::RETR_LIST,cv::CHAIN_APPROX_SIMPLE);
-    
-
-    if(contours.size() > 1){ //sorting by size. Could change this to check if the current point is inside or not, but may require point passing. 
-        std::cout << contours.size();
-        std::sort(contours.begin(), contours.end(), [](const std::vector<cv::Point2i> &a, const std::vector<cv::Point2i> &b){ return a.size() > b.size(); });
-    }
-
-    //only the largest contour remains
-
-    
-
-
-
-
-    std::vector<std::vector<cv::Point2i>> ctr_approx;
-    for(auto &e: contours){
-        std::vector<cv::Point2i> a;
-        cv::approxPolyDP(e, a, 0.75, true);
-        ctr_approx.push_back(a);
-    }
-
-    for(int i = 0; i < ctr_approx.size(); i++){
-            cv::drawContours(approx_img, ctr_approx, i, cv::Scalar(255,255,255));
-    }
-
-    
-    cv::imshow("OCC approx map", approx_img);
-    cv::waitKey(WAITKEY_DELAY);
-
-  
-    return ctr_approx;
-}
 
 std::pair<int,int> Agent::determineAction(){
-
-
-    //Rastering Assumption
-    //Range of scan >= speed
-
-    
-
-
-
+ 
 
 
     std::pair<int,int> next_position = this->coords;
 
-
-    //dummy move
-
-    // next_position.first += this->speed;
-    // return next_position;
-
     
-
-    
-    std::vector<std::pair<cv::Point2i,double>> cost_vec;
 
 
     cv::Mat new_cells;
@@ -370,6 +144,17 @@ std::pair<int,int> Agent::determineAction(){
     double best_score = LONG_MIN;
     cv::Point2i best_point;
 
+
+
+    cv::Mat seen;
+    cv::threshold(this->certainty_grids->at(BASE).getLikelihood(), seen,unknown-1, unknown, cv::THRESH_BINARY_INV);
+
+    this->frontiers = Grid::getImageFrontiers(seen);
+
+
+
+    cv::imshow("seen", seen);
+    cv::waitKey(WAITKEY_DELAY);
 
 
 
@@ -382,18 +167,19 @@ std::pair<int,int> Agent::determineAction(){
         }
     };
 
-    //filter frontier points based on distance
+    
 
     std::unordered_set<cv::Point,point_hash> signal_frontiers;
 
     std::vector<cv::Point> priority_frontiers;
     std::vector<cv::Point> reserve_frontiers;
-    // reserve_frontiers.
+
 
 
 
     cv::Mat priority_img = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC3);    
     
+    //filter frontier points based on distance
     for(auto &f_vec: this->frontiers){
         for(auto &f: f_vec){
             double dist = this->dist(this->coords, this->point2Pair(f));
@@ -407,43 +193,19 @@ std::pair<int,int> Agent::determineAction(){
         }
     }
 
-
-    for(auto &kv_name_bound: this->signal_bounds){
-        if(this->found.count(kv_name_bound.first) == 0){//if not found
-            for(auto &p: kv_name_bound.second.getBounds()){
+    //add signal bounds to the priority frontier list
+    for(auto &kv_name_grid: *(this->certainty_grids)){
+        if(kv_name_grid.second.isFound() == false && kv_name_grid.first != BASE){//if not found and not base
+            for(auto &p: kv_name_grid.second.getSignalBounds().getBounds()){
                 signal_frontiers.insert(p);
                 priority_frontiers.push_back(p);
                 cv::circle(priority_img, p,2,cv::Scalar(255,255,0));
             }
         }
-
-
     }
 
 
-    // //identify and plug holes
-    // cv::Mat inverse(new_cells.size(), CV_8UC1);
-    // cv::Mat labelImage(new_cells.size(), CV_32S);
 
-
-    // int connected_count = cv::connectedComponents(inverse, labelImage, 8);
-    // std::vector<cv::Vec3b> colors(connected_count);
-    // colors[0] = cv::Vec3b(0, 0, 0);//background
-    // for(int label = 0; label < connected_count; ++label){
-    //     colors[label] = cv::Vec3b( 255, 255 - 50*label, 50*label + 50 );
-    // }
-    
-    // cv::Mat dst(new_cells.size(), CV_8UC3);
-    // for(int r = 0; r < dst.rows; ++r){
-    //     for(int c = 0; c < dst.cols; ++c){
-    //         int label = labelImage.at<int>(r, c);
-    //         cv::Vec3b &pixel = dst.at<cv::Vec3b>(r, c);
-    //         pixel = colors[label];
-    //     }
-    // }
-    // // std::cout << "CONNECTED COUNT: " << connected_count << std::endl;
-    // cv::imshow( "Connected Components", dst );
-    // cv::waitKey(WAITKEY_DELAY);
 
 
 
@@ -465,15 +227,10 @@ std::pair<int,int> Agent::determineAction(){
 
     for(auto &f: priority_frontiers ){
 #ifdef COST_VEC_PRINT
-            std::cout << "Point: " << f.x << "," << f.y;
+        std::cout << "Point: " << f.x << "," << f.y;
 #endif
         
-        cv::Mat seen;
 
-        cv::threshold(this->certainty_grid, seen,unknown-1, unknown, cv::THRESH_BINARY_INV);
-
-        cv::imshow("seen", seen);
-        cv::waitKey(WAITKEY_DELAY);
 
         double score = 0;
 
@@ -485,20 +242,19 @@ std::pair<int,int> Agent::determineAction(){
         
 
         if(signal_frontiers.count(f) > 0 ){ //if its a signal frontier point;
-            score += 10000;
+            score += 1000;
         }
 
 
 
         double dist = this->dist(this->coords, this->point2Pair(f));
-        // int(hypot(this->coords.first - f.x, this->coords.second-f.y));
-        if(dist < 0.5) {
-            continue;
+        if(dist < 0.1*this->speed) {
+            score = LONG_MIN;
         }
 
         double dist_mod = -10;
         
-        // score += dist_mod * dist;
+
         score += dist_mod*exp(floor(dist/this->scan_radius));
 
 #ifdef COST_VEC_PRINT
@@ -533,7 +289,7 @@ std::pair<int,int> Agent::determineAction(){
 
 
 
-        new_frontiers = this->getImageFrontiers(new_cells);
+        new_frontiers = Grid::getImageFrontiers(new_cells);
 
         if(new_frontiers.size() > 0){
 
@@ -595,7 +351,7 @@ std::pair<int,int> Agent::determineAction(){
 
 
 
-        std::vector<std::vector<cv::Point>> inverse_frontiers = this->getImageFrontiers(inverse);
+        std::vector<std::vector<cv::Point>> inverse_frontiers = Grid::getImageFrontiers(inverse);
 
 
         if(inverse_frontiers.size() > 0){
@@ -643,45 +399,6 @@ std::pair<int,int> Agent::determineAction(){
 
 
 
-
-
-
-
-
-//         cv::Mat labelImage(new_cells.size(), CV_32S);
-//         int connected_count = connectedComponents(inverse, labelImage, 8);
-//         std::vector<cv::Vec3b> colors(connected_count);
-//         colors[0] = cv::Vec3b(0, 0, 0);//background
-//         for(int label = 0; label < connected_count; ++label){
-//             colors[label] = cv::Vec3b( 255, 255 - 50*label, 50*label + 50 );
-//         }
-        
-//         cv::Mat dst(new_cells.size(), CV_8UC3);
-//         for(int r = 0; r < dst.rows; ++r){
-//             for(int c = 0; c < dst.cols; ++c){
-//                 int label = labelImage.at<int>(r, c);
-//                 cv::Vec3b &pixel = dst.at<cv::Vec3b>(r, c);
-//                 pixel = colors[label];
-//             }
-//         }
-//         // std::cout << "CONNECTED COUNT: " << connected_count << std::endl;
-//         cv::imshow( "Connected Components", dst );
-//         cv::waitKey(WAITKEY_DELAY);
-
-//         double connected_mod = 0*-50; 
-
-
-//         score += connected_mod * connected_count;
-// #ifdef COST_VEC_PRINT
-//         std::cout << " Connected Components Penalty: " << connected_mod * connected_count;
-// #endif
-
-
-
-
-
-
-
 #ifdef COST_VEC_PRINT
         std::cout  << " Final Score: " << score <<  std::endl;  
 #endif      
@@ -699,7 +416,7 @@ std::pair<int,int> Agent::determineAction(){
         std::cout << "SHOULD BE DONE!" << std::endl;
         std::vector<cv::Point2i> missed_spots;
 
-        cv::findNonZero(this->certainty_grid,missed_spots);
+        cv::findNonZero(this->certainty_grids->at(BASE).getLikelihood(),missed_spots);
 
         if(missed_spots.size() == 0){ //fully explored
             std::cout <<"DONE!" << std::endl;
@@ -722,14 +439,8 @@ std::pair<int,int> Agent::determineAction(){
 
 
 
-    // //Finf min arg
-    // std::pair<cv::Point2i,double>result = *std::max_element(cost_vec.cbegin(), cost_vec.cend(), [](const std::pair<cv::Point2i,double> &lhs, const std::pair<cv::Point2i,double> &rhs) {
-    //     return lhs.second < rhs.second;    
-    // });
-
-
     std::cout <<  "BEST! " << "Point:" << best_point.x <<"," << best_point.y << " Score: " << best_score << std::endl;
-    cv::Mat best = this->certainty_grid.clone();
+    cv::Mat best = this->certainty_grids->at(BASE).getLikelihood().clone();
     cv::circle(best, best_point, 3, cv::Scalar(255));
     cv::imshow("best", best);
     cv::waitKey(WAITKEY_DELAY);
@@ -779,37 +490,6 @@ std::pair<int,int> Agent::moveToPosition(std::pair<int,int> pos){
 
 
 
-// void Agent::measureSignalStrength(Field f) {
-//     std::vector<std::pair<std::string, double>> measurements = f.getMeasurements(this->coords);
-//     std::vector<Ring> curr_est;
-//     for(auto &m: measurements){
-//         std::cout << m.first << ": " << m.second << std::endl;
-        
-        
-//         Ring r = Ring(this->field_x_width, this->field_y_length, this->coords.first, this->coords.second,m.second, 1, m.first ); 
-//         r.drawRing();
-//         cv::Mat img = r.getCanvas();
-//         cv::imshow("New Measurement", img);
-//         cv::waitKey(WAITKEY_DELAY);
-        
-//         if(this->signal_estimations[r.getName()].size() == 0){
-//             this->signal_estimations[r.getName()] = curr_est;
-//         }
-//         this->signal_estimations[r.getName()].push_back(r);
-
-
-//     }
-//     this->measurements.push_back(measurements);
-
-//     for(auto &key_val: this->signal_estimations){
-//         cv::Mat img = Ring::intersectRings(key_val.second);
-//         cv::imshow(key_val.first, img);
-//         cv::waitKey(WAITKEY_DELAY);
-//     }
-
-    
-// }
-
 
 
 
@@ -818,50 +498,7 @@ std::pair<int,int> Agent::getCoords(){
     return this->coords;
 }
 
-std::string Agent::logAgent() {
-    std::ofstream agent_log;
-    std::string file_path = "logs/" + this->name + "_agent_log.csv";
-    agent_log.open(file_path);
-    agent_log << "drone_x, drone_y";
-    //this->measurements[0] is the number of sources
-    for(int i = 0; i < this->measurements[0].size() ; i++){
-        agent_log << ",id" << i << ",dist" << i;
-    }
-    agent_log << std::endl;
-    
-    //For each timestep
-
-    auto it_coords = this->coord_history.begin();
-    auto it_measurements = this->measurements.begin();
-    while(it_coords != this->coord_history.end()  && it_measurements != this->measurements.end()){
-        
-        agent_log << (*it_coords).first << "," << (*it_coords).second;  
-        for(auto &measurement: (*it_measurements)){
-            agent_log << "," << measurement.first << "," << measurement.second;
-        }
-        agent_log << std::endl;
-        it_coords++;
-        it_measurements++;
-        
-    }
-    
-    return file_path;
-
-}
-
-
-
 
 cv::Mat Agent::getCertGrid(){
-    return this->certainty_grid;
-}
-
-cv::Mat Agent::getFrontierMap(){
-    cv::Mat frontier_map = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC1);
-
-
-
-    cv::drawContours(frontier_map, this->frontiers  , -1, cv::Scalar(255));
-    
-    return frontier_map;
+    return this->certainty_grids->at(BASE).getLikelihood();
 }
