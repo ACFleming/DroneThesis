@@ -10,7 +10,7 @@
 #include "Ring.hpp"
 #include "BoundingPoints.hpp"
 
-#define WAITKEY_DELAY 2
+#define WAITKEY_DELAY 1
 
 #define BASE "base_certainty"
 

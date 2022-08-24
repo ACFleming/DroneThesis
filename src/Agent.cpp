@@ -92,7 +92,7 @@ cv::Mat Agent::rangeMask(int x, int y, int value){
 
 void Agent::updateCertainty(Field f){
 
-
+    
 
     //step 0 clear old measurements
 
@@ -112,7 +112,7 @@ void Agent::updateCertainty(Field f){
     for(auto &m: measurements){
 
         if(this->certainty_grids->count(m.first) == 0){ //if no existing grid region
-            this->certainty_grids->insert(std::pair<std::string, Grid> (m.first, Grid(m.first, this->certainty_grids->at(BASE).getLikelihood())));
+            this->certainty_grids->insert(std::pair<std::string, Grid> (m.first, Grid(m.first, this->certainty_grids->at(BASE).getLikelihood().clone())));
             this->certainty_grids->at(m.first).prepareForUpdate(this->coords, this->scan_radius);
         }
         this->certainty_grids->at(m.first).receiveMeasurement(m.second);
@@ -272,14 +272,14 @@ std::pair<int,int> Agent::determineAction(){
 
         if(new_scanned_count == 0){
 #ifdef COST_VEC_PRINT
-            std::cout << " Lack of information gain Contribution: "<< -500 << std::endl;
+            std::cout << " Lack of information gain Contribution: "<< -1000 << std::endl;
 #endif
             score -= 1000;
         }
 
         double new_scanned_ratio = (new_scanned_count-old_scanned_count)/old_scanned_count;
 
-        double scanned_mod = 50;
+        double scanned_mod = 0;
 
         score += scanned_mod * new_scanned_ratio;
 #ifdef COST_VEC_PRINT
@@ -291,13 +291,18 @@ std::pair<int,int> Agent::determineAction(){
 
         new_frontiers = Grid::getImageFrontiers(new_cells);
 
-        if(new_frontiers.size() > 0){
+        for(auto &nf : new_frontiers){
+            
+            double signed_dist = cv::pointPolygonTest(nf, this->pair2Point(this->coords), true);
+            if(signed_dist < 0){
+                continue;
+            }
 
-            double ctr_area = cv::contourArea(new_frontiers[0]);
-            double ctr_perim = cv::arcLength(new_frontiers[0], true);
+            double ctr_area = cv::contourArea(nf);
+            double ctr_perim = cv::arcLength(nf, true);
             std::vector<cv::Point2i> hull_points;
 
-            cv::convexHull(new_frontiers[0], hull_points);
+            cv::convexHull(nf, hull_points);
             double hull_area = cv::contourArea(hull_points);
             double hull_perim = cv::arcLength(hull_points, true);
             if(hull_area == 0){
@@ -355,37 +360,45 @@ std::pair<int,int> Agent::determineAction(){
 
 
         if(inverse_frontiers.size() > 0){
-            double inv_ctr_area = cv::contourArea(inverse_frontiers[0]);
-            double inv_ctr_perim = cv::arcLength(inverse_frontiers[0], true);
-            std::vector<cv::Point2i> inv_hull_points;
+            double inv_ctr_perim = 0;
+            double inv_hull_perim = 0;
+            double inv_ctr_area = 0;
+            double inv_hull_area = 0;
+            for(auto &iif : inverse_frontiers){
+                inv_ctr_area += cv::contourArea(iif);
+                inv_ctr_perim += cv::arcLength(iif, true);
+                std::vector<cv::Point2i> inv_hull_points;
 
-            cv::convexHull(inverse_frontiers[0], inv_hull_points);
-            double inv_hull_area = cv::contourArea(inv_hull_points);
-            double inv_hull_perim = cv::arcLength(inv_hull_points, true);
-            if(inv_hull_area == 0){
-                std::cout << "HUH?" << std::endl;
-                inv_hull_area = 1;
+                cv::convexHull(iif, inv_hull_points);
+                inv_hull_area += cv::contourArea(inv_hull_points);
+                inv_hull_perim += cv::arcLength(inv_hull_points, true);
+                if(inv_hull_area == 0){
+                    std::cout << "HUH?" << std::endl;
+                    inv_hull_area = 1;
+                }
+
+                cv::Mat inv_hull_img(inverse.size(), CV_8UC3);
+                cv::drawContours(inv_hull_img, inverse_frontiers, -1, cv::Scalar(0,0,255));
+                
+                std::vector<std::vector<cv::Point2i>> inv_h;
+                inv_h.push_back(inv_hull_points);
+                cv::drawContours(inv_hull_img, inv_h, -1, cv::Scalar(255,0,0));
+
+
+                cv::imshow("inv_hull_img", inv_hull_img);
+                cv::waitKey(0);
             }
 
-            cv::Mat inv_hull_img(inverse.size(), CV_8UC3);
-            cv::drawContours(inv_hull_img, inverse_frontiers, -1, cv::Scalar(0,0,255));
-            
-            std::vector<std::vector<cv::Point2i>> inv_h;
-            inv_h.push_back(inv_hull_points);
-            cv::drawContours(inv_hull_img, inv_h, -1, cv::Scalar(255,0,0));
-
-
-            cv::imshow("inv_hull_img", inv_hull_img);
-            cv::waitKey(WAITKEY_DELAY);
 
 
 
-
+            if(inv_hull_perim == 0) inv_hull_perim = 1;
             double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
 
             double inv_perim_rt_mod = -10*100;
 
-            score += inv_perim_rt_mod * inv_perim_ratio;
+            
+            score += inv_perim_rt_mod * pow(inv_perim_ratio,inverse_frontiers.size())  ;
 #ifdef COST_VEC_PRINT   
             std::cout << " Perim Ratio Contribution: " << inv_perim_rt_mod * inv_perim_ratio;
 #endif
