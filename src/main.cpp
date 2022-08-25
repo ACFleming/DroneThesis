@@ -9,13 +9,13 @@
 
 int main (int argc, char* argv[]){
     //seed the random number generator
-    srand((unsigned int)(13));
+    srand((unsigned int)(22));
     int field_x_width = 300;
     int field_y_length = 300;
     int num_sources = 10;
-    int std_dev_noise = 5;
-    int max_range = 30; 
-    int speed = 30;
+    int std_dev_noise = 4;
+    int max_range = 20; 
+    int speed = 20;
 
 
     std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
@@ -43,7 +43,7 @@ int main (int argc, char* argv[]){
 
     Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
     Agent a1 = Agent("Drone1", 0 , 0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
-    Agent a2 = Agent("Drone2", 299 ,299, field_x_width, field_y_length, max_range,speed, &certainty_grids);
+    Agent a2 = Agent("Drone2", 0 ,0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
 
     
 
@@ -73,14 +73,13 @@ int main (int argc, char* argv[]){
     cv::imshow("map", map);
     cv::waitKey(0);
 
-    int counter = 0;
+   
 
     while(true){
 
         
 
         //plot a1 
-        counter++;
         std::pair<int,int> a1_curr = a1.getCoords();
         std::cout << "Drone1 at: " << a1_curr.first << "," << a1_curr.second << std::endl;
         a1.updateCertainty(f);    

@@ -29,7 +29,7 @@ private:
     int speed;
 
 
-    static int step_counter;
+    
 
 
 
@@ -45,7 +45,7 @@ private:
 public:
     Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius, int speed, std::map<std::string, Grid> *certainty_grids);
     ~Agent();
-
+    static int step_counter;
 
     std::pair<int,int> determineAction();
     std::pair<int,int> moveToPosition(std::pair<int,int> pos) ;

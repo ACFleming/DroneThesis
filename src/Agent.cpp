@@ -263,7 +263,7 @@ std::pair<int,int> Agent::determineAction(){
 
         double dist_mod = -0.05;
         
-        score += dist_mod * (dist-(this->speed)/2) * (dist-2*this->speed);
+        score += dist_mod * (dist-(this->speed)/2) * (dist-1.5*this->speed);
         // score += dist_mod*exp(dist/this->scan_radius);
 
 #ifdef COST_VEC_PRINT
@@ -288,7 +288,7 @@ std::pair<int,int> Agent::determineAction(){
 // #endif
 //             score -= 1000;
 //         }
-        double scanned_mod = 3*100;
+        double scanned_mod = 1.5*100;
 
 
 
@@ -459,7 +459,7 @@ std::pair<int,int> Agent::determineAction(){
             std::cout <<"DONE!" << std::endl;
             std::cout << "Steps taken: " << Agent::step_counter << std::endl;
             for(auto &kv_name_grid: *(this->certainty_grids)){
-                if(kv_name_grid.first == BASE) continue;
+                if(kv_name_grid.first == BASE || kv_name_grid.first == MAP ) continue;
                 std::cout << kv_name_grid.first << " located at or about " << kv_name_grid.second.getSignalBounds().getCentre().x << " , " << kv_name_grid.second.getSignalBounds().getCentre().y << std::endl;
                 std::cout << "Likelihood area: " << kv_name_grid.second.getSignalBounds().getArea() << std::endl;
             }
@@ -562,9 +562,9 @@ cv::Mat Agent::getSignalLocations() {
             // srand((unsigned int)(time(0)));
             std::hash<std::string> colour_name_hasher;
             uint hash_colour = colour_name_hasher(kv_name_grid.first);
-            int colour1 = hash_colour%255;
-            int colour2 = (hash_colour/1000)%255;
-            int colour3 = (hash_colour/1000000)%255;
+            int colour1 = hash_colour%200+55;
+            int colour2 = (hash_colour/1000)%200+55;
+            int colour3 = (hash_colour/1000000)%200+55;
 
             temp.setTo(cv::Scalar(colour1, colour2, colour3), temp);
             // cv::cvtColor(temp, temp, cv::COLOR_HSV2BGR);
