@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <unordered_set>
+#include <functional>
 #include <opencv2/opencv.hpp>
 #include <set>
 #include "Field.hpp"
@@ -28,15 +29,11 @@ private:
     int speed;
 
 
-
+    static int step_counter;
 
 
 
     std::vector<std::vector<cv::Point2i>> frontiers;
-
-
-
-
     std::map<std::string, Grid> *certainty_grids;
 
 
@@ -71,7 +68,7 @@ public:
     void updateCertainty(Field f); // this will be changed to read bluetooth signals
 
  
-
+    void updateMap();
     
 
 
@@ -81,7 +78,10 @@ public:
     std::pair<int,int> getCoords();
     std::string logAgent();
     void showOccGrid();
-    cv::Mat getCertGrid();
+    cv::Mat getMap();
+
+
+    cv::Mat getSignalLocations();
 
 };
 

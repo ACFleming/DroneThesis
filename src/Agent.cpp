@@ -4,7 +4,7 @@
 #define COST_VEC_PRINT
 
 
-
+int Agent::step_counter = 0;
 
 /*
 
@@ -39,7 +39,9 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->scan_radius = scan_radius;
     this->speed = speed;
     this->certainty_grids = certainty_grids;
-    this->certainty_grids->insert(std::pair<std::string, Grid>(BASE,Grid(this->field_x_width, this->field_y_length) ));
+    this->certainty_grids->insert(std::pair<std::string, Grid>(BASE,Grid(this->field_x_width, this->field_y_length, unknown)));
+    this->certainty_grids->insert(std::pair<std::string, Grid>(MAP,Grid(this->field_x_width, this->field_y_length, unknown)));
+
 
 }
 
@@ -92,7 +94,7 @@ cv::Mat Agent::rangeMask(int x, int y, int value){
 
 void Agent::updateCertainty(Field f){
 
-    
+    //Note! Need to update certainty grid of base after move, to update position
 
     //step 0 clear old measurements
 
@@ -127,6 +129,11 @@ void Agent::updateCertainty(Field f){
 
 }
 
+void Agent::updateMap(){
+    this->certainty_grids->at(MAP).prepareForUpdate(this->coords, this->scan_radius);
+    this->certainty_grids->at(MAP).updateCertainty();
+    // this->certainty_grids->at(MAP).getLikelihood().at<uint8_t>(this->pair2Point(this->coords)) = occupied;
+}
 
 
 std::pair<int,int> Agent::determineAction(){
@@ -147,7 +154,7 @@ std::pair<int,int> Agent::determineAction(){
 
 
     cv::Mat seen;
-    cv::threshold(this->certainty_grids->at(BASE).getLikelihood(), seen,unknown-1, unknown, cv::THRESH_BINARY_INV);
+    cv::threshold(this->certainty_grids->at(MAP).getLikelihood(), seen,unknown-1, unknown, cv::THRESH_BINARY_INV);
 
     this->frontiers = Grid::getImageFrontiers(seen);
 
@@ -183,19 +190,22 @@ std::pair<int,int> Agent::determineAction(){
     for(auto &f_vec: this->frontiers){
         for(auto &f: f_vec){
             double dist = this->dist(this->coords, this->point2Pair(f));
-            if(dist < 2 || dist > 1.5*this->speed){
-                cv::circle(priority_img, f,2,cv::Scalar(0,0,255));
+            int edge_root_func = (f.x)*(f.y)*(int)(this->field_x_width-1-f.x)*(int)(this-field_y_length-1-f.y);
+                
+            // int edge_root_func = (f.x)*(this->field_x_width-1-f.x)*(f.y)*(this-field_y_length-1-f.y);
+            if(dist < 2 || dist > 2*this->speed || edge_root_func == 0){
+                cv::circle(priority_img, f,2,cv::Scalar(255,0,255));
                 reserve_frontiers.push_back(f);
             }else{
                 priority_frontiers.push_back(f);
-                cv::circle(priority_img, f,2,cv::Scalar(0,255,0));
+                cv::circle(priority_img, f,2,cv::Scalar(0,255,255));
             }
         }
     }
 
     //add signal bounds to the priority frontier list
     for(auto &kv_name_grid: *(this->certainty_grids)){
-        if(kv_name_grid.second.isFound() == false && kv_name_grid.first != BASE){//if not found and not base
+        if(kv_name_grid.second.isFound() == false){//if not found and not base
             for(auto &p: kv_name_grid.second.getSignalBounds().getBounds()){
                 signal_frontiers.insert(p);
                 priority_frontiers.push_back(p);
@@ -242,7 +252,7 @@ std::pair<int,int> Agent::determineAction(){
         
 
         if(signal_frontiers.count(f) > 0 ){ //if its a signal frontier point;
-            score += 1000;
+            score += 100;
         }
 
 
@@ -252,10 +262,10 @@ std::pair<int,int> Agent::determineAction(){
             score = LONG_MIN;
         }
 
-        double dist_mod = -10;
+        double dist_mod = -0.01;
         
-
-        score += dist_mod*exp(floor(dist/this->scan_radius));
+        score += dist_mod * (dist-10) * (dist-2*this->speed);
+        // score += dist_mod*exp(dist/this->scan_radius);
 
 #ifdef COST_VEC_PRINT
         std::cout << " Dist contribution: " << dist_mod * dist;
@@ -270,16 +280,17 @@ std::pair<int,int> Agent::determineAction(){
         double old_scanned_count = cv::countNonZero(seen);
         double new_scanned_count = cv::countNonZero(new_cells);
 
-        if(new_scanned_count == 0){
-#ifdef COST_VEC_PRINT
-            std::cout << " Lack of information gain Contribution: "<< -1000 << std::endl;
-#endif
-            score -= 1000;
-        }
-
         double new_scanned_ratio = (new_scanned_count-old_scanned_count)/old_scanned_count;
+        
+//         if(new_scanned_count-old_scanned_count < 1){
+// #ifdef COST_VEC_PRINT
+//             std::cout << " Lack of information gain Contribution: "<< -1000 << std::endl;
+// #endif
+//             score -= 1000;
+//         }
+        double scanned_mod = 1*100;
 
-        double scanned_mod = 0;
+
 
         score += scanned_mod * new_scanned_ratio;
 #ifdef COST_VEC_PRINT
@@ -325,7 +336,7 @@ std::pair<int,int> Agent::determineAction(){
             
             double perim_ratio = ctr_perim/hull_perim;
 
-            double area_rt_mod = 50*100;
+            double area_rt_mod = 3*100;
 
             score += area_rt_mod * area_ratio;
 #ifdef COST_VEC_PRINT
@@ -364,6 +375,9 @@ std::pair<int,int> Agent::determineAction(){
             double inv_hull_perim = 0;
             double inv_ctr_area = 0;
             double inv_hull_area = 0;
+            if(inverse_frontiers.size() > 1){
+                NO_OP;
+            }
             for(auto &iif : inverse_frontiers){
                 inv_ctr_area += cv::contourArea(iif);
                 inv_ctr_perim += cv::arcLength(iif, true);
@@ -380,13 +394,13 @@ std::pair<int,int> Agent::determineAction(){
                 cv::Mat inv_hull_img(inverse.size(), CV_8UC3);
                 cv::drawContours(inv_hull_img, inverse_frontiers, -1, cv::Scalar(0,0,255));
                 
-                std::vector<std::vector<cv::Point2i>> inv_h;
+                std::vector<std::vector<cv::Point2i>> inv_h = std::vector<std::vector<cv::Point2i>>();
                 inv_h.push_back(inv_hull_points);
                 cv::drawContours(inv_hull_img, inv_h, -1, cv::Scalar(255,0,0));
 
 
                 cv::imshow("inv_hull_img", inv_hull_img);
-                cv::waitKey(0);
+                cv::waitKey(WAITKEY_DELAY);
             }
 
 
@@ -395,14 +409,21 @@ std::pair<int,int> Agent::determineAction(){
             if(inv_hull_perim == 0) inv_hull_perim = 1;
             double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
 
-            double inv_perim_rt_mod = -10*100;
+            double inv_perim_rt_mod = -3*100;
 
             
-            score += inv_perim_rt_mod * pow(inv_perim_ratio,inverse_frontiers.size())  ;
+            score += pow(inv_perim_rt_mod * inv_perim_ratio,1)  ;
 #ifdef COST_VEC_PRINT   
             std::cout << " Perim Ratio Contribution: " << inv_perim_rt_mod * inv_perim_ratio;
 #endif
         }
+
+            double hole_mod = -1;
+            double hole_value = pow(100, (int)(inverse_frontiers.size()) -1);
+            score += hole_mod * hole_value;
+#ifdef COST_VEC_PRINT   
+            std::cout << " Hole count Contribution " << hole_mod * hole_value;
+#endif
 
 
 
@@ -433,6 +454,12 @@ std::pair<int,int> Agent::determineAction(){
 
         if(missed_spots.size() == 0){ //fully explored
             std::cout <<"DONE!" << std::endl;
+            std::cout << "Steps taken: " << Agent::step_counter << std::endl;
+            for(auto &kv_name_grid: *(this->certainty_grids)){
+                if(kv_name_grid.first == BASE) continue;
+                std::cout << kv_name_grid.first << " located at or about " << kv_name_grid.second.getSignalBounds().getCentre().x << " , " << kv_name_grid.second.getSignalBounds().getCentre().y << std::endl;
+                std::cout << "Likelihood area: " << kv_name_grid.second.getSignalBounds().getArea() << std::endl;
+            }
             cv::waitKey(0);
             exit(0);
         }//else find 
@@ -497,6 +524,7 @@ std::pair<int,int> Agent::moveToPosition(std::pair<int,int> pos){
     this->coords = interpolated_pos;
     // this->certainty_grid.at<uint8_t>(this->coords.second, this->coords.first) = scanned;
     this->coord_history.push_back(this->coords);
+    Agent::step_counter++;
 
     return interpolated_pos;
 }
@@ -512,6 +540,38 @@ std::pair<int,int> Agent::getCoords(){
 }
 
 
-cv::Mat Agent::getCertGrid(){
-    return this->certainty_grids->at(BASE).getLikelihood();
+cv::Mat Agent::getMap(){
+    return this->certainty_grids->at(MAP).getLikelihood();
+}
+
+cv::Mat Agent::getSignalLocations() {
+    cv::Mat confirmed = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
+    cv::Mat temp;
+    for(auto &kv_name_grid: *(this->certainty_grids)){
+        if(kv_name_grid.second.isFound() && kv_name_grid.first != BASE && kv_name_grid.first != MAP){
+            temp = kv_name_grid.second.getLikelihood().clone();
+            cv::cvtColor(temp, temp, cv::COLOR_GRAY2BGR);
+            cv::imshow(kv_name_grid.first+" coloured", temp);
+            cv::waitKey(0);
+
+            // cv::cvtColor(temp, temp, cv::COLOR_BGR2HSV);
+            // srand((unsigned int)(time(0)));
+            std::hash<std::string> colour_name_hasher;
+            uint hash_colour = colour_name_hasher(kv_name_grid.first);
+            int colour1 = hash_colour%255;
+            int colour2 = (hash_colour/1000)%255;
+            int colour3 = (hash_colour/1000000)%255;
+
+            temp.setTo(cv::Scalar(colour1, colour2, colour3), temp);
+            // cv::cvtColor(temp, temp, cv::COLOR_HSV2BGR);
+            cv::imshow(kv_name_grid.first+" coloured", temp);
+            cv::waitKey(0);
+
+            cv::bitwise_or(confirmed, temp, confirmed);
+            
+        }
+
+        
+    }
+    return confirmed;
 }

@@ -9,12 +9,12 @@
 
 int main (int argc, char* argv[]){
     //seed the random number generator
-    srand(time(0));
+    srand((unsigned int)(time(0)));
     int field_x_width = 300;
     int field_y_length = 300;
-    int num_sources = 2;
+    int num_sources = 10;
     int std_dev_noise = 3;
-    int max_range = 30;
+    int max_range = 30; 
     int speed = 30;
     int bearing = 90;
 
@@ -27,7 +27,7 @@ int main (int argc, char* argv[]){
 
     // cv::circle(image2, cv::Point(150,150), 50, cv::Scalar(255), -1);
 
-    // cv::bitwise_not(image2, image2);
+    // cv::bitwise_not(image2, image2); 
     // cv::bitwise_and(image,image2, image);
     
 
@@ -42,8 +42,8 @@ int main (int argc, char* argv[]){
 
 
     Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
-    Agent a1 = Agent("Drone1", 0 , 0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
-    Agent a2 = Agent("Drone2", 299 ,299, field_x_width, field_y_length, max_range,speed, &certainty_grids);
+    Agent a1 = Agent("Drone1", 0 , 10, field_x_width, field_y_length, max_range,speed, &certainty_grids);
+    Agent a2 = Agent("Drone2", 10 ,0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
 
     
 
@@ -71,7 +71,7 @@ int main (int argc, char* argv[]){
     cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
         
     cv::imshow("map", map);
-    cv::waitKey(10);
+    cv::waitKey(0);
 
     int counter = 0;
 
@@ -80,23 +80,25 @@ int main (int argc, char* argv[]){
         
 
         //plot a1 
-
+        counter++;
         std::pair<int,int> a1_curr = a1.getCoords();
         std::cout << "Drone1 at: " << a1_curr.first << "," << a1_curr.second << std::endl;
         a1.updateCertainty(f);    
         std::pair<int,int> a1_dest = a1.determineAction();
         a1_dest = a1.moveToPosition(a1_dest);
+        a1.updateMap();
 
 
         cv::line(map, a1.pair2Point(a1_dest), a1.pair2Point(a1_curr),cv::Scalar(0,255,0));
         cv::circle(map, a1.pair2Point(a1_curr),2,cv::Scalar(0,255,0));
         
-        cv::Mat cert_grid = a1.getCertGrid();
+        cv::Mat cert_grid = a1.getMap();
         cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
         cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
         cv::imshow("map", img);
-        cv::waitKey(WAITKEY_DELAY);
-
+        cv::waitKey(0);
+        cv::imshow("locations", a1.getSignalLocations());
+        cv::waitKey(0);
 
         //plot a2
         std::pair<int,int> a2_curr = a2.getCoords();
@@ -104,14 +106,17 @@ int main (int argc, char* argv[]){
         a2.updateCertainty(f);    
         std::pair<int,int> a2_dest = a2.determineAction();
         a2_dest = a2.moveToPosition(a2_dest);
+        a2.updateMap();
 
         cv::line(map, a2.pair2Point(a2_dest), a2.pair2Point(a2_curr),cv::Scalar(0,0,255));
         cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
-        cert_grid = a2.getCertGrid();
+        cert_grid = a2.getMap();
         cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
         cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
         cv::imshow("map", img);
-        cv::waitKey(WAITKEY_DELAY);
+        cv::waitKey(0);
+        cv::imshow("locations", a2.getSignalLocations());
+        cv::waitKey(0);
 
 
 

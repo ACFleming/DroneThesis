@@ -54,7 +54,7 @@ Grid::Grid(){
 }
 
 
-Grid::Grid(int field_x_width, int field_y_length){
+Grid::Grid(int field_x_width, int field_y_length, int value){
 
     Grid::field_x_width = field_x_width;
     Grid::field_y_length = field_y_length;
@@ -62,7 +62,7 @@ Grid::Grid(int field_x_width, int field_y_length){
     this->signal_ring = Ring();
     this->signal_likelihood = cv::Mat(Grid::field_y_length, Grid::field_x_width, CV_8UC1, cv::Scalar(unknown));
     this->signal_bounds = BoundingPoints();
-    this->found = false;
+    this->found = true;
 
 }
 
@@ -80,6 +80,10 @@ Grid::~Grid() {
     
 }
 
+void Grid::markPoint(std::pair<int,int> point, int value){
+    this->signal_likelihood.at<uint8_t>(cv::Point2i(point.first, point.second)) = value;
+}
+
 void Grid::prepareForUpdate(std::pair<int, int> point, int range){
     this->signal_ring = Ring();
     this->updated = false;
@@ -93,7 +97,7 @@ void Grid::receiveMeasurement(double measurement) {
     
     std::cout << this->name << " @ dist " << measurement << std::endl;
     std::cout << "Measured from: " << this->measurement_point.first << "," << this->measurement_point.second << std::endl; 
-    this->signal_ring = Ring(this->field_x_width, this->field_y_length, this->measurement_point.first, this->measurement_point.second,measurement, 15, name );
+    this->signal_ring = Ring(this->field_x_width, this->field_y_length, this->measurement_point.first, this->measurement_point.second,measurement, 20, name );
     this->signal_ring.drawRing();
     this->updated = true;
 
@@ -105,7 +109,7 @@ void Grid::updateCertainty(){
 
     cv::imshow(this->name,this->signal_likelihood );
     cv::waitKey(WAITKEY_DELAY);
-    if(!updated){ //i.e no new info  (Note: this should always trigger for the certainty grid)
+    if(!updated){ //i.e no new info  (Note: this should always trigger for base & map certainty grid)
         cv::Mat inv = Grid::rangeMask(this->measurement_point, this->measurement_range, 255);
         cv::bitwise_not(inv, inv);
         cv::imshow("inv", inv);
@@ -119,13 +123,16 @@ void Grid::updateCertainty(){
     cv::imshow(this->name,this->signal_likelihood );
     cv::waitKey(WAITKEY_DELAY);
 
+    if(this->found == false){ //dont need to calculate bounding for base or map
+        BoundingPoints bp = BoundingPoints(this->signal_likelihood);
+        if(bp.getArea() >= 50) this->signal_bounds = bp;
 
-    this->signal_bounds = BoundingPoints(this->signal_likelihood);
-
-    if(this->signal_bounds.getArea() < 200){
-        this->found = true;
-        std::cout << "Signal found at or near: " << this->signal_bounds.getCentre().x  << "," << this->signal_bounds.getCentre().y << std::endl;
+        if(this->signal_bounds.getArea() < 400){
+            this->found = true;
+            std::cout << "Signal found at or near: " << this->signal_bounds.getCentre().x  << "," << this->signal_bounds.getCentre().y << std::endl;
+        }  
     }
+
 
 
 

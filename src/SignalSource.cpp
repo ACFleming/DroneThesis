@@ -5,7 +5,7 @@ SignalSource::SignalSource(int field_width, int field_length) {
 
     this->x_coord= std::rand() % field_width;
     this->y_coord = std::rand() % field_length;
-    this->id = this->randomString(8);
+    this->id = this->randomString(6);
     std::cout << "ID: " << this->id << " X: " << this->x_coord << " Y: " << this->y_coord << std::endl;
 
 }
@@ -32,7 +32,7 @@ std::string SignalSource::getId() {
 
 std::string SignalSource::randomString(std::size_t length)
 {
-    const std::string CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    const std::string CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 
     std::random_device random_device;
     std::mt19937 generator(random_device());

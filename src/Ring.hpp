@@ -6,6 +6,7 @@
 #include <vector>
 #include <opencv2/opencv.hpp>
 
+#define NO_OP [](){}()
 
 
 class Ring

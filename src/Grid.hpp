@@ -13,11 +13,14 @@
 #define WAITKEY_DELAY 1
 
 #define BASE "base_certainty"
+#define MAP "map_of_grid"
+#define LOCATIONS "locations_of_sources"
 
 enum grid_vals{
     empty = 0,
     searching = 100,
-    unknown = 200
+    unknown = 200,
+    occupied = 255
 };
 
 
@@ -39,15 +42,19 @@ private:
     bool updated;
     bool found;
 
+    
+
 
 
 
 
 public:
     Grid();
-    Grid(int field_x_width, int field_y_length);
+    Grid(int field_x_width, int field_y_length, int value);
     Grid(std::string name, cv::Mat base_certainty);
     ~Grid();
+
+    void markPoint(std::pair<int,int> point, int value);
 
     void prepareForUpdate(std::pair<int,int> point, int range);
 
