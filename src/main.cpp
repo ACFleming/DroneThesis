@@ -9,14 +9,14 @@
 
 int main (int argc, char* argv[]){
     //seed the random number generator
-    srand((unsigned int)(time(0)));
+    srand((unsigned int)(13));
     int field_x_width = 300;
     int field_y_length = 300;
     int num_sources = 10;
     int std_dev_noise = 5;
-    int max_range = 40; 
-    int speed = 40;
-    int bearing = 90;
+    int max_range = 30; 
+    int speed = 30;
+
 
     std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
 
@@ -42,8 +42,8 @@ int main (int argc, char* argv[]){
 
 
     Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
-    Agent a1 = Agent("Drone1", 0 , 20, field_x_width, field_y_length, max_range,speed, &certainty_grids);
-    Agent a2 = Agent("Drone2", 20 ,0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
+    Agent a1 = Agent("Drone1", 0 , 0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
+    Agent a2 = Agent("Drone2", 299 ,299, field_x_width, field_y_length, max_range,speed, &certainty_grids);
 
     
 

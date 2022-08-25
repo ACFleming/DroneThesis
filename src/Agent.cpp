@@ -1,8 +1,6 @@
 #include "Agent.hpp"
 
 
-#define COST_VEC_PRINT
-
 
 int Agent::step_counter = 0;
 
@@ -159,10 +157,10 @@ std::pair<int,int> Agent::determineAction(){
     this->frontiers = Grid::getImageFrontiers(seen);
 
 
-
+#ifdef SHOW_IMG
     cv::imshow("seen", seen);
     cv::waitKey(WAITKEY_DELAY);
-
+#endif
 
 
 
@@ -226,10 +224,11 @@ std::pair<int,int> Agent::determineAction(){
     std::cout << "total frontiers: " << this->frontiers.size() << " prioritised frontiers: " << priority_frontiers.size() << std::endl;
     
     
-
+#ifdef SHOW_IMG
     cv::imshow("Filtered Frontiers", priority_img);
-
-    // cv::waitKey(0);
+    cv::waitKey(WAITKEY_DELAY);
+#endif
+    
 
 
 
@@ -272,9 +271,10 @@ std::pair<int,int> Agent::determineAction(){
 #endif
 
         cv::bitwise_or(seen, this->rangeMask(f.x, f.y, searching), new_cells);  
+#ifdef SHOW_IMG
         cv::imshow("new_cells", new_cells);
         cv::waitKey(WAITKEY_DELAY);
-
+#endif
 
 
         double old_scanned_count = cv::countNonZero(seen);
@@ -328,10 +328,10 @@ std::pair<int,int> Agent::determineAction(){
             h.push_back(hull_points);
             cv::drawContours(hull_img, h, -1, cv::Scalar(255,0,0));
 
-
+#ifdef SHOW_IMG
             cv::imshow("hull_img", hull_img);
             cv::waitKey(WAITKEY_DELAY);
-
+#endif
             double area_ratio = ctr_area/hull_area;
             
             double perim_ratio = ctr_perim/hull_perim;
@@ -361,8 +361,10 @@ std::pair<int,int> Agent::determineAction(){
         cv::Mat inverse(new_cells.size(), CV_8UC1);
         cv::threshold(new_cells, inverse, searching-1, 255, cv::THRESH_BINARY);
         cv::bitwise_not(inverse, inverse);
+#ifdef SHOW_IMG
         cv::imshow("inverse", inverse );
         cv::waitKey(WAITKEY_DELAY);
+#endif
 
 
 
@@ -398,9 +400,10 @@ std::pair<int,int> Agent::determineAction(){
                 inv_h.push_back(inv_hull_points);
                 cv::drawContours(inv_hull_img, inv_h, -1, cv::Scalar(255,0,0));
 
-
+#ifdef SHOW_IMG
                 cv::imshow("inv_hull_img", inv_hull_img);
                 cv::waitKey(WAITKEY_DELAY);
+#endif
             }
 
 
@@ -482,9 +485,10 @@ std::pair<int,int> Agent::determineAction(){
     std::cout <<  "BEST! " << "Point:" << best_point.x <<"," << best_point.y << " Score: " << best_score << std::endl;
     cv::Mat best = this->certainty_grids->at(MAP).getLikelihood().clone();
     cv::circle(best, best_point, 3, cv::Scalar(255));
+#ifdef SHOW_IMG
     cv::imshow("best", best);
     cv::waitKey(WAITKEY_DELAY);
-
+#endif
 
     return this->point2Pair(best_point);
 

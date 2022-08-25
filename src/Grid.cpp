@@ -28,9 +28,10 @@ std::vector<std::vector<cv::Point2i>> Grid::getImageFrontiers(cv::Mat frontier_i
         cv::drawContours(approx_img, ctr_approx, i, cv::Scalar(255,255,255));
     }
 
-    
+#ifdef SHOW_IMG
     cv::imshow("OCC approx map", approx_img);
     cv::waitKey(WAITKEY_DELAY);
+#endif
 
   
     return ctr_approx;

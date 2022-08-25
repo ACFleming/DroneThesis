@@ -1,48 +1,48 @@
 #include "Ring.hpp"
 
-cv::Mat Ring::intersectRings(std::vector<Ring> other_rings){
-    cv::Mat ret = cv::Mat::zeros(other_rings[0].y_length, other_rings[0].x_width, CV_8UC1)*255;
-    for(int i = 0; i  < other_rings.size(); i++){
-        other_rings[i].drawRing();
-        cv::bitwise_or(ret, other_rings[i].getCanvas(), ret);
-    }
-    return ret;
-}
+// cv::Mat Ring::intersectRings(std::vector<Ring> other_rings){
+//     cv::Mat ret = cv::Mat::zeros(other_rings[0].y_length, other_rings[0].x_width, CV_8UC1)*255;
+//     for(int i = 0; i  < other_rings.size(); i++){
+//         other_rings[i].drawRing();
+//         cv::bitwise_or(ret, other_rings[i].getCanvas(), ret);
+//     }
+//     return ret;
+// }
 
 
-std::vector<std::pair<bool, cv::Point2i>> Ring::centroidOfIntersections(cv::Mat intersection){
-    std::vector<std::pair<bool, cv::Point2i>> centroids;
-    cv::Mat img = cv::Mat::zeros(intersection.size(),CV_8UC3);
+// std::vector<std::pair<bool, cv::Point2i>> Ring::centroidOfIntersections(cv::Mat intersection){
+//     std::vector<std::pair<bool, cv::Point2i>> centroids;
+//     cv::Mat img = cv::Mat::zeros(intersection.size(),CV_8UC3);
 
-    std::vector<std::vector<cv::Point2i>> intersect_ctrs;
-    std::vector<cv::Vec4i> ctr_hierarchy;
-    cv::findContours(intersection,intersect_ctrs, ctr_hierarchy, cv::RETR_LIST,cv::CHAIN_APPROX_SIMPLE);
+//     std::vector<std::vector<cv::Point2i>> intersect_ctrs;
+//     std::vector<cv::Vec4i> ctr_hierarchy;
+//     cv::findContours(intersection,intersect_ctrs, ctr_hierarchy, cv::RETR_LIST,cv::CHAIN_APPROX_SIMPLE);
 
-    for(int i = 0; i < intersect_ctrs.size(); i++){
-        cv::drawContours(img, intersect_ctrs, i, cv::Scalar(100, 255-30*(i+1), 30*i+150));
-        cv::imshow("img", img);
-        cv::waitKey(0);
-    }
+//     for(int i = 0; i < intersect_ctrs.size(); i++){
+//         cv::drawContours(img, intersect_ctrs, i, cv::Scalar(100, 255-30*(i+1), 30*i+150));
+//         cv::imshow("img", img);
+//         cv::waitKey(0);
+//     }
 
 
-    for(auto &c: intersect_ctrs){
-        // cv::Rect r = cv::boundingRect(c);
-        // cv::Point2i p = cv::Point2i((r.br().x + r.tl().x)/2, (r.br().y+r.tl().y)/2);
-        // centroids.push_back(p);
-        cv::Moments M = cv::moments(c);
-        if(M.m00 > 0){
-            cv::Point2i p = cv::Point2i(M.m10/M.m00, M.m01/M.m00);
-            if(intersection.at<uint8_t>(p) > 0){
-                centroids.push_back(std::make_pair(true,p));
-            }else{
-                centroids.push_back(std::make_pair(false,p));
-            }
-        }
+//     for(auto &c: intersect_ctrs){
+//         // cv::Rect r = cv::boundingRect(c);
+//         // cv::Point2i p = cv::Point2i((r.br().x + r.tl().x)/2, (r.br().y+r.tl().y)/2);
+//         // centroids.push_back(p);
+//         cv::Moments M = cv::moments(c);
+//         if(M.m00 > 0){
+//             cv::Point2i p = cv::Point2i(M.m10/M.m00, M.m01/M.m00);
+//             if(intersection.at<uint8_t>(p) > 0){
+//                 centroids.push_back(std::make_pair(true,p));
+//             }else{
+//                 centroids.push_back(std::make_pair(false,p));
+//             }
+//         }
 
         
-    }
-    return centroids;
-}
+//     }
+//     return centroids;
+// }
 
 
 
