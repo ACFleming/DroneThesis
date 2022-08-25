@@ -13,9 +13,9 @@ int main (int argc, char* argv[]){
     int field_x_width = 300;
     int field_y_length = 300;
     int num_sources = 10;
-    int std_dev_noise = 3;
-    int max_range = 30; 
-    int speed = 30;
+    int std_dev_noise = 5;
+    int max_range = 40; 
+    int speed = 40;
     int bearing = 90;
 
     std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
@@ -42,8 +42,8 @@ int main (int argc, char* argv[]){
 
 
     Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
-    Agent a1 = Agent("Drone1", 0 , 10, field_x_width, field_y_length, max_range,speed, &certainty_grids);
-    Agent a2 = Agent("Drone2", 10 ,0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
+    Agent a1 = Agent("Drone1", 0 , 20, field_x_width, field_y_length, max_range,speed, &certainty_grids);
+    Agent a2 = Agent("Drone2", 20 ,0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
 
     
 
@@ -96,9 +96,9 @@ int main (int argc, char* argv[]){
         cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
         cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
         cv::imshow("map", img);
-        cv::waitKey(0);
+        cv::waitKey(1);
         cv::imshow("locations", a1.getSignalLocations());
-        cv::waitKey(0);
+        cv::waitKey(1);
 
         //plot a2
         std::pair<int,int> a2_curr = a2.getCoords();
@@ -114,9 +114,9 @@ int main (int argc, char* argv[]){
         cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
         cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
         cv::imshow("map", img);
-        cv::waitKey(0);
+        cv::waitKey(1);
         cv::imshow("locations", a2.getSignalLocations());
-        cv::waitKey(0);
+        cv::waitKey(1);
 
 
 

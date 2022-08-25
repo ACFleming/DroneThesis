@@ -107,20 +107,21 @@ void Grid::receiveMeasurement(double measurement) {
 
 void Grid::updateCertainty(){
 
-    cv::imshow(this->name,this->signal_likelihood );
+    // cv::imshow(this->name,this->signal_likelihood );
     cv::waitKey(WAITKEY_DELAY);
     if(!updated){ //i.e no new info  (Note: this should always trigger for base & map certainty grid)
         cv::Mat inv = Grid::rangeMask(this->measurement_point, this->measurement_range, 255);
         cv::bitwise_not(inv, inv);
-        cv::imshow("inv", inv);
+        // cv::imshow("inv", inv);
+        // cv::waitKey(WAITKEY_DELAY);
         cv::bitwise_and(inv, this->signal_likelihood,this->signal_likelihood);
     }else{
-        cv::imshow("new measurement", this->signal_ring.getCanvas());
-        cv::waitKey(WAITKEY_DELAY);
+        // cv::imshow("new measurement", this->signal_ring.getCanvas());
+        // cv::waitKey(WAITKEY_DELAY);
         cv::bitwise_and(this->signal_likelihood, this->signal_ring.getCanvas(), this->signal_likelihood);
 
     }
-    cv::imshow(this->name,this->signal_likelihood );
+    // cv::imshow(this->name,this->signal_likelihood );
     cv::waitKey(WAITKEY_DELAY);
 
     if(this->found == false){ //dont need to calculate bounding for base or map

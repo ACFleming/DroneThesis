@@ -252,7 +252,7 @@ std::pair<int,int> Agent::determineAction(){
         
 
         if(signal_frontiers.count(f) > 0 ){ //if its a signal frontier point;
-            score += 100;
+            score += 50;
         }
 
 
@@ -262,9 +262,9 @@ std::pair<int,int> Agent::determineAction(){
             score = LONG_MIN;
         }
 
-        double dist_mod = -0.01;
+        double dist_mod = -0.05;
         
-        score += dist_mod * (dist-10) * (dist-2*this->speed);
+        score += dist_mod * (dist-(this->speed)/2) * (dist-2*this->speed);
         // score += dist_mod*exp(dist/this->scan_radius);
 
 #ifdef COST_VEC_PRINT
@@ -288,7 +288,7 @@ std::pair<int,int> Agent::determineAction(){
 // #endif
 //             score -= 1000;
 //         }
-        double scanned_mod = 1*100;
+        double scanned_mod = 3*100;
 
 
 
@@ -480,7 +480,7 @@ std::pair<int,int> Agent::determineAction(){
 
 
     std::cout <<  "BEST! " << "Point:" << best_point.x <<"," << best_point.y << " Score: " << best_score << std::endl;
-    cv::Mat best = this->certainty_grids->at(BASE).getLikelihood().clone();
+    cv::Mat best = this->certainty_grids->at(MAP).getLikelihood().clone();
     cv::circle(best, best_point, 3, cv::Scalar(255));
     cv::imshow("best", best);
     cv::waitKey(WAITKEY_DELAY);
@@ -551,8 +551,8 @@ cv::Mat Agent::getSignalLocations() {
         if(kv_name_grid.second.isFound() && kv_name_grid.first != BASE && kv_name_grid.first != MAP){
             temp = kv_name_grid.second.getLikelihood().clone();
             cv::cvtColor(temp, temp, cv::COLOR_GRAY2BGR);
-            cv::imshow(kv_name_grid.first+" coloured", temp);
-            cv::waitKey(0);
+            // cv::imshow(kv_name_grid.first+" coloured", temp);
+            // cv::waitKey(0);
 
             // cv::cvtColor(temp, temp, cv::COLOR_BGR2HSV);
             // srand((unsigned int)(time(0)));
@@ -564,8 +564,8 @@ cv::Mat Agent::getSignalLocations() {
 
             temp.setTo(cv::Scalar(colour1, colour2, colour3), temp);
             // cv::cvtColor(temp, temp, cv::COLOR_HSV2BGR);
-            cv::imshow(kv_name_grid.first+" coloured", temp);
-            cv::waitKey(0);
+            // cv::imshow(kv_name_grid.first+" coloured", temp);
+            // cv::waitKey(0);
 
             cv::bitwise_or(confirmed, temp, confirmed);
             
