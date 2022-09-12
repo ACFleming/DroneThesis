@@ -58,14 +58,10 @@ std::vector<std::pair<std::string,double>> Field::getMeasurements(std::pair<int,
     return distances;
 }
 
-std::string Field::logField() {
-    std::ofstream field_log;
-    std::string file_path = "logs/field_log.csv";
-    field_log.open(file_path);
-    field_log << "Name, x, y" << std::endl;
-    field_log << "Field Dimensions"  << "," << this->x_width << "," << this->y_length <<  std::endl;
+void Field::logField(std::ostream* output_file) {
+    *output_file << "Name, x, y" << std::endl;
+    *output_file << "Field Dimensions"  << "," << this->x_width << "," << this->y_length <<  std::endl;
     for(auto &source: this->signal_sources){
-        field_log << source.getId() << "," << source.getCoords().first << "," << source.getCoords().second << std::endl;
+        *output_file << source.getId() << "," << source.getCoords().first << "," << source.getCoords().second << std::endl;
     }
-    return file_path;
 }

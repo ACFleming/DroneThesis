@@ -28,7 +28,7 @@ private:
     int scan_radius;
     int speed;
 
-
+    
     
 
 
@@ -46,6 +46,8 @@ public:
     Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius, int speed, std::map<std::string, Grid> *certainty_grids);
     ~Agent();
     static int step_counter;
+
+    std::ostream *output;
 
     std::pair<int,int> determineAction();
     std::pair<int,int> moveToPosition(std::pair<int,int> pos) ;
@@ -71,12 +73,12 @@ public:
     void updateMap();
     
 
-
+    
 
     int run();
     
     std::pair<int,int> getCoords();
-    std::string logAgent();
+    void logAgent();
     void showOccGrid();
     cv::Mat getMap();
 

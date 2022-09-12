@@ -11,7 +11,7 @@ std::vector<std::vector<cv::Point2i>> Grid::getImageFrontiers(cv::Mat frontier_i
     
 
     if(contours.size() > 1){ //sorting by size. Could change this to check if the current point is inside or not, but may require point passing. 
-        std::cout << contours.size();
+        // std::cout << contours.size();
         std::sort(contours.begin(), contours.end(), [](const std::vector<cv::Point2i> &a, const std::vector<cv::Point2i> &b){ return a.size() > b.size(); });
     }
   
@@ -96,8 +96,8 @@ void Grid::prepareForUpdate(std::pair<int, int> point, int range){
 
 void Grid::receiveMeasurement(double measurement) {
     
-    std::cout << this->name << " @ dist " << measurement << std::endl;
-    std::cout << "Measured from: " << this->measurement_point.first << "," << this->measurement_point.second << std::endl; 
+    // std::cout << this->name << " @ dist " << measurement << std::endl;
+    // std::cout << "Measured from: " << this->measurement_point.first << "," << this->measurement_point.second << std::endl; 
     this->signal_ring = Ring(this->field_x_width, this->field_y_length, this->measurement_point.first, this->measurement_point.second,measurement, 20, name );
     this->signal_ring.drawRing();
     this->updated = true;
@@ -108,10 +108,13 @@ void Grid::receiveMeasurement(double measurement) {
 
 void Grid::updateCertainty(){
 
+
+    if(found && name!=BASE && name != MAP ) return;
+
     cv::Mat temp = this->signal_likelihood.clone();
     // cv::imshow(this->name,this->signal_likelihood );
     cv::waitKey(WAITKEY_DELAY);
-    if(!updated && (!found || name==BASE || name==MAP)){ //i.e no new info  (Note: this should always trigger for base & map certainty grid)
+    if(!updated){ //i.e no new info  (Note: this should always trigger for base & map certainty grid)
         cv::Mat inv = Grid::rangeMask(this->measurement_point, this->measurement_range, 255);
         cv::bitwise_not(inv, inv);
         // cv::imshow("inv", inv);
@@ -133,9 +136,9 @@ void Grid::updateCertainty(){
             this->signal_likelihood = temp;           
         } 
 
-        if(this->signal_bounds.getArea() < 400){
+        if(this->signal_bounds.getArea() < 200){
             this->found = true;
-            std::cout << "Signal found at or near: " << this->signal_bounds.getCentre().x  << "," << this->signal_bounds.getCentre().y << std::endl;
+            // std::cout << "Signal found at or near: " << this->signal_bounds.getCentre().x  << "," << this->signal_bounds.getCentre().y << std::endl;
         }  
     }else{
         this->signal_likelihood = temp; 

@@ -39,6 +39,7 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->certainty_grids = certainty_grids;
     this->certainty_grids->insert(std::pair<std::string, Grid>(BASE,Grid(this->field_x_width, this->field_y_length, unknown)));
     this->certainty_grids->insert(std::pair<std::string, Grid>(MAP,Grid(this->field_x_width, this->field_y_length, unknown)));
+    this->output = &std::cout;
 
 
 }
@@ -115,6 +116,7 @@ void Agent::updateCertainty(Field f){
             this->certainty_grids->insert(std::pair<std::string, Grid> (m.first, Grid(m.first, this->certainty_grids->at(BASE).getLikelihood().clone())));
             this->certainty_grids->at(m.first).prepareForUpdate(this->coords, this->scan_radius);
         }
+        *this->output << "Signal name: " << "," << m.first << "," << " Signal value: " << "," << m.second << std::endl;
         this->certainty_grids->at(m.first).receiveMeasurement(m.second);
 
     }
@@ -221,7 +223,7 @@ std::pair<int,int> Agent::determineAction(){
 
 
 
-    std::cout << "total frontiers: " << this->frontiers.size() << " prioritised frontiers: " << priority_frontiers.size() << std::endl;
+    *this->output << "Total frontiers: " << "," << this->frontiers.size() << "," << " Prioritised frontiers: " << "," << priority_frontiers.size() << std::endl;
     
     
 #ifdef SHOW_IMG
@@ -236,7 +238,7 @@ std::pair<int,int> Agent::determineAction(){
 
     for(auto &f: priority_frontiers ){
 #ifdef COST_VEC_PRINT
-        std::cout << "Point: " << f.x << "," << f.y;
+        *this->output << "Point: " << f.x << "," << f.y << ",";
 #endif
         
 
@@ -246,7 +248,7 @@ std::pair<int,int> Agent::determineAction(){
         if(std::find(this->coord_history.begin(), this->coord_history.end(), this->point2Pair(f)) != this->coord_history.end()){
             double repeat_point_mod = -100000;
             score += repeat_point_mod;
-            std::cout << " Repeat point!";
+            *this->output << " Repeat point!";
         }
         
 
@@ -267,7 +269,7 @@ std::pair<int,int> Agent::determineAction(){
         // score += dist_mod*exp(dist/this->scan_radius);
 
 #ifdef COST_VEC_PRINT
-        std::cout << " Dist contribution: " << dist_mod * dist;
+        *this->output << "Dist:" << "," << dist << "," << " Dist contribution: " << "," << dist_mod * dist << ",";
 #endif
 
         cv::bitwise_or(seen, this->rangeMask(f.x, f.y, searching), new_cells);  
@@ -282,19 +284,13 @@ std::pair<int,int> Agent::determineAction(){
 
         double new_scanned_ratio = (new_scanned_count-old_scanned_count)/old_scanned_count;
         
-//         if(new_scanned_count-old_scanned_count < 1){
-// #ifdef COST_VEC_PRINT
-//             std::cout << " Lack of information gain Contribution: "<< -1000 << std::endl;
-// #endif
-//             score -= 1000;
-//         }
         double scanned_mod = 1.5*100;
 
 
 
         score += scanned_mod * new_scanned_ratio;
 #ifdef COST_VEC_PRINT
-        std::cout << " New Scanned Cells Contribution: " <<  scanned_mod  *new_scanned_ratio;
+        *this->output << " New scanned ratio: "<<  "," << new_scanned_ratio << "," << " New Scanned Cells Contribution: " <<  scanned_mod  *new_scanned_ratio << ",";
 #endif
 
 
@@ -317,7 +313,7 @@ std::pair<int,int> Agent::determineAction(){
             double hull_area = cv::contourArea(hull_points);
             double hull_perim = cv::arcLength(hull_points, true);
             if(hull_area == 0){
-                std::cout << "HUH?" << std::endl;
+                // *this->output << "HUH?" << std::endl;
                 hull_area = 1;
             }
 
@@ -340,14 +336,14 @@ std::pair<int,int> Agent::determineAction(){
 
             score += area_rt_mod * area_ratio;
 #ifdef COST_VEC_PRINT
-            std::cout << " Area Ratio Contribution: " << area_rt_mod * area_ratio;
+            *this->output << "Area ratio: " << area_ratio << "," << " Area Ratio Contribution: " << area_rt_mod * area_ratio << ",";
 #endif
-            double perim_rt_mod = -0*100;
+//             double perim_rt_mod = -0*100;
 
-            score += perim_rt_mod * perim_ratio;
-#ifdef COST_VEC_PRINT   
-            std::cout << " Perim Ratio Contribution: " << perim_rt_mod * perim_ratio;
-#endif
+//             score += perim_rt_mod * perim_ratio;
+// #ifdef COST_VEC_PRINT   
+//             *this->output << " Perim Ratio Contribution: " << perim_rt_mod * perim_ratio;
+// #endif
 
         }
 
@@ -389,7 +385,7 @@ std::pair<int,int> Agent::determineAction(){
                 inv_hull_area += cv::contourArea(inv_hull_points);
                 inv_hull_perim += cv::arcLength(inv_hull_points, true);
                 if(inv_hull_area == 0){
-                    std::cout << "HUH?" << std::endl;
+                    // *this->output << "HUH?" << std::endl;
                     inv_hull_area = 1;
                 }
 
@@ -417,7 +413,7 @@ std::pair<int,int> Agent::determineAction(){
             
             score += pow(inv_perim_rt_mod * inv_perim_ratio,1)  ;
 #ifdef COST_VEC_PRINT   
-            std::cout << " Perim Ratio Contribution: " << inv_perim_rt_mod * inv_perim_ratio;
+            *this->output << "Inverse perim ratio: " << "," << inv_perim_ratio << "," << " Perim Ratio Contribution: " << inv_perim_rt_mod * inv_perim_ratio << ",";
 #endif
         }
 
@@ -425,7 +421,7 @@ std::pair<int,int> Agent::determineAction(){
             double hole_value = pow(100, (int)(inverse_frontiers.size()) -1);
             score += hole_mod * hole_value;
 #ifdef COST_VEC_PRINT   
-            std::cout << " Hole count Contribution " << hole_mod * hole_value;
+            *this->output << "Hole count: " << "," << inverse_frontiers.size() << "," << " Hole count Contribution " << hole_mod * hole_value << ",";
 #endif
 
 
@@ -437,7 +433,7 @@ std::pair<int,int> Agent::determineAction(){
 
 
 #ifdef COST_VEC_PRINT
-        std::cout  << " Final Score: " << score <<  std::endl;  
+        *this->output  << " Final Score: " << "," << score <<  std::endl;  
 #endif      
         if(score > best_score){
             best_score = score;
@@ -450,22 +446,15 @@ std::pair<int,int> Agent::determineAction(){
     }
 
     if(best_score < -90000){ //repeat point
-        std::cout << "SHOULD BE DONE!" << std::endl;
+        // *this->output << "SHOULD BE DONE!" << std::endl;
         std::vector<cv::Point2i> missed_spots;
 
         cv::findNonZero(this->certainty_grids->at(BASE).getLikelihood(),missed_spots);
 
         if(missed_spots.size() == 0){ //fully explored
-            std::cout <<"DONE!" << std::endl;
-            std::cout << "Steps taken: " << Agent::step_counter << std::endl;
-            for(auto &kv_name_grid: *(this->certainty_grids)){
-                if(kv_name_grid.first == BASE || kv_name_grid.first == MAP ) continue;
-                std::cout << kv_name_grid.first << " located at or about " << kv_name_grid.second.getSignalBounds().getCentre().x << " , " << kv_name_grid.second.getSignalBounds().getCentre().y << std::endl;
-                std::cout << "Likelihood area: " << kv_name_grid.second.getSignalBounds().getArea() << std::endl;
-            }
-            cv::waitKey(0);
-            exit(0);
-        }//else find 
+            // *this->output <<"DONE!" << std::endl;
+            return std::make_pair(-1,-1);
+        }
 
         double missed_p_dist = this->field_x_width*this->field_x_width + this->field_y_length*this->field_y_length;
         for(auto &p: missed_spots){
@@ -482,7 +471,7 @@ std::pair<int,int> Agent::determineAction(){
 
 
 
-    std::cout <<  "BEST! " << "Point:" << best_point.x <<"," << best_point.y << " Score: " << best_score << std::endl;
+    *this->output <<  "BEST Point:" << "," << best_point.x << "," << best_point.y << "," << " Score: " << "," << best_score << std::endl;
     cv::Mat best = this->certainty_grids->at(MAP).getLikelihood().clone();
     cv::circle(best, best_point, 3, cv::Scalar(255));
 #ifdef SHOW_IMG
@@ -517,7 +506,7 @@ std::pair<int,int> Agent::moveToPosition(std::pair<int,int> pos){
 
     
 
-    std::cout << "Interpolation factor: " << factor << " Interpolated point: " << interpolated_pos.first << "," << interpolated_pos.second << std::endl;
+    // *this->output << "Interpolation factor: " << factor << " Interpolated point: " << interpolated_pos.first << "," << interpolated_pos.second << std::endl;
 
 
     interpolated_pos.first = this->clipRange(0, this->field_x_width, interpolated_pos.first);
@@ -567,7 +556,7 @@ cv::Mat Agent::getSignalLocations() {
             int colour3 = (hash_colour/1000000)%200+55;
 
             temp.setTo(cv::Scalar(colour1, colour2, colour3), temp);
-            // cv::cvtColor(temp, temp, cv::COLOR_HSV2BGR);
+            cv::cvtColor(temp, temp, cv::COLOR_HSV2BGR);
             // cv::imshow(kv_name_grid.first+" coloured", temp);
             // cv::waitKey(0);
 
@@ -579,3 +568,15 @@ cv::Mat Agent::getSignalLocations() {
     }
     return confirmed;
 }
+
+void Agent::logAgent() {
+    
+    *this->output << "Steps taken: " << "," << Agent::step_counter << std::endl;
+    for(auto &kv_name_grid: *(this->certainty_grids)){
+        if(kv_name_grid.first == BASE || kv_name_grid.first == MAP ) continue;
+        *this->output << kv_name_grid.first << ","  << kv_name_grid.second.getSignalBounds().getCentre().x << " , " << kv_name_grid.second.getSignalBounds().getCentre().y << std::endl;
+        *this->output << "Likelihood area: " << "," << kv_name_grid.second.getSignalBounds().getArea() << std::endl;
+    }
+}
+
+

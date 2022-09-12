@@ -29,7 +29,7 @@ public:
     ~Field();
     std::vector<SignalSource> getSources();
     std::vector<std::pair<std::string,double>> getMeasurements(std::pair<int,int> pos);
-    std::string logField();
+    void logField(std::ostream* output_file);
 
     
 };
