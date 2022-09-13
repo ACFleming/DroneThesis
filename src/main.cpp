@@ -18,6 +18,7 @@ int main (int argc, char* argv[]){
     // output_test.close();
     // std::cout << std::filesystem::current_path() << std::endl << std::endl;
     
+    std::string type_of_test = std::string("triple");
 
 
     int num_tests = 100;
@@ -25,16 +26,16 @@ int main (int argc, char* argv[]){
     int max_sources = 5;
     for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){
         for (int source_count = 0; source_count < max_sources; source_count++){
-
+                std::cout << "Seed: " << test << " Num sources: " << source_count << " ***********************" << std::endl;
                 std::ofstream output_field;
-                std::string file_path_field = std::string("single") + std::string("_agent_logs/field_log") + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".csv";
+                std::string file_path_field = type_of_test + std::string("_agent_logs/field_log") + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".csv";
                 output_field.open(file_path_field);
                 std::ofstream output_agent;
-                std::string file_path_agent = std::string("single") + std::string("_agent_logs/agent_log") + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".csv";
+                std::string file_path_agent = type_of_test + std::string("_agent_logs/agent_log") + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".csv";
                 output_agent.open(file_path_agent);
 
-                std::string file_path_map = std::string("single") + std::string("_agent_images/map") + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
-                std::string file_path_locations = std::string("single") + std::string("_agent_images/locations") + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
+                std::string file_path_map = type_of_test + std::string("_agent_images/map") + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
+                std::string file_path_locations = type_of_test + std::string("_agent_images/locations") + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
 
                 int field_x_width = 300;
                 int field_y_length = 300;
@@ -46,11 +47,13 @@ int main (int argc, char* argv[]){
                 std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
 
                 Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
-                Agent a1 = Agent("Drone1", 0 ,20, field_x_width, field_y_length, max_range,speed, &certainty_grids);
-                // Agent a2 = Agent("Drone2", 20 ,0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
+                Agent a1 = Agent("Drone1", 0 ,0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
+                Agent a2 = Agent("Drone2", 0 ,299, field_x_width, field_y_length, max_range,speed, &certainty_grids);
+                Agent a3 = Agent("Drone2", 299 ,0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
                 Agent::step_counter = 0;
                 a1.output = &output_agent;
-                // a2.output = &output_agent;
+                a2.output = &output_agent;
+                a3.output = &output_agent;
 
 
                 // RUN FUNCTION
@@ -97,26 +100,48 @@ int main (int argc, char* argv[]){
                     // cv::imshow("locations", a1.getSignalLocations());
                     // cv::waitKey(1);
 
-                    // //plot a2
-                    // std::pair<int,int> a2_curr = a2.getCoords();
-                    // std::cout << "Drone 2 at: " << a1_curr.first << "," << a1_curr.second << std::endl;
-                    // a2.updateCertainty(f);    
-                    // std::pair<int,int> a2_dest = a2.determineAction();
-                    // if(a2_dest.first == -1 ){ //exploration complete
-                    //     break;
-                    // }
-                    // a2_dest = a2.moveToPosition(a2_dest);
-                    // a2.updateMap();
+                    //plot a2
+                    std::pair<int,int> a2_curr = a2.getCoords();
+                    std::cout << "Drone 2 at: " << a2_curr.first << "," << a2_curr.second << std::endl;
+                    a2.updateCertainty(f);    
+                    std::pair<int,int> a2_dest = a2.determineAction();
+                    if(a2_dest.first == -1 ){ //exploration complete
+                        break;
+                    }
+                    a2_dest = a2.moveToPosition(a2_dest);
+                    a2.updateMap();
 
-                    // cv::line(map, a2.pair2Point(a2_dest), a2.pair2Point(a2_curr),cv::Scalar(0,0,255));
-                    // cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
-                    // cert_grid = a2.getMap();
-                    // cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
-                    // cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
-                    // // cv::imshow("map", img);
-                    // // cv::waitKey(1);
-                    // // cv::imshow("locations", a2.getSignalLocations());
-                    // // cv::waitKey(1);
+                    cv::line(map, a2.pair2Point(a2_dest), a2.pair2Point(a2_curr),cv::Scalar(0,0,255));
+                    cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
+                    cert_grid = a2.getMap();
+                    cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
+                    cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
+                    // cv::imshow("map", img);
+                    // cv::waitKey(1);
+                    // cv::imshow("locations", a2.getSignalLocations());
+                    // cv::waitKey(1);
+
+
+                    //plot a3
+                    std::pair<int,int> a3_curr = a3.getCoords();
+                    std::cout << "Drone 3 at: " << a3_curr.first << "," << a3_curr.second << std::endl;
+                    a3.updateCertainty(f);    
+                    std::pair<int,int> a3_dest = a3.determineAction();
+                    if(a3_dest.first == -1 ){ //exploration complete
+                        break;
+                    }
+                    a3_dest = a3.moveToPosition(a3_dest);
+                    a3.updateMap();
+
+                    cv::line(map, a3.pair2Point(a3_dest), a3.pair2Point(a3_curr),cv::Scalar(255,0,0));
+                    cv::circle(map, a3.pair2Point(a3_curr),2,cv::Scalar(255,0,0));
+                    cert_grid = a3.getMap();
+                    cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
+                    cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
+                                        // cv::imshow("map", img);
+                    // cv::waitKey(1);
+                    // cv::imshow("locations", a2.getSignalLocations());
+                    // cv::waitKey(1);
 
                 }
                 a1.logAgent();

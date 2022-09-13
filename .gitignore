@@ -53,4 +53,6 @@ double_agent_images/*.png
 double_agent_logs/*.txt
 single_agent_images/*.png
 single_agent_logs/*.txt
+triple_agent_images/*.png
+triple_agent_logs/*.txt
 
