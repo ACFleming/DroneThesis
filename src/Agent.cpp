@@ -149,112 +149,14 @@ void Agent::updateMap(){
 }
 
 
-std::pair<int,int> Agent::determineAction(){
- 
-
-
-    std::pair<int,int> next_position = this->coords;
-
-    
-
-
-    cv::Mat new_cells;
-    std::vector<std::vector<cv::Point2i>> new_frontiers;
-
-    double best_score = LONG_MIN;
-    cv::Point2i best_point;
-
-
-
-    cv::Mat seen;
-    cv::threshold(this->certainty_grids->at(MAP).getLikelihood(), seen,unknown-1, unknown, cv::THRESH_BINARY_INV);
-
-    this->frontiers = Grid::getImageFrontiers(seen);
-
-
-#ifdef SHOW_IMG
-    cv::imshow("seen", seen);
-    cv::waitKey(WAITKEY_DELAY);
-#endif
-
-
-
-    //need to define hash function for cv::Point set
-
-    struct point_hash {
-    inline std::size_t operator()(const cv::Point2i & v) const {
-        return v.x*31 + v.y;
-        }
-    };
-
-    
-
-    std::unordered_set<cv::Point,point_hash> signal_frontiers;
-
-    std::vector<cv::Point> priority_frontiers;
-    std::vector<cv::Point> reserve_frontiers;
-
-
-
-
-    cv::Mat priority_img = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC3);    
-    
-    //filter frontier points based on distance
-    for(auto &f_vec: this->frontiers){
-        for(auto &f: f_vec){
-            double dist = this->dist(this->coords, this->point2Pair(f));
-            int edge_root_func = (f.x)*(f.y)*(int)(this->field_x_width-1-f.x)*(int)(this->field_y_length-1-f.y);
-                
-            // int edge_root_func = (f.x)*(this->field_x_width-1-f.x)*(f.y)*(this-field_y_length-1-f.y);
-            if(dist < 2 || dist > 2*this->speed || edge_root_func == 0 || this->numberOfVisits(this->point2Pair(f)) > 1){
-                cv::circle(priority_img, f,2,cv::Scalar(255,0,255));
-                reserve_frontiers.push_back(f);
-            }else{
-                priority_frontiers.push_back(f);
-                cv::circle(priority_img, f,2,cv::Scalar(0,255,255));
-            }
-        }
-    }
-
-    //add signal bounds to the priority frontier list
-    for(auto &kv_name_grid: *(this->certainty_grids)){
-        if(kv_name_grid.second.isFound() == false){//if not found and not base
-            for(auto &p: kv_name_grid.second.getSignalBounds().getBounds()){
-                signal_frontiers.insert(p);
-                priority_frontiers.push_back(p);
-                cv::circle(priority_img, p,2,cv::Scalar(255,255,0));
-            }
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-    *this->output << "Total frontiers: " << "," << this->frontiers.size() << "," << " Prioritised frontiers: " << "," << priority_frontiers.size() << std::endl;
-    
-    
-#ifdef SHOW_IMG
-    cv::imshow("Filtered Frontiers", priority_img);
-    cv::waitKey(WAITKEY_DELAY);
-#endif
-    
-
-
-
-
-
-    for(auto &f: priority_frontiers ){
+void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::unordered_set<cv::Point,point_hash> signal_frontiers, cv::Point2i &best_point, double &best_score){
+    for(auto &f: points ){
 #ifdef COST_VEC_PRINT
         *this->output << "Point: " << f.x << "," << f.y << ",";
 #endif
         
-
+        cv::Mat new_cells;
+        std::vector<std::vector<cv::Point2i>> new_frontiers;
 
         double score = 0;
 
@@ -464,6 +366,106 @@ std::pair<int,int> Agent::determineAction(){
         
     }
 
+}
+
+
+std::pair<int,int> Agent::determineAction(){
+ 
+
+
+    std::pair<int,int> next_position = this->coords;
+
+    
+
+
+
+
+    double best_score = LONG_MIN;
+    cv::Point2i best_point = cv::Point2i(-1,-1);
+
+
+
+    cv::Mat seen;
+    cv::threshold(this->certainty_grids->at(MAP).getLikelihood(), seen,unknown-1, unknown, cv::THRESH_BINARY_INV);
+
+    this->frontiers = Grid::getImageFrontiers(seen);
+
+
+#ifdef SHOW_IMG
+    cv::imshow("seen", seen);
+    cv::waitKey(WAITKEY_DELAY);
+#endif
+
+
+
+    //need to define hash function for cv::Point set
+
+
+
+    
+
+    std::unordered_set<cv::Point,point_hash> signal_frontiers;
+
+    std::vector<cv::Point> priority_frontiers;
+    std::vector<cv::Point> reserve_frontiers;
+
+
+
+
+    cv::Mat priority_img = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC3);    
+    
+    //filter frontier points based on distance
+    for(auto &f_vec: this->frontiers){
+        for(auto &f: f_vec){
+            double dist = this->dist(this->coords, this->point2Pair(f));
+            int edge_root_func = (f.x)*(f.y)*(int)(this->field_x_width-1-f.x)*(int)(this->field_y_length-1-f.y);
+                
+            // int edge_root_func = (f.x)*(this->field_x_width-1-f.x)*(f.y)*(this-field_y_length-1-f.y);
+            if(dist < 2 || dist > 2*this->speed || edge_root_func == 0 || this->numberOfVisits(this->point2Pair(f)) > 1){
+                cv::circle(priority_img, f,2,cv::Scalar(255,0,255));
+                reserve_frontiers.push_back(f);
+            }else{
+                priority_frontiers.push_back(f);
+                cv::circle(priority_img, f,2,cv::Scalar(0,255,255));
+            }
+        }
+    }
+
+    //add signal bounds to the priority frontier list
+    for(auto &kv_name_grid: *(this->certainty_grids)){
+        if(kv_name_grid.second.isFound() == false){//if not found and not base
+            for(auto &p: kv_name_grid.second.getSignalBounds().getBounds()){
+                signal_frontiers.insert(p);
+                priority_frontiers.push_back(p);
+                cv::circle(priority_img, p,2,cv::Scalar(255,255,0));
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    *this->output << "Total frontiers: " << "," << this->frontiers.size() << "," << " Prioritised frontiers: " << "," << priority_frontiers.size() << std::endl;
+    
+    
+#ifdef SHOW_IMG
+    cv::imshow("Filtered Frontiers", priority_img);
+    cv::waitKey(WAITKEY_DELAY);
+#endif
+    
+
+    this->costFunction(seen, priority_frontiers, signal_frontiers, best_point,best_score);
+
+//COST FUNCTION
+
+
+
     if(best_score < -90000 || this->numberOfVisits(this->point2Pair(best_point)) > 1){ //repeat point
         // *this->output << "SHOULD BE DONE!" << std::endl;
         std::vector<cv::Point2i> missed_spots;
@@ -475,6 +477,8 @@ std::pair<int,int> Agent::determineAction(){
             return std::make_pair(-1,-1);
         }
 
+        
+
         double missed_p_dist = this->field_x_width*this->field_x_width + this->field_y_length*this->field_y_length;
         for(auto &p: missed_spots){
             if(missed_p_dist > this->dist(this->coords, this->point2Pair(p))){
@@ -484,11 +488,7 @@ std::pair<int,int> Agent::determineAction(){
             }
         }
         if(best_score < 0){
-            if(best_point.x != 0){
-                best_point = cv::Point(0,0);
-            }else{
-                best_point = cv::Point(field_x_width-1, field_y_length-1);
-            }
+            this->costFunction(seen, reserve_frontiers, signal_frontiers, best_point,best_score);
             
             
         

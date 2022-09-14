@@ -16,6 +16,13 @@
 
 #define PI 3.1415926535
 
+struct point_hash {
+    inline std::size_t operator()(const cv::Point2i & v) const {
+        return v.x*31 + v.y;
+    }
+};
+
+
 class Agent
 {
 private:
@@ -53,6 +60,9 @@ public:
     std::ostream *output;
 
     std::pair<int,int> determineAction();
+
+    void costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::unordered_set<cv::Point,point_hash> signal_frontiers, cv::Point2i &best_point, double &best_score);
+
     std::pair<int,int> moveToPosition(std::pair<int,int> pos) ;
 
 
@@ -87,6 +97,8 @@ public:
 
 
     cv::Mat getSignalLocations();
+
+
 
 };
 
