@@ -193,7 +193,7 @@ std::pair<int,int> Agent::determineAction(){
             int edge_root_func = (f.x)*(f.y)*(int)(this->field_x_width-1-f.x)*(int)(this->field_y_length-1-f.y);
                 
             // int edge_root_func = (f.x)*(this->field_x_width-1-f.x)*(f.y)*(this-field_y_length-1-f.y);
-            if(dist < 2 || dist > 2*this->speed || edge_root_func == 0){
+            if(dist < 2 || dist > 2*this->speed || edge_root_func == 0 || std::find(this->coord_history.begin(), this->coord_history.end(), this->point2Pair(f)) != this->coord_history.end()){
                 cv::circle(priority_img, f,2,cv::Scalar(255,0,255));
                 reserve_frontiers.push_back(f);
             }else{
@@ -247,6 +247,7 @@ std::pair<int,int> Agent::determineAction(){
 
         if(std::find(this->coord_history.begin(), this->coord_history.end(), this->point2Pair(f)) != this->coord_history.end()){
             double repeat_point_mod = -100000;
+            
             score += repeat_point_mod;
             *this->output << " Repeat point!";
         }
@@ -285,7 +286,7 @@ std::pair<int,int> Agent::determineAction(){
         double new_scanned_ratio = (new_scanned_count-old_scanned_count)/old_scanned_count;
         
         double scanned_mod = 1.5*100;
-        scanned_mod = 0;
+        // scanned_mod = 0;
 
 
 
@@ -450,7 +451,7 @@ std::pair<int,int> Agent::determineAction(){
         
     }
 
-    if(best_score < -90000){ //repeat point
+    if(best_score < -90000 ||std::find(this->coord_history.begin(), this->coord_history.end(), this->point2Pair(best_point)) != this->coord_history.end() ){ //repeat point
         // *this->output << "SHOULD BE DONE!" << std::endl;
         std::vector<cv::Point2i> missed_spots;
 
@@ -465,10 +466,20 @@ std::pair<int,int> Agent::determineAction(){
         for(auto &p: missed_spots){
             if(missed_p_dist > this->dist(this->coords, this->point2Pair(p))){
                 best_point = p;
+                best_score = 0;
                 missed_p_dist = this->dist(this->coords, this->point2Pair(p));
             }
         }
-
+        if(best_score < 0){
+            if(best_point.x != 0){
+                best_point = cv::Point(0,0);
+            }else{
+                best_point = cv::Point(field_x_width-1, field_y_length-1);
+            }
+            
+            
+        
+        }
         
 
     }

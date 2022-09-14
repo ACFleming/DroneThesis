@@ -5,7 +5,7 @@
 #include <opencv2/core.hpp>
 #include <map>
 #include <string>
-#include <filesystem>
+// #include <filesystem>
 
 
 int main (int argc, char* argv[]){
@@ -18,14 +18,15 @@ int main (int argc, char* argv[]){
     // output_test.close();
     // std::cout << std::filesystem::current_path() << std::endl << std::endl;
     
-    std::string type_of_test = std::string("only_dist");
+    std::string type_of_test = std::string("dist_and_seen");
 
 
     int num_tests = 100;
     int rand_seed_start = 0;
+    int source_start = 0;
     int max_sources = 5;
     for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){
-        for (int source_count = 0; source_count < max_sources; source_count++){
+        for (int source_count = source_start; source_count < max_sources; source_count++){
                 std::cout << "Seed: " << test << " Num sources: " << source_count << " ***********************" << std::endl;
                 std::ofstream output_field;
                 std::string file_path_field = type_of_test + std::string("/logs/field_log") + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".csv";
@@ -66,15 +67,16 @@ int main (int argc, char* argv[]){
                     cv::circle(map, cv::Point2i(c.getCoords().first, c.getCoords().second), 3, cv::Scalar(255,0,255) );
                 }
 
-                // std::pair<int,int> a1_curr = a1.getCoords();    
-                // cv::circle(map, a1.pair2Point(a1_curr),2,cv::Scalar(0,255,0));  
+#ifdef SHOW_IMG
+                std::pair<int,int> a1_curr = a1.getCoords();    
+                cv::circle(map, a1.pair2Point(a1_curr),2,cv::Scalar(0,255,0));  
 
                 // std::pair<int,int> a2_curr = a2.getCoords();
                 // cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
                     
-                // cv::imshow("map", map);
-                // cv::waitKey(1);
-
+                cv::imshow("map", map);
+                cv::waitKey(1);
+#endif
             
 
                 while(true){
@@ -95,11 +97,12 @@ int main (int argc, char* argv[]){
                     cv::Mat cert_grid = a1.getMap();
                     cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
                     cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
-                    // cv::imshow("map", img);
-                    // cv::waitKey(1);
-                    // cv::imshow("locations", a1.getSignalLocations());
-                    // cv::waitKey(1);
-
+#ifdef SHOW_IMG
+                    cv::imshow("map", img);
+                    cv::waitKey(1);
+                    cv::imshow("locations", a1.getSignalLocations());
+                    cv::waitKey(1);
+#endif
                     // //plot a2
                     // std::pair<int,int> a2_curr = a2.getCoords();
                     // std::cout << "Drone 2 at: " << a2_curr.first << "," << a2_curr.second << std::endl;
@@ -116,11 +119,12 @@ int main (int argc, char* argv[]){
                     // cert_grid = a2.getMap();
                     // cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
                     // cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
+#ifdef SHOW_IMG
                     // // cv::imshow("map", img);
                     // // cv::waitKey(1);
                     // // cv::imshow("locations", a2.getSignalLocations());
                     // // cv::waitKey(1);
-
+#endif
 
                     // //plot a3
                     // std::pair<int,int> a3_curr = a3.getCoords();
@@ -138,10 +142,12 @@ int main (int argc, char* argv[]){
                     // cert_grid = a3.getMap();
                     // cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
                     // cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
-                    //                     // cv::imshow("map", img);
+#ifdef SHOW_IMG
+                    // // cv::imshow("map", img);
                     // // cv::waitKey(1);
                     // // cv::imshow("locations", a2.getSignalLocations());
                     // // cv::waitKey(1);
+#endif
 
                 }
                 a1.logAgent();
