@@ -20,7 +20,7 @@ class Agent
 {
 private:
     std::pair<int,int> coords;
-    std::vector<std::pair<int,int>> coord_history;
+    std::map<std::pair<int,int>, int> coord_history;
    
     std::string name;
     int field_x_width;
@@ -46,6 +46,9 @@ public:
     Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius, int speed, std::map<std::string, Grid> *certainty_grids);
     ~Agent();
     static int step_counter;
+
+    void recordPosition(std::pair<int,int> p);
+    int numberOfVisits(std::pair<int,int> p);
 
     std::ostream *output;
 

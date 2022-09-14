@@ -30,7 +30,7 @@ int Agent::step_counter = 0;
 
 Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius, int speed, std::map<std::string, Grid> *certainty_grids) {
     this->coords = std::make_pair(x_coord, y_coord);
-    this->coord_history.push_back(this->coords);
+    this->recordPosition(this->coords);
     this->name = name;
     this->field_x_width = field_width;
     this->field_y_length = field_length;
@@ -68,6 +68,7 @@ int Agent::clipRange(int lower, int upper, int value){
     return value;
 }
 
+
 double Agent::dist(std::pair<int,int> p1, std::pair<int,int> p2){
     return hypot(p1.first - p2.first, p1.second-p2.second);
 }
@@ -84,7 +85,19 @@ cv::Mat Agent::rangeMask(int x, int y, int value){
 
 
 
+void Agent::recordPosition(std::pair<int,int> p ){
+    if(this->coord_history.count(p) == 0){
+        this->coord_history.insert(std::make_pair(p, 0));
+    }
+    this->coord_history.at(p) = this->coord_history.at(p)+1;
+}
 
+int Agent::numberOfVisits(std::pair<int,int> p){
+    if(this->coord_history.count(p) == 0){
+        return 0;
+    }
+    return this->coord_history.at(p);
+}
 
 
 
@@ -193,7 +206,7 @@ std::pair<int,int> Agent::determineAction(){
             int edge_root_func = (f.x)*(f.y)*(int)(this->field_x_width-1-f.x)*(int)(this->field_y_length-1-f.y);
                 
             // int edge_root_func = (f.x)*(this->field_x_width-1-f.x)*(f.y)*(this-field_y_length-1-f.y);
-            if(dist < 2 || dist > 2*this->speed || edge_root_func == 0 || std::find(this->coord_history.begin(), this->coord_history.end(), this->point2Pair(f)) != this->coord_history.end()){
+            if(dist < 2 || dist > 2*this->speed || edge_root_func == 0 || this->numberOfVisits(this->point2Pair(f)) > 1){
                 cv::circle(priority_img, f,2,cv::Scalar(255,0,255));
                 reserve_frontiers.push_back(f);
             }else{
@@ -245,7 +258,7 @@ std::pair<int,int> Agent::determineAction(){
 
         double score = 0;
 
-        if(std::find(this->coord_history.begin(), this->coord_history.end(), this->point2Pair(f)) != this->coord_history.end()){
+        if(this->numberOfVisits(this->point2Pair(f)) > 1){
             double repeat_point_mod = -100000;
             
             score += repeat_point_mod;
@@ -451,7 +464,7 @@ std::pair<int,int> Agent::determineAction(){
         
     }
 
-    if(best_score < -90000 ||std::find(this->coord_history.begin(), this->coord_history.end(), this->point2Pair(best_point)) != this->coord_history.end() ){ //repeat point
+    if(best_score < -90000 || this->numberOfVisits(this->point2Pair(best_point)) > 1){ //repeat point
         // *this->output << "SHOULD BE DONE!" << std::endl;
         std::vector<cv::Point2i> missed_spots;
 
@@ -532,7 +545,7 @@ std::pair<int,int> Agent::moveToPosition(std::pair<int,int> pos){
 
     this->coords = interpolated_pos;
     // this->certainty_grid.at<uint8_t>(this->coords.second, this->coords.first) = scanned;
-    this->coord_history.push_back(this->coords);
+    this->recordPosition(this->coords);
     Agent::step_counter++;
 
     return interpolated_pos;
