@@ -285,6 +285,7 @@ std::pair<int,int> Agent::determineAction(){
         double new_scanned_ratio = (new_scanned_count-old_scanned_count)/old_scanned_count;
         
         double scanned_mod = 1.5*100;
+        scanned_mod = 0;
 
 
 
@@ -329,10 +330,10 @@ std::pair<int,int> Agent::determineAction(){
             cv::waitKey(WAITKEY_DELAY);
 #endif
             double area_ratio = ctr_area/hull_area;
-            
-            double perim_ratio = ctr_perim/hull_perim;
 
             double area_rt_mod = 3*100;
+
+            area_rt_mod = 0;
 
             score += area_rt_mod * area_ratio;
 #ifdef COST_VEC_PRINT
@@ -409,6 +410,7 @@ std::pair<int,int> Agent::determineAction(){
             double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
 
             double inv_perim_rt_mod = -3*100;
+            inv_perim_rt_mod = 0;
 
             
             score += pow(inv_perim_rt_mod * inv_perim_ratio,1)  ;
@@ -417,9 +419,12 @@ std::pair<int,int> Agent::determineAction(){
 #endif
         }
 
-            double hole_mod = -1;
+            
             double hole_value = pow(100, (int)(inverse_frontiers.size()) -1);
+            double hole_mod = -1;
+            hole_mod = 0;
             score += hole_mod * hole_value;
+            
 #ifdef COST_VEC_PRINT   
             *this->output << "Hole count: " << "," << inverse_frontiers.size() << "," << " Hole count Contribution " << hole_mod * hole_value << ",";
 #endif

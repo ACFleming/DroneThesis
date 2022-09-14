@@ -18,7 +18,7 @@
 
 
 
-// #define COST_VEC_PRINT
+#define COST_VEC_PRINT
 // #define SHOW_IMG
 
 
