@@ -190,7 +190,7 @@ std::pair<int,int> Agent::determineAction(){
     for(auto &f_vec: this->frontiers){
         for(auto &f: f_vec){
             double dist = this->dist(this->coords, this->point2Pair(f));
-            int edge_root_func = (f.x)*(f.y)*(int)(this->field_x_width-1-f.x)*(int)(this-field_y_length-1-f.y);
+            int edge_root_func = (f.x)*(f.y)*(int)(this->field_x_width-1-f.x)*(int)(this->field_y_length-1-f.y);
                 
             // int edge_root_func = (f.x)*(this->field_x_width-1-f.x)*(f.y)*(this-field_y_length-1-f.y);
             if(dist < 2 || dist > 2*this->speed || edge_root_func == 0){
@@ -317,7 +317,7 @@ std::pair<int,int> Agent::determineAction(){
                 hull_area = 1;
             }
 
-            cv::Mat hull_img(new_cells.size(), CV_8UC3);
+            cv::Mat hull_img = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
             cv::drawContours(hull_img, new_frontiers, -1, cv::Scalar(0,0,255));
             
             std::vector<std::vector<cv::Point2i>> h;
@@ -389,7 +389,7 @@ std::pair<int,int> Agent::determineAction(){
                     inv_hull_area = 1;
                 }
 
-                cv::Mat inv_hull_img(inverse.size(), CV_8UC3);
+                cv::Mat inv_hull_img = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
                 cv::drawContours(inv_hull_img, inverse_frontiers, -1, cv::Scalar(0,0,255));
                 
                 std::vector<std::vector<cv::Point2i>> inv_h = std::vector<std::vector<cv::Point2i>>();
