@@ -23,7 +23,7 @@ int main (int argc, char* argv[]){
 
     int num_tests = 100;
     int rand_seed_start = 0 ;
-    int source_start = 0;
+    int source_start = 4;
     int max_sources = 5;
     for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){
         for (int source_count = source_start; source_count < max_sources; source_count++){
@@ -41,7 +41,7 @@ int main (int argc, char* argv[]){
                 int field_x_width = 300;
                 int field_y_length = 300;
                 int num_sources = source_count;
-                int std_dev_noise = 4;
+                int std_dev_noise = 3;
                 int max_range = 20; 
                 int speed = 20;
                 srand((unsigned int)(test));
@@ -61,10 +61,13 @@ int main (int argc, char* argv[]){
 
                 cv::Mat map = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
                 cv::Mat img = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
+                cv::Mat locations = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
+                cv::Mat img2 = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
 
                 //Display true location
                 for(auto &c: f.getSources()){
                     cv::circle(map, cv::Point2i(c.getCoords().first, c.getCoords().second), 3, cv::Scalar(255,0,255) );
+                    cv::circle(locations, cv::Point2i(c.getCoords().first, c.getCoords().second), 3, cv::Scalar(255,255,255 ));
                 }
 
 #ifdef SHOW_IMG
@@ -80,7 +83,10 @@ int main (int argc, char* argv[]){
             
 
                 while(true){
+                    // cv::waitKey(0);
                     //plot a1 
+
+
                     std::pair<int,int> a1_curr = a1.getCoords();
                     std::cout << "Drone 1 at: " << a1_curr.first << "," << a1_curr.second << std::endl;
                     a1.updateCertainty(f);    
@@ -100,7 +106,8 @@ int main (int argc, char* argv[]){
 #ifdef SHOW_IMG
                     cv::imshow("map", img);
                     cv::waitKey(1);
-                    cv::imshow("locations", a1.getSignalLocations());
+                    cv::bitwise_or(locations, a1.getSignalLocations(), img2);
+                    cv::imshow("locations", img2);
                     cv::waitKey(1);
 #endif
                     // //plot a2
