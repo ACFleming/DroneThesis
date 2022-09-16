@@ -123,7 +123,7 @@ void Grid::updateCertainty(){
         cv::bitwise_not(inv, inv);
         // cv::imshow("inv", inv);
         // cv::waitKey(WAITKEY_DELAY);
-        cv::bitwise_and(inv, this->signal_likelihood,temp);
+        cv::bitwise_and(inv, this->signal_likelihood,temp); 
     }else{
         // cv::imshow("new measurement", this->signal_ring.getCanvas());
         // cv::waitKey(WAITKEY_DELAY);

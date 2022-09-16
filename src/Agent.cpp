@@ -155,7 +155,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
         *this->output << "Point: " << f.x << "," << f.y << ",";
 #endif
         
-        cv::Mat new_cells;
+        cv::Mat new_cells = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC3); 
         std::vector<std::vector<cv::Point2i>> new_frontiers;
 
         double score = 0;
@@ -385,7 +385,7 @@ std::pair<int,int> Agent::determineAction(){
 
 
 
-    cv::Mat seen;
+    cv::Mat seen = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC3); 
     cv::threshold(this->certainty_grids->at(MAP).getLikelihood(), seen,unknown-1, unknown, cv::THRESH_BINARY_INV);
 
     this->frontiers = Grid::getImageFrontiers(seen);
@@ -568,7 +568,7 @@ cv::Mat Agent::getMap(){
 
 cv::Mat Agent::getSignalLocations() {
     cv::Mat confirmed = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
-    cv::Mat temp;
+    cv::Mat temp = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
     for(auto &kv_name_grid: *(this->certainty_grids)){
         if(kv_name_grid.second.isFound() && kv_name_grid.first != BASE && kv_name_grid.first != MAP){
             temp = kv_name_grid.second.getLikelihood().clone();
