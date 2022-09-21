@@ -18,7 +18,7 @@ int main (int argc, char* argv[]){
     // output_test.close();
     // std::cout << std::filesystem::current_path() << std::endl << std::endl;
     
-    std::string type_of_test = std::string("dist_and_seen");
+    std::string type_of_test = std::string("only_dist");
 
 
     int num_tests = 100;
@@ -29,14 +29,13 @@ int main (int argc, char* argv[]){
         for (int source_count = source_start; source_count < max_sources; source_count++){
                 std::cout << "Seed: " << test << " Num sources: " << source_count << " ***********************" << std::endl;
                 std::ofstream output_field;
-                std::string file_path_field = type_of_test + std::string("/logs/field_log") + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".csv";
+                std::string file_path_field = type_of_test + std::string("/logs/field_log")         + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".csv";
                 output_field.open(file_path_field);
                 std::ofstream output_agent;
-                std::string file_path_agent = type_of_test + std::string("/logs/agent_log") + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".csv";
+                std::string file_path_agent = type_of_test + std::string("/logs/agent_log")         + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".csv";
                 output_agent.open(file_path_agent);
-
-                std::string file_path_map = type_of_test + std::string("/images/map") + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
-                std::string file_path_locations = type_of_test + std::string("/images/locations") + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
+                std::string file_path_map = type_of_test + std::string("/images/map")               + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
+                std::string file_path_locations = type_of_test + std::string("/images/locations")   + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
 
                 int field_x_width = 300;
                 int field_y_length = 300;

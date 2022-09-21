@@ -27,7 +27,7 @@ class Agent
 {
 private:
     std::pair<int,int> coords;
-    std::map<std::pair<int,int>, int> coord_history;
+    std::map<std::pair<int,int>, int> command_history;
    
     std::string name;
     int field_x_width;
@@ -54,8 +54,8 @@ public:
     ~Agent();
     static int step_counter;
 
-    void recordPosition(std::pair<int,int> p);
-    int numberOfVisits(std::pair<int,int> p);
+    void recordCommand(std::pair<int,int> p);
+    int countCommand(std::pair<int,int> p);
 
     std::ostream *output;
 

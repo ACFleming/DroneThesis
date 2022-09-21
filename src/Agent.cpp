@@ -30,7 +30,6 @@ int Agent::step_counter = 0;
 
 Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius, int speed, std::map<std::string, Grid> *certainty_grids) {
     this->coords = std::make_pair(x_coord, y_coord);
-    this->recordPosition(this->coords);
     this->name = name;
     this->field_x_width = field_width;
     this->field_y_length = field_length;
@@ -85,18 +84,18 @@ cv::Mat Agent::rangeMask(int x, int y, int value){
 
 
 
-void Agent::recordPosition(std::pair<int,int> p ){
-    if(this->coord_history.count(p) == 0){
-        this->coord_history.insert(std::make_pair(p, 0));
+void Agent::recordCommand(std::pair<int,int> p ){
+    if(this->command_history.count(p) == 0){
+        this->command_history.insert(std::make_pair(p, 0));
     }
-    this->coord_history.at(p) = this->coord_history.at(p)+1;
+    this->command_history.at(p) = this->command_history.at(p)+1;
 }
 
-int Agent::numberOfVisits(std::pair<int,int> p){
-    if(this->coord_history.count(p) == 0){
+int Agent::countCommand(std::pair<int,int> p){
+    if(this->command_history.count(p) == 0){
         return 0;
     }
-    return this->coord_history.at(p);
+    return this->command_history.at(p);
 }
 
 
@@ -152,7 +151,7 @@ void Agent::updateMap(){
 void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::unordered_set<cv::Point,point_hash> signal_frontiers, cv::Point2i &best_point, double &best_score){
     for(auto &f: points ){
 #ifdef COST_VEC_PRINT
-        *this->output << "Point: " << f.x << "," << f.y << ",";
+        *this->output << "Point: " << ","  << f.x << "," << f.y << ",";
 #endif
         
         cv::Mat new_cells = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC3); 
@@ -160,13 +159,19 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
 
         double score = 0;
 
-        if(this->numberOfVisits(this->point2Pair(f)) > 1){
-            double repeat_point_mod = -100000;
+        // if(this->numberOfVisits(this->point2Pair(f)) > 1){
+        //     double repeat_point_mod = -100000;
             
-            score += repeat_point_mod;
-            *this->output << " Repeat point!";
-        }
-        
+        //     score += repeat_point_mod;
+        //     *this->output << " Repeat point!";
+        // }
+        double repeat_cmd_mod = -1;
+
+        double repeat_cmd_score = pow(10, this->countCommand(this->point2Pair(f)) - 1);
+
+        score += repeat_cmd_mod * repeat_cmd_score; 
+
+
 
         if(signal_frontiers.count(f) > 0 ){ //if its a signal frontier point;
             score += 50;
@@ -175,11 +180,9 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
 
 
         double dist = this->dist(this->coords, this->point2Pair(f));
-        if(dist < 0.1*this->speed) {
-            score = LONG_MIN;
-        }
 
-        double dist_mod = -0.05;
+
+        double dist_mod = -0.5;
         
         score += dist_mod * (dist-(this->speed)/2) * (dist-1.5*this->speed);
         // score += dist_mod*exp(dist/this->scan_radius);
@@ -201,13 +204,13 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
         double new_scanned_ratio = (new_scanned_count-old_scanned_count)/old_scanned_count;
         
         double scanned_mod = 1.5*100;
-        // scanned_mod = 0;
+        scanned_mod = 0;
 
 
 
         score += scanned_mod * new_scanned_ratio;
 #ifdef COST_VEC_PRINT
-        *this->output << " New scanned ratio: "<<  "," << new_scanned_ratio << "," << " New Scanned Cells Contribution: " <<  scanned_mod  *new_scanned_ratio << ",";
+        *this->output << " New scanned ratio: "<<  "," << new_scanned_ratio << "," << " New Scanned Cells Contribution: " << "," <<  scanned_mod  *new_scanned_ratio << ",";
 #endif
 
 
@@ -253,14 +256,8 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
 
             score += area_rt_mod * area_ratio;
 #ifdef COST_VEC_PRINT
-            *this->output << "Area ratio: " << area_ratio << "," << " Area Ratio Contribution: " << area_rt_mod * area_ratio << ",";
+            *this->output << "Area ratio: " << "," << area_ratio << "," << " Area Ratio Contribution: " << "," << area_rt_mod * area_ratio << ",";
 #endif
-//             double perim_rt_mod = -0*100;
-
-//             score += perim_rt_mod * perim_ratio;
-// #ifdef COST_VEC_PRINT   
-//             *this->output << " Perim Ratio Contribution: " << perim_rt_mod * perim_ratio;
-// #endif
 
         }
 
@@ -290,9 +287,9 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
             double inv_hull_perim = 0;
             double inv_ctr_area = 0;
             double inv_hull_area = 0;
-            if(inverse_frontiers.size() > 1){
-                NO_OP;
-            }
+            // if(inverse_frontiers.size() > 1){
+            //     NO_OP;
+            // }
             for(auto &iif : inverse_frontiers){
                 inv_ctr_area += cv::contourArea(iif);
                 inv_ctr_perim += cv::arcLength(iif, true);
@@ -329,9 +326,9 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
             inv_perim_rt_mod = 0;
 
             
-            score += pow(inv_perim_rt_mod * inv_perim_ratio,1)  ;
+            score += inv_perim_rt_mod * inv_perim_ratio;
 #ifdef COST_VEC_PRINT   
-            *this->output << "Inverse perim ratio: " << "," << inv_perim_ratio << "," << " Perim Ratio Contribution: " << inv_perim_rt_mod * inv_perim_ratio << ",";
+            *this->output << "Inverse perim ratio: " << "," << inv_perim_ratio << "," << " Perim Ratio Contribution: " << "," << inv_perim_rt_mod * inv_perim_ratio << ",";
 #endif
         }
 
@@ -342,7 +339,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
             score += hole_mod * hole_value;
             
 #ifdef COST_VEC_PRINT   
-            *this->output << "Hole count: " << "," << inverse_frontiers.size() << "," << " Hole count Contribution " << hole_mod * hole_value << ",";
+            *this->output << "Hole count: " << "," << inverse_frontiers.size()-1 << "," << " Hole count Contribution " << ","<< hole_mod * hole_value << ",";
 #endif
 
 
@@ -419,9 +416,7 @@ std::pair<int,int> Agent::determineAction(){
         for(auto &f: f_vec){
             double dist = this->dist(this->coords, this->point2Pair(f));
             int edge_root_func = (f.x)*(f.y)*(int)(this->field_x_width-1-f.x)*(int)(this->field_y_length-1-f.y);
-                
-            // int edge_root_func = (f.x)*(this->field_x_width-1-f.x)*(f.y)*(this-field_y_length-1-f.y);
-            if(dist < 2 || dist > 2*this->speed || edge_root_func == 0 || this->numberOfVisits(this->point2Pair(f)) > 1){
+            if(dist < 2 || dist > 2*this->speed || edge_root_func == 0){
                 cv::circle(priority_img, f,2,cv::Scalar(255,0,255));
                 reserve_frontiers.push_back(f);
             }else{
@@ -465,8 +460,8 @@ std::pair<int,int> Agent::determineAction(){
 //COST FUNCTION
 
 
-
-    if(best_score < -90000 || this->numberOfVisits(this->point2Pair(best_point)) > 1){ //repeat point
+    
+    if(best_score < -10000){ 
         // *this->output << "SHOULD BE DONE!" << std::endl;
         std::vector<cv::Point2i> missed_spots;
 
@@ -477,22 +472,21 @@ std::pair<int,int> Agent::determineAction(){
             return std::make_pair(-1,-1);
         }
 
-        
-
-        double missed_p_dist = this->field_x_width*this->field_x_width + this->field_y_length*this->field_y_length;
-        for(auto &p: missed_spots){
-            if(missed_p_dist > this->dist(this->coords, this->point2Pair(p))){
-                best_point = p;
-                best_score = 0;
-                missed_p_dist = this->dist(this->coords, this->point2Pair(p));
+        this->costFunction(seen, reserve_frontiers, signal_frontiers, best_point,best_score);
+        if(best_score < 1000){ 
+            double missed_p_dist = this->field_x_width*this->field_x_width + this->field_y_length*this->field_y_length;
+            for(auto &p: missed_spots){
+                if(missed_p_dist > this->dist(this->coords, this->point2Pair(p))){
+                    best_point = p;
+                    best_score = 0;
+                    missed_p_dist = this->dist(this->coords, this->point2Pair(p));
+                }
             }
         }
-        if(best_score < 0){
-            this->costFunction(seen, reserve_frontiers, signal_frontiers, best_point,best_score);
-            
-            
         
-        }
+        
+
+
         
 
     }
@@ -507,7 +501,7 @@ std::pair<int,int> Agent::determineAction(){
     cv::imshow("best", best);
     cv::waitKey(WAITKEY_DELAY);
 #endif
-
+    this->recordCommand(this->point2Pair(best_point));
     return this->point2Pair(best_point);
 
 
@@ -545,7 +539,7 @@ std::pair<int,int> Agent::moveToPosition(std::pair<int,int> pos){
 
     this->coords = interpolated_pos;
     // this->certainty_grid.at<uint8_t>(this->coords.second, this->coords.first) = scanned;
-    this->recordPosition(this->coords);
+    
     Agent::step_counter++;
 
     return interpolated_pos;
