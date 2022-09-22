@@ -18,6 +18,7 @@ int main (int argc, char* argv[]){
     // output_test.close();
     // std::cout << std::filesystem::current_path() << std::endl << std::endl;
     
+    std::string number_of_agents = std::string("single/");
     std::string type_of_test = std::string("dist_seen_perim_area");
 
 
@@ -29,20 +30,20 @@ int main (int argc, char* argv[]){
         for (int source_count = source_start; source_count < max_sources; source_count++){
                 std::cout << "Seed: " << test << " Num sources: " << source_count << " ***********************" << std::endl;
                 std::ofstream output_field;
-                std::string file_path_field = type_of_test + std::string("/logs/field_log")         + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".csv";
+                std::string file_path_field =       number_of_agents + type_of_test + std::string("/logs/field_log")    + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".csv";
                 output_field.open(file_path_field);
                 std::ofstream output_agent;
-                std::string file_path_agent = type_of_test + std::string("/logs/agent_log")         + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".csv";
+                std::string file_path_agent =       number_of_agents + type_of_test + std::string("/logs/agent_log")    + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".csv";
                 output_agent.open(file_path_agent);
-                std::string file_path_map = type_of_test + std::string("/images/map")               + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
-                std::string file_path_locations = type_of_test + std::string("/images/locations")   + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
+                std::string file_path_map =         number_of_agents + type_of_test + std::string("/images/map")        + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
+                std::string file_path_locations =   number_of_agents + type_of_test + std::string("/images/locations")  + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
 
                 int field_x_width = 300;
                 int field_y_length = 300;
                 int num_sources = source_count;
                 int std_dev_noise = 3;
-                int max_range = 20; 
-                int speed = 20;
+                int max_range = 30; 
+                int speed = 10;
                 srand((unsigned int)(test));
                 std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
 

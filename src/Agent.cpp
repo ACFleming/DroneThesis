@@ -182,7 +182,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
         double dist = this->dist(this->coords, this->point2Pair(f));
 
 
-        double dist_mod = -0.05;
+        double dist_mod = -5;
         
         score += dist_mod * (dist-(this->speed)/2) * (dist-1.5*this->speed);
         // score += dist_mod*exp(dist/this->scan_radius);
@@ -203,7 +203,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
 
         double new_scanned_ratio = (new_scanned_count-old_scanned_count)/old_scanned_count;
         
-        double scanned_mod = 1.5*100;
+        double scanned_mod = -1.5*100;
         // scanned_mod = 0;
 
 
@@ -317,18 +317,24 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
             }
 
 
+            double inv_area_ratio = inv_ctr_area/inv_hull_area;
 
+            double inv_area_rt_mod = 3*100;
+            inv_area_rt_mod = 0;
+
+
+            score += inv_area_rt_mod * inv_area_ratio;
 
             if(inv_hull_perim == 0) inv_hull_perim = 1;
             double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
 
             double inv_perim_rt_mod = -3*100;
-            // inv_perim_rt_mod = 0;
+            inv_perim_rt_mod = 0;
 
             
             score += inv_perim_rt_mod * inv_perim_ratio;
 #ifdef COST_VEC_PRINT   
-            *this->output << "Inverse perim ratio: " << "," << inv_perim_ratio << "," << " Perim Ratio Contribution: " << "," << inv_perim_rt_mod * inv_perim_ratio << ",";
+            *this->output << "Inverse Area ratio: " << "," << inv_area_ratio << "," << " Inv Area Ratio Contribution: " << "," << inv_area_rt_mod * inv_area_ratio << ",";
 #endif
         }
 
@@ -446,7 +452,7 @@ std::pair<int,int> Agent::determineAction(){
 
 
 
-    *this->output << "Total frontiers: " << "," << this->frontiers.size() << "," << " Prioritised frontiers: " << "," << priority_frontiers.size() << std::endl;
+    *this->output << "Total frontiers: " << "," << this->frontiers[0].size() << "," << " Prioritised frontiers: " << "," << priority_frontiers.size() << std::endl;
     
     
 #ifdef SHOW_IMG
