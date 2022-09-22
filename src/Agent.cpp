@@ -182,7 +182,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
         double dist = this->dist(this->coords, this->point2Pair(f));
 
 
-        double dist_mod = -0.5;
+        double dist_mod = -0.05;
         
         score += dist_mod * (dist-(this->speed)/2) * (dist-1.5*this->speed);
         // score += dist_mod*exp(dist/this->scan_radius);
@@ -204,7 +204,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
         double new_scanned_ratio = (new_scanned_count-old_scanned_count)/old_scanned_count;
         
         double scanned_mod = 1.5*100;
-        scanned_mod = 0;
+        // scanned_mod = 0;
 
 
 
@@ -252,7 +252,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
 
             double area_rt_mod = 3*100;
 
-            area_rt_mod = 0;
+            // area_rt_mod = 0;
 
             score += area_rt_mod * area_ratio;
 #ifdef COST_VEC_PRINT
@@ -323,7 +323,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
             double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
 
             double inv_perim_rt_mod = -3*100;
-            inv_perim_rt_mod = 0;
+            // inv_perim_rt_mod = 0;
 
             
             score += inv_perim_rt_mod * inv_perim_ratio;
@@ -335,7 +335,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
             
             double hole_value = pow(100, (int)(inverse_frontiers.size()) -1);
             double hole_mod = -1;
-            hole_mod = 0;
+            // hole_mod = 0;
             score += hole_mod * hole_value;
             
 #ifdef COST_VEC_PRINT   
@@ -416,7 +416,7 @@ std::pair<int,int> Agent::determineAction(){
         for(auto &f: f_vec){
             double dist = this->dist(this->coords, this->point2Pair(f));
             int edge_root_func = (f.x)*(f.y)*(int)(this->field_x_width-1-f.x)*(int)(this->field_y_length-1-f.y);
-            if(dist < 2 || dist > 2*this->speed || edge_root_func == 0){
+            if(dist < 2 || dist > 4*this->speed || edge_root_func == 0){
                 cv::circle(priority_img, f,2,cv::Scalar(255,0,255));
                 reserve_frontiers.push_back(f);
             }else{

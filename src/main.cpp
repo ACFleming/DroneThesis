@@ -18,7 +18,7 @@ int main (int argc, char* argv[]){
     // output_test.close();
     // std::cout << std::filesystem::current_path() << std::endl << std::endl;
     
-    std::string type_of_test = std::string("only_dist");
+    std::string type_of_test = std::string("dist_seen_perim_area");
 
 
     int num_tests = 100;
@@ -51,7 +51,7 @@ int main (int argc, char* argv[]){
                 // Agent a2 = Agent("Drone2", 0 ,299, field_x_width, field_y_length, max_range,speed, &certainty_grids);
                 // Agent a3 = Agent("Drone2", 299 ,0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
                 Agent::step_counter = 0;
-                a1.output = &output_agent;
+                // a1.output = &output_agent;
                 // a2.output = &output_agent;
                 // a3.output = &output_agent;
 
@@ -102,13 +102,13 @@ int main (int argc, char* argv[]){
                     cv::Mat cert_grid = a1.getMap();
                     cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
                     cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
-#ifdef SHOW_IMG
+// #ifdef SHOW_IMG
                     cv::imshow("map", img);
                     cv::waitKey(1);
                     cv::bitwise_or(locations, a1.getSignalLocations(), img2);
                     cv::imshow("locations", img2);
                     cv::waitKey(1);
-#endif
+// #endif
                     // //plot a2
                     // std::pair<int,int> a2_curr = a2.getCoords();
                     // std::cout << "Drone 2 at: " << a2_curr.first << "," << a2_curr.second << std::endl;
