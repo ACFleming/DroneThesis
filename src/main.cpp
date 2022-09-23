@@ -38,18 +38,18 @@ int main (int argc, char* argv[]){
                 std::string file_path_map =         number_of_agents + type_of_test + std::string("/images/map")        + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
                 std::string file_path_locations =   number_of_agents + type_of_test + std::string("/images/locations")  + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
 
-                int field_x_width = 300;
-                int field_y_length = 300;
+                int field_x_width = 400;
+                int field_y_length = 400;
                 int num_sources = source_count;
                 int std_dev_noise = 3;
-                int max_range = 30; 
-                int speed = 10;
+                int max_range = 20; 
+                int speed = 20;
                 srand((unsigned int)(test));
                 std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
 
                 Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
-                Agent a1 = Agent("Drone1", 0 ,0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
-                // Agent a2 = Agent("Drone2", 0 ,299, field_x_width, field_y_length, max_range,speed, &certainty_grids);
+                Agent a1 = Agent("Drone1", 0 ,20, field_x_width, field_y_length, max_range,speed, &certainty_grids);
+                // Agent a2 = Agent("Drone2", 20 , 0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
                 // Agent a3 = Agent("Drone2", 299 ,0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
                 Agent::step_counter = 0;
                 // a1.output = &output_agent;
@@ -110,28 +110,28 @@ int main (int argc, char* argv[]){
                     cv::imshow("locations", img2);
                     cv::waitKey(1);
 // #endif
-                    // //plot a2
-                    // std::pair<int,int> a2_curr = a2.getCoords();
-                    // std::cout << "Drone 2 at: " << a2_curr.first << "," << a2_curr.second << std::endl;
-                    // a2.updateCertainty(f);    
-                    // std::pair<int,int> a2_dest = a2.determineAction();
-                    // if(a2_dest.first == -1 ){ //exploration complete
-                    //     break;
-                    // }
-                    // a2_dest = a2.moveToPosition(a2_dest);
-                    // a2.updateMap();
+//                     //plot a2
+//                     std::pair<int,int> a2_curr = a2.getCoords();
+//                     std::cout << "Drone 2 at: " << a2_curr.first << "," << a2_curr.second << std::endl;
+//                     a2.updateCertainty(f);    
+//                     std::pair<int,int> a2_dest = a2.determineAction();
+//                     if(a2_dest.first == -1 ){ //exploration complete
+//                         break;
+//                     }
+//                     a2_dest = a2.moveToPosition(a2_dest);
+//                     a2.updateMap();
 
-                    // cv::line(map, a2.pair2Point(a2_dest), a2.pair2Point(a2_curr),cv::Scalar(0,0,255));
-                    // cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
-                    // cert_grid = a2.getMap();
-                    // cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
-                    // cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
-#ifdef SHOW_IMG
-                    // // cv::imshow("map", img);
-                    // // cv::waitKey(1);
-                    // // cv::imshow("locations", a2.getSignalLocations());
-                    // // cv::waitKey(1);
-#endif
+//                     cv::line(map, a2.pair2Point(a2_dest), a2.pair2Point(a2_curr),cv::Scalar(0,0,255));
+//                     cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
+//                     cert_grid = a2.getMap();
+//                     cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
+//                     cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
+// // #ifdef SHOW_IMG
+//                     cv::imshow("map", img);
+//                     cv::waitKey(1);
+//                     cv::imshow("locations", a2.getSignalLocations());
+//                     cv::waitKey(1);
+// // #endif
 
                     // //plot a3
                     // std::pair<int,int> a3_curr = a3.getCoords();

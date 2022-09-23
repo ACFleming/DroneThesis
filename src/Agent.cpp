@@ -182,9 +182,9 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
         double dist = this->dist(this->coords, this->point2Pair(f));
 
 
-        double dist_mod = -5;
+        double dist_mod = -0.5;
         
-        score += dist_mod * (dist-(this->speed)/2) * (dist-1.5*this->speed);
+        score += dist_mod  * dist;
         // score += dist_mod*exp(dist/this->scan_radius);
 
 #ifdef COST_VEC_PRINT
@@ -203,8 +203,8 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
 
         double new_scanned_ratio = (new_scanned_count-old_scanned_count)/old_scanned_count;
         
-        double scanned_mod = -1.5*100;
-        // scanned_mod = 0;
+        double scanned_mod = 1.5*100;
+        scanned_mod = 0;
 
 
 
@@ -248,15 +248,26 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
             cv::imshow("hull_img", hull_img);
             cv::waitKey(WAITKEY_DELAY);
 #endif
-            double area_ratio = ctr_area/hull_area;
+            double area_diff = abs(ctr_area-hull_area);
 
-            double area_rt_mod = 3*100;
+            double area_mod = -0.03;
 
-            // area_rt_mod = 0;
+            // area_mod = 0;
 
-            score += area_rt_mod * area_ratio;
+            score += area_mod * area_diff;
 #ifdef COST_VEC_PRINT
-            *this->output << "Area ratio: " << "," << area_ratio << "," << " Area Ratio Contribution: " << "," << area_rt_mod * area_ratio << ",";
+            *this->output << "Area diff: " << "," << area_diff << "," << " Area diff Contribution: " << "," << area_mod * area_diff << ",";
+#endif
+
+            double perim_diff = abs(hull_perim);
+
+            double perim_mod = 0.3;
+
+            // perim_mod = 0;
+
+            score += perim_mod * perim_diff;
+#ifdef COST_VEC_PRINT
+            *this->output << "Perim diff: " << "," << perim_diff << "," << " Perim diff Contribution: " << "," << perim_mod * perim_diff << ",";
 #endif
 
         }
@@ -341,7 +352,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
             
             double hole_value = pow(100, (int)(inverse_frontiers.size()) -1);
             double hole_mod = -1;
-            // hole_mod = 0;
+            hole_mod = 0;
             score += hole_mod * hole_value;
             
 #ifdef COST_VEC_PRINT   
