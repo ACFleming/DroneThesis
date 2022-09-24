@@ -61,7 +61,7 @@ public:
 
     std::pair<int,int> determineAction();
 
-    void costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::unordered_set<cv::Point,point_hash> signal_frontiers, cv::Point2i &best_point, double &best_score);
+    void costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::unordered_set<cv::Point,point_hash> signal_frontiers, std::unordered_set<cv::Point,point_hash> hole_centres, cv::Point2i &best_point, double &best_score);
 
     std::pair<int,int> moveToPosition(std::pair<int,int> pos) ;
 
