@@ -24,8 +24,8 @@ int main (int argc, char* argv[]){
 
     int num_tests = 100;
     int rand_seed_start = 20;
-    int source_start = 2;
-    int max_sources = 5;
+    int source_start = 7;
+    int max_sources = 10;
     for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){
         for (int source_count = source_start; source_count < max_sources; source_count++){
                 std::cout << "Seed: " << test << " Num sources: " << source_count << " ***********************" << std::endl;
@@ -89,6 +89,7 @@ int main (int argc, char* argv[]){
 
                     std::pair<int,int> a1_curr = a1.getCoords();
                     std::cout << "Drone 1 at: " << a1_curr.first << "," << a1_curr.second << std::endl;
+                    std::cout << "Step: " << Agent::step_counter << std::endl;
                     a1.updateCertainty(f);    
                     std::pair<int,int> a1_dest = a1.determineAction();
                     if(a1_dest.first == -1 ){ //exploration complete
@@ -105,14 +106,15 @@ int main (int argc, char* argv[]){
                     cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
 // #ifdef SHOW_IMG
                     cv::imshow("map", img);
-                    cv::waitKey(1);
+                    cv::waitKey(WAITKEY_DELAY);
                     cv::bitwise_or(locations, a1.getSignalLocations(), img2);
                     cv::imshow("locations", img2);
-                    cv::waitKey(1);
+                    cv::waitKey(WAITKEY_DELAY);
 // #endif
                     //plot a2
                     std::pair<int,int> a2_curr = a2.getCoords();
                     std::cout << "Drone 2 at: " << a2_curr.first << "," << a2_curr.second << std::endl;
+                    std::cout << "Step: " << Agent::step_counter << std::endl;
                     a2.updateCertainty(f);    
                     std::pair<int,int> a2_dest = a2.determineAction();
                     if(a2_dest.first == -1 ){ //exploration complete
@@ -128,9 +130,10 @@ int main (int argc, char* argv[]){
                     cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
 // #ifdef SHOW_IMG
                     cv::imshow("map", img);
-                    cv::waitKey(1);
-                    cv::imshow("locations", a2.getSignalLocations());
-                    cv::waitKey(1);
+                    cv::waitKey(WAITKEY_DELAY);
+                    cv::bitwise_or(locations, a1.getSignalLocations(), img2);
+                    cv::imshow("locations", img2);
+                    cv::waitKey(WAITKEY_DELAY);
 // #endif
 
                     // //plot a3

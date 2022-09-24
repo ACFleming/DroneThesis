@@ -10,7 +10,7 @@
 #include "Ring.hpp"
 #include "BoundingPoints.hpp"
 
-#define WAITKEY_DELAY 0
+#define WAITKEY_DELAY 1
 
 #define BASE "base_certainty"
 #define MAP "map_of_grid"
@@ -18,7 +18,7 @@
 
 
 
-#define COST_VEC_PRINT
+// #define COST_VEC_PRINT
 // #define SHOW_IMG
 
 
