@@ -223,7 +223,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
         double new_scanned_ratio = (new_scanned_count-old_scanned_count)/old_scanned_count;
         
         double scanned_mod = 15*100;
-        // scanned_mod = 0;
+        scanned_mod = 0;
 
 
 
@@ -248,6 +248,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
         }
 
         double global_dist_mod = -0.001;
+        global_dist_mod = 0;
         score += global_dist_mod * global_dist;
 #ifdef COST_VEC_PRINT
         *this->output << " Global Dist "<<  "," <<global_dist << "," << " Global Dist Contribution: " << "," <<  global_dist_mod * global_dist << ",";
@@ -290,7 +291,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
 
             double area_mod = -0.03;
 
-            // area_mod = 0;
+            area_mod = 0;
 
             score += area_mod * area_diff;
 #ifdef COST_VEC_PRINT
