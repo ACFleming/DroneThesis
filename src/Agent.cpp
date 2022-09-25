@@ -173,24 +173,29 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
 
         double repeat_cmd_score = pow(10, this->countCommand(this->point2Pair(f)) - 1);
 
-        score += repeat_cmd_mod * repeat_cmd_score; 
+        // score += repeat_cmd_mod * repeat_cmd_score; 
 
 
 
         if(signal_frontiers.count(f) > 0 ){ //if its a signal frontier point;
             double signal_mod = 500;
-            signal_mod = 0;
-            score += signal_mod;
+            // signal_mod = 0;
+            // score += signal_mod;
         }
 
         if(hole_centres.count(f) > 0 ){ //if its a signal frontier point;
             double hole_mod = 1000;
-            hole_mod = 100;
-            score += hole_mod;
+            // hole_mod = 0;
+            // score += hole_mod;
         }
 
 
-        double dist = this->dist(this->coords, this->point2Pair(f));
+        // double dist = this->dist(this->coords, this->point2Pair(f));
+        double horizontal_dist = abs(this->coords.first - f.x);
+        double vertical_dist = abs(this->coords.second - f.y); 
+        double horiz_mod = -0.01;
+        double vert_mod = -1;
+        double dist = hypot(horiz_mod*horizontal_dist, vert_mod*vertical_dist);
 
 
         double dist_mod = -0.5;
@@ -222,8 +227,8 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
 
         double new_scanned_ratio = (new_scanned_count-old_scanned_count)/old_scanned_count;
         
-        double scanned_mod = 15*100;
-        scanned_mod = 0;
+        double scanned_mod = 5*100;
+        // scanned_mod = 0;
 
 
 
@@ -235,168 +240,168 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
 
 
 
-        new_frontiers = Grid::getImageFrontiers(new_cells);
+//         new_frontiers = Grid::getImageFrontiers(new_cells);
 
 
-    //global dist
+//     //global dist
 
-        double global_dist = 0;
-        for(auto &frontier_vec : new_frontiers){
-            for(auto &nf: frontier_vec){
-                global_dist += this->dist(point2Pair(nf), point2Pair(f));
-            }
-        }
+//         double global_dist = 0;
+//         for(auto &frontier_vec : new_frontiers){
+//             for(auto &nf: frontier_vec){
+//                 global_dist += this->dist(point2Pair(nf), point2Pair(f));
+//             }
+//         }
 
-        double global_dist_mod = -0.001;
-        global_dist_mod = 0;
-        score += global_dist_mod * global_dist;
-#ifdef COST_VEC_PRINT
-        *this->output << " Global Dist "<<  "," <<global_dist << "," << " Global Dist Contribution: " << "," <<  global_dist_mod * global_dist << ",";
-#endif
-
-
+//         double global_dist_mod = -0.001;
+//         global_dist_mod = 0;
+//         score += global_dist_mod * global_dist;
+// #ifdef COST_VEC_PRINT
+//         *this->output << " Global Dist "<<  "," <<global_dist << "," << " Global Dist Contribution: " << "," <<  global_dist_mod * global_dist << ",";
+// #endif
 
 
-        for(auto &nf : new_frontiers){
+
+
+//         for(auto &nf : new_frontiers){
             
-            double signed_dist = cv::pointPolygonTest(nf, this->pair2Point(this->coords), true);
-            // if(signed_dist < 0){
-            //     continue;
-            // }
+//             double signed_dist = cv::pointPolygonTest(nf, this->pair2Point(this->coords), true);
+//             // if(signed_dist < 0){
+//             //     continue;
+//             // }
 
-            double ctr_area = cv::contourArea(nf);
-            double ctr_perim = cv::arcLength(nf, true);
-            std::vector<cv::Point2i> hull_points;
+//             double ctr_area = cv::contourArea(nf);
+//             double ctr_perim = cv::arcLength(nf, true);
+//             std::vector<cv::Point2i> hull_points;
 
-            cv::convexHull(nf, hull_points);
-            double hull_area = cv::contourArea(hull_points);
-            double hull_perim = cv::arcLength(hull_points, true);
-            if(hull_area == 0){
-                // *this->output << "HUH?" << std::endl;
-                hull_area = 1;
-            }
+//             cv::convexHull(nf, hull_points);
+//             double hull_area = cv::contourArea(hull_points);
+//             double hull_perim = cv::arcLength(hull_points, true);
+//             if(hull_area == 0){
+//                 // *this->output << "HUH?" << std::endl;
+//                 hull_area = 1;
+//             }
 
-            cv::Mat hull_img = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
-            cv::drawContours(hull_img, new_frontiers, -1, cv::Scalar(0,0,255));
+//             cv::Mat hull_img = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
+//             cv::drawContours(hull_img, new_frontiers, -1, cv::Scalar(0,0,255));
             
-            std::vector<std::vector<cv::Point2i>> h;
-            h.push_back(hull_points);
-            cv::drawContours(hull_img, h, -1, cv::Scalar(255,0,0));
+//             std::vector<std::vector<cv::Point2i>> h;
+//             h.push_back(hull_points);
+//             cv::drawContours(hull_img, h, -1, cv::Scalar(255,0,0));
 
-#ifdef SHOW_IMG
-            cv::imshow("hull_img", hull_img);
-            cv::waitKey(WAITKEY_DELAY);
-#endif
-            double area_diff = abs(ctr_area-hull_area);
+// #ifdef SHOW_IMG
+//             cv::imshow("hull_img", hull_img);
+//             cv::waitKey(WAITKEY_DELAY);
+// #endif
+//             double area_rt = (ctr_area)/hull_area;
 
-            double area_mod = -0.03;
+//             double area_rt_mod = 3*100;
 
-            area_mod = 0;
+//             area_rt_mod = 0;
 
-            score += area_mod * area_diff;
-#ifdef COST_VEC_PRINT
-            *this->output << "Area diff: " << "," << area_diff << "," << " Area diff Contribution: " << "," << area_mod * area_diff << ",";
-#endif
+//             score += area_rt_mod * area_rt;
+// #ifdef COST_VEC_PRINT
+//             *this->output << "Area ratio: " << "," << area_rt << "," << " Area ratio Contribution: " << "," << area_rt_mod * area_rt << ",";
+// #endif
 
-            double perim_diff = abs(hull_perim);
+//             double perim_diff = abs(ctr_perim);
 
-            double perim_mod = 0.3;
+//             double perim_mod = -0.3;
 
-            perim_mod = 0;
+//             perim_mod = 0;
 
-            score += perim_mod * perim_diff;
-#ifdef COST_VEC_PRINT
-            *this->output << "Perim diff: " << "," << perim_diff << "," << " Perim diff Contribution: " << "," << perim_mod * perim_diff << ",";
-#endif
+//             score += perim_mod * perim_diff;
+// #ifdef COST_VEC_PRINT
+//             *this->output << "Perim diff: " << "," << perim_diff << "," << " Perim diff Contribution: " << "," << perim_mod * perim_diff << ",";
+// #endif
 
-        }
-
-
-
-
-
-//Inverse concavity check
-
-
-        cv::Mat inverse(new_cells.size(), CV_8UC1);
-        cv::threshold(new_cells, inverse, searching-1, 255, cv::THRESH_BINARY);
-        cv::bitwise_not(inverse, inverse);
-#ifdef SHOW_IMG
-        cv::imshow("inverse", inverse );
-        cv::waitKey(WAITKEY_DELAY);
-#endif
+//         }
 
 
 
 
-        std::vector<std::vector<cv::Point>> inverse_frontiers = Grid::getImageFrontiers(inverse);
+
+// //Inverse concavity check
 
 
-        if(inverse_frontiers.size() > 0){
-            double inv_ctr_perim = 0;
-            double inv_hull_perim = 0;
-            double inv_ctr_area = 0;
-            double inv_hull_area = 0;
-            // if(inverse_frontiers.size() > 1){
-            //     NO_OP;
-            // }
-            for(auto &iif : inverse_frontiers){
-                inv_ctr_area += cv::contourArea(iif);
-                inv_ctr_perim += cv::arcLength(iif, true);
-                std::vector<cv::Point2i> inv_hull_points;
+//         cv::Mat inverse(new_cells.size(), CV_8UC1);
+//         cv::threshold(new_cells, inverse, searching-1, 255, cv::THRESH_BINARY);
+//         cv::bitwise_not(inverse, inverse);
+// #ifdef SHOW_IMG
+//         cv::imshow("inverse", inverse );
+//         cv::waitKey(WAITKEY_DELAY);
+// #endif
 
-                cv::convexHull(iif, inv_hull_points);
-                inv_hull_area += cv::contourArea(inv_hull_points);
-                inv_hull_perim += cv::arcLength(inv_hull_points, true);
-                if(inv_hull_area == 0){
-                    // *this->output << "HUH?" << std::endl;
-                    inv_hull_area = 1;
-                }
 
-                cv::Mat inv_hull_img = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
-                cv::drawContours(inv_hull_img, inverse_frontiers, -1, cv::Scalar(0,0,255));
+
+
+//         std::vector<std::vector<cv::Point>> inverse_frontiers = Grid::getImageFrontiers(inverse);
+
+
+//         if(inverse_frontiers.size() > 0){
+//             double inv_ctr_perim = 0;
+//             double inv_hull_perim = 0;
+//             double inv_ctr_area = 0;
+//             double inv_hull_area = 0;
+//             // if(inverse_frontiers.size() > 1){
+//             //     NO_OP;
+//             // }
+//             for(auto &iif : inverse_frontiers){
+//                 inv_ctr_area += cv::contourArea(iif);
+//                 inv_ctr_perim += cv::arcLength(iif, true);
+//                 std::vector<cv::Point2i> inv_hull_points;
+
+//                 cv::convexHull(iif, inv_hull_points);
+//                 inv_hull_area += cv::contourArea(inv_hull_points);
+//                 inv_hull_perim += cv::arcLength(inv_hull_points, true);
+//                 if(inv_hull_area == 0){
+//                     // *this->output << "HUH?" << std::endl;
+//                     inv_hull_area = 1;
+//                 }
+
+//                 cv::Mat inv_hull_img = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
+//                 cv::drawContours(inv_hull_img, inverse_frontiers, -1, cv::Scalar(0,0,255));
                 
-                std::vector<std::vector<cv::Point2i>> inv_h = std::vector<std::vector<cv::Point2i>>();
-                inv_h.push_back(inv_hull_points);
-                cv::drawContours(inv_hull_img, inv_h, -1, cv::Scalar(255,0,0));
+//                 std::vector<std::vector<cv::Point2i>> inv_h = std::vector<std::vector<cv::Point2i>>();
+//                 inv_h.push_back(inv_hull_points);
+//                 cv::drawContours(inv_hull_img, inv_h, -1, cv::Scalar(255,0,0));
 
-#ifdef SHOW_IMG
-                cv::imshow("inv_hull_img", inv_hull_img);
-                cv::waitKey(WAITKEY_DELAY);
-#endif
-            }
-
-
-            double inv_area_ratio = inv_ctr_area/inv_hull_area;
-
-            double inv_area_rt_mod = 3*100;
-            inv_area_rt_mod = 0;
+// #ifdef SHOW_IMG
+//                 cv::imshow("inv_hull_img", inv_hull_img);
+//                 cv::waitKey(WAITKEY_DELAY);
+// #endif
+//             }
 
 
-            score += inv_area_rt_mod * inv_area_ratio;
+//             double inv_area_ratio = inv_ctr_area/inv_hull_area;
 
-            if(inv_hull_perim == 0) inv_hull_perim = 1;
-            double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
+//             double inv_area_rt_mod = 3*100;
+//             inv_area_rt_mod = 0;
 
-            double inv_perim_rt_mod = -3*100;
-            inv_perim_rt_mod = 0;
 
-            
-            score += inv_perim_rt_mod * inv_perim_ratio;
-#ifdef COST_VEC_PRINT   
-            *this->output << "Inverse Area ratio: " << "," << inv_area_ratio << "," << " Inv Area Ratio Contribution: " << "," << inv_area_rt_mod * inv_area_ratio << ",";
-#endif
-        }
+//             score += inv_area_rt_mod * inv_area_ratio;
+
+//             if(inv_hull_perim == 0) inv_hull_perim = 1;
+//             double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
+
+//             double inv_perim_rt_mod = -3*100;
+//             inv_perim_rt_mod = 0;
 
             
-            double hole_value = pow(100, (int)(inverse_frontiers.size()) -1);
-            double hole_mod = -1;
-            hole_mod = 0;
-            score += hole_mod * hole_value;
+//             score += inv_perim_rt_mod * inv_perim_ratio;
+// #ifdef COST_VEC_PRINT   
+//             *this->output << "Inverse Area ratio: " << "," << inv_area_ratio << "," << " Inv Area Ratio Contribution: " << "," << inv_area_rt_mod * inv_area_ratio << ",";
+// #endif
+//         }
+
             
-#ifdef COST_VEC_PRINT   
-            *this->output << "Hole count: " << "," << inverse_frontiers.size()-1 << "," << " Hole count Contribution " << ","<< hole_mod * hole_value << ",";
-#endif
+//             double hole_value = pow(100, (int)(inverse_frontiers.size()) -1);
+//             double hole_mod = -1;
+//             // hole_mod = 0;
+//             score += hole_mod * hole_value;
+            
+// #ifdef COST_VEC_PRINT   
+//             *this->output << "Hole count: " << "," << inverse_frontiers.size()-1 << "," << " Hole count Contribution " << ","<< hole_mod * hole_value << ",";
+// #endif
 
 
 

@@ -80,7 +80,8 @@ int main (int argc, char* argv[]){
                 cv::imshow("map", map);
                 cv::waitKey(1);
 #endif
-            
+                a1.updateCertainty(f);
+                a2.updateCertainty(f); 
 
                 while(true){
                     // cv::waitKey(0);
