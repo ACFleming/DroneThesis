@@ -10,24 +10,10 @@
 #include "Ring.hpp"
 #include "BoundingPoints.hpp"
 
-#define WAITKEY_DELAY 0
-
-#define BASE "base_certainty"
-#define MAP "map_of_grid"
-#define LOCATIONS "locations_of_sources"
 
 
 
-#define COST_VEC_PRINT
-// #define SHOW_IMG
 
-
-enum grid_vals{
-    empty = 0,
-    searching = 100,
-    unknown = 200,
-    occupied = 255
-};
 
 
 class Grid
@@ -64,7 +50,7 @@ public:
 
     void prepareForUpdate(std::pair<int,int> point, int range);
 
-    void receiveMeasurement( double measurement);
+    void receiveMeasurement(double measurement, double std_dev);
 
     void updateCertainty();
 

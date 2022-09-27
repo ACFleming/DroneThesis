@@ -48,28 +48,15 @@
 
 
 
-Ring::Ring(int x_width, int y_length, int centre_x, int centre_y, double middle_radius, double ring_width, std::string name){
+
+Ring::Ring(int x_width, int y_length, int centre_x, int centre_y, double mean, double std_dev){
     this->x_width = x_width;
     this->y_length = y_length;
     this->centre_x = centre_x;
     this->centre_y = centre_y;
-    this->middle_radius = middle_radius;  
-    this->ring_width = ring_width;
+    this->mean = std::max(mean, 1.0);  
+    this->std_dev = std_dev;
     this->canvas = cv::Mat::zeros(cv::Size(this->x_width, this->y_length), CV_8UC1);
-    this->name = name;
-    
-}
-
-
-Ring::Ring(int x_width, int y_length, int centre_x, int centre_y, double middle_radius, double ring_width){
-    this->x_width = x_width;
-    this->y_length = y_length;
-    this->centre_x = centre_x;
-    this->centre_y = centre_y;
-    this->middle_radius = std::max(middle_radius, 1.0);  
-    this->ring_width = ring_width;
-    this->canvas = cv::Mat::zeros(cv::Size(this->x_width, this->y_length), CV_8UC1);
-    this->name = "Dummy";
 
     
 }
@@ -79,10 +66,9 @@ Ring::Ring(){
     this->y_length = 1;
     this->centre_x = 0;
     this->centre_y = 0;
-    this->middle_radius = 0;
-    this->ring_width = 0;
+    this->mean = 1;
+    this->std_dev = 0;
     this->canvas = cv::Mat::zeros(cv::Size(this->x_width, this->y_length), CV_8UC1);
-    this->name = "";
 }
 
 Ring::~Ring() {
@@ -91,15 +77,23 @@ Ring::~Ring() {
 }
 
 void Ring::drawRing(){
-    // cv::circle(this->canvas, cv::Point2i(this->centre_x, this->centre_y), this->middle_radius, cv::Scalar(255),0);
-    int outer_radius =  std::max(this->middle_radius+0.5*this->ring_width, 1.0);
-    int inner_radius =  std::max(this->middle_radius-0.5*this->ring_width, 0.0);
-    //both outer and inner are at least 1;
-    cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y),  outer_radius, cv::Scalar(255), -1);
-    if(this->ring_width > 0 && inner_radius>=1){//if not asked to fill
-        cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y), inner_radius, cv::Scalar(0), -1);
-
+    
+    if(std_dev < 0){
+        double scan_radius = this->mean;
+        cv::circle(this->canvas, cv::Point2i(200,200), this->mean,  scan_radius,std_dev);
+        cv::bitwise_not(this->canvas, this->canvas);
+    }else{
+        //change step size for more precision
+        for(int c = 2; c >= 0; c = c-1){
+            std::cout << 150*exp(-0.5*pow(c,2)) << std::endl;
+            std::cout << 2*(c+1)*std_dev << std::endl;
+            cv::circle(this->canvas, cv::Point2i(200,200), this->mean,  cv::Scalar(likely*exp(-0.5*pow(c,2))), 2*(c+1)*this->std_dev);
+        }
     }
+
+    
+
+
 
 
 }
@@ -111,11 +105,3 @@ cv::Mat Ring::getCanvas(){
 
 
 
-std::string Ring::getName() {
-    return this->name;
-}
-
-bool Ring::isNull(){
-    return this->name == "" ? true : false;
-    
-}

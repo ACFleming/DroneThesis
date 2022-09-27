@@ -61,7 +61,7 @@ Grid::Grid(int field_x_width, int field_y_length, int value){
     Grid::field_y_length = field_y_length;
     this->name = BASE;
     this->signal_ring = Ring();
-    this->signal_likelihood = cv::Mat(Grid::field_y_length, Grid::field_x_width, CV_8UC1, cv::Scalar(unknown));
+    this->signal_likelihood = cv::Mat(Grid::field_y_length, Grid::field_x_width, CV_8UC1, cv::Scalar(searching));
     this->signal_bounds = BoundingPoints();
     this->found = true;
 
@@ -94,13 +94,13 @@ void Grid::prepareForUpdate(std::pair<int, int> point, int range){
 
 
 
-void Grid::receiveMeasurement(double measurement) {
+void Grid::receiveMeasurement(double measurement, double std_dev) {
     
     //NOTE ring with should be 6*std_dev
     
     // std::cout << this->name << " @ dist " << measurement << std::endl;
     // std::cout << "Measured from: " << this->measurement_point.first << "," << this->measurement_point.second << std::endl; 
-    this->signal_ring = Ring(this->field_x_width, this->field_y_length, this->measurement_point.first, this->measurement_point.second,measurement, 18, name );
+    this->signal_ring = Ring(this->field_x_width, this->field_y_length, this->measurement_point.first, this->measurement_point.second, measurement,std_dev);
     this->signal_ring.drawRing();
     this->updated = true;
 

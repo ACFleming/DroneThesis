@@ -28,7 +28,7 @@ int Agent::step_counter = 0;
     y
     */
 
-Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius, int speed, std::map<std::string, Grid> *certainty_grids) {
+Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length,  double scan_radius, double measurement_std_dev, double speed, std::map<std::string, Grid> *certainty_grids) {
     this->coords = std::make_pair(x_coord, y_coord);
     this->name = name;
     this->field_x_width = field_width;
@@ -36,8 +36,8 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->scan_radius = scan_radius;
     this->speed = speed;
     this->certainty_grids = certainty_grids;
-    this->certainty_grids->insert(std::pair<std::string, Grid>(BASE,Grid(this->field_x_width, this->field_y_length, unknown)));
-    this->certainty_grids->insert(std::pair<std::string, Grid>(MAP,Grid(this->field_x_width, this->field_y_length, unknown)));
+    this->certainty_grids->insert(std::pair<std::string, Grid>(BASE,Grid(this->field_x_width, this->field_y_length, searching)));
+    this->certainty_grids->insert(std::pair<std::string, Grid>(MAP,Grid(this->field_x_width, this->field_y_length, searching)));
     this->output = &std::cout;
 
 
@@ -129,7 +129,7 @@ void Agent::updateCertainty(Field f){
             this->certainty_grids->at(m.first).prepareForUpdate(this->coords, this->scan_radius);
         }
         *this->output << "Signal name: " << "," << m.first << "," << " Signal value: " << "," << m.second << std::endl;
-        this->certainty_grids->at(m.first).receiveMeasurement(m.second);
+        this->certainty_grids->at(m.first).receiveMeasurement(m.second, this->measurement_std_dev);
 
     }
 
@@ -444,7 +444,7 @@ std::pair<int,int> Agent::determineAction(){
 
 
     cv::Mat seen = cv::Mat::zeros(this->field_y_length,this->field_x_width,CV_8UC3); 
-    cv::threshold(this->certainty_grids->at(MAP).getLikelihood(), seen,unknown-1, unknown, cv::THRESH_BINARY_INV);
+    cv::threshold(this->certainty_grids->at(MAP).getLikelihood(), seen,searching-1, 255, cv::THRESH_BINARY_INV);
 
     this->frontiers = Grid::getImageFrontiers(seen);
 

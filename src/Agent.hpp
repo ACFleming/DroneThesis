@@ -32,8 +32,9 @@ private:
     std::string name;
     int field_x_width;
     int field_y_length;
-    int scan_radius;
-    int speed;
+    double scan_radius;
+    double measurement_std_dev;
+    double speed;
 
     
     
@@ -50,7 +51,7 @@ private:
 // should probably change these ints to double? the ints is nice for cartesian stuff
 
 public:
-    Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, int scan_radius, int speed, std::map<std::string, Grid> *certainty_grids);
+    Agent(std::string name, int x_coord, int y_coord, int field_width, int field_length, double scan_radius, double measurement_std_dev, double speed, std::map<std::string, Grid> *certainty_grids);
     ~Agent();
     static int step_counter;
 
