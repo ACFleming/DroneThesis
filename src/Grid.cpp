@@ -55,15 +55,15 @@ Grid::Grid(){
 }
 
 
-Grid::Grid(int field_x_width, int field_y_length, int value){
+Grid::Grid(std::string name, int field_x_width, int field_y_length, int value){
 
     Grid::field_x_width = field_x_width;
     Grid::field_y_length = field_y_length;
-    this->name = BASE;
+    this->name = name;
     this->signal_ring = Ring();
     this->signal_likelihood = cv::Mat(Grid::field_y_length, Grid::field_x_width, CV_8UC1, cv::Scalar(searching));
     this->signal_bounds = BoundingPoints();
-    this->found = true;
+    this->found = false;
 
 }
 
@@ -116,13 +116,16 @@ void Grid::updateCertainty(){
     cv::Mat temp = this->signal_likelihood.clone();
 #ifdef SHOW_IMG
     cv::imshow(this->name,this->signal_likelihood );
-#endif
     cv::waitKey(WAITKEY_DELAY);
+#endif
+
     if(this->updated == false){ //i.e no new info  (Note: this should always trigger for base & map certainty grid)
         this->signal_ring = Ring(this->field_x_width, this->field_y_length, this->measurement_point.first, this->measurement_point.second, this->measurement_range,-1);
+        
     }   
     // cv::imshow("new measurement", this->signal_ring.getCanvas());
     // cv::waitKey(WAITKEY_DELAY);
+    this->signal_ring.drawRing();
     cv::bitwise_and(this->signal_likelihood, this->signal_ring.getCanvas(), temp);
 
 
@@ -149,7 +152,9 @@ void Grid::updateCertainty(){
             this->signal_bounds= one_std_confidence;
             
         }
-    } 
+    }else{
+        this->signal_likelihood = temp;
+    }
 #ifdef SHOW_IMG
     cv::imshow(this->name,this->signal_likelihood );
     cv::waitKey(WAITKEY_DELAY);

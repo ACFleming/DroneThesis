@@ -187,7 +187,7 @@ int main (int argc, char* argv[]){
                 // cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
                     
                 cv::imshow("map", map);
-                cv::waitKey(1);
+                cv::waitKey(WAITKEY_DELAY);
 #endif
                 a1.updateCertainty(f);
                 a2.updateCertainty(f); 

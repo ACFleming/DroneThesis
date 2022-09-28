@@ -36,8 +36,8 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->scan_radius = scan_radius;
     this->speed = speed;
     this->certainty_grids = certainty_grids;
-    this->certainty_grids->insert(std::pair<std::string, Grid>(BASE,Grid(this->field_x_width, this->field_y_length, searching)));
-    this->certainty_grids->insert(std::pair<std::string, Grid>(MAP,Grid(this->field_x_width, this->field_y_length, searching)));
+    this->certainty_grids->insert(std::pair<std::string, Grid>(BASE,Grid(BASE, this->field_x_width, this->field_y_length, searching)));
+    this->certainty_grids->insert(std::pair<std::string, Grid>(MAP,Grid(MAP, this->field_x_width, this->field_y_length, searching)));
     this->output = &std::cout;
 
 
@@ -490,7 +490,7 @@ std::pair<int,int> Agent::determineAction(){
 
     //add signal bounds to the priority frontier list
     for(auto &kv_name_grid: *(this->certainty_grids)){
-        if(kv_name_grid.second.isFound() == false){//if not found
+        if(kv_name_grid.second.isFound() == false && kv_name_grid.first != MAP && kv_name_grid.first != BASE){//if not found
             for(auto &p: kv_name_grid.second.getSignalBounds().getBounds()){
                 signal_frontiers.insert(p);
                 priority_frontiers.push_back(p);

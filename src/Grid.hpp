@@ -42,7 +42,7 @@ private:
 
 public:
     Grid();
-    Grid(int field_x_width, int field_y_length, int value);
+    Grid(std::string name, int field_x_width, int field_y_length, int value);
     Grid(std::string name, cv::Mat base_certainty);
     ~Grid();
 
