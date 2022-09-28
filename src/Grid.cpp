@@ -111,41 +111,45 @@ void Grid::receiveMeasurement(double measurement, double std_dev) {
 void Grid::updateCertainty(){
 
 
-    if(found && name!=BASE && name != MAP ) return;
+    if(found) return;
 
     cv::Mat temp = this->signal_likelihood.clone();
 #ifdef SHOW_IMG
     cv::imshow(this->name,this->signal_likelihood );
 #endif
     cv::waitKey(WAITKEY_DELAY);
-    if(!updated){ //i.e no new info  (Note: this should always trigger for base & map certainty grid)
-        cv::Mat inv = Grid::rangeMask(this->measurement_point, this->measurement_range, 255);
-        cv::bitwise_not(inv, inv);
-        // cv::imshow("inv", inv);
-        // cv::waitKey(WAITKEY_DELAY);
-        cv::bitwise_and(inv, this->signal_likelihood,temp); 
-    }else{
-        // cv::imshow("new measurement", this->signal_ring.getCanvas());
-        // cv::waitKey(WAITKEY_DELAY);
-        cv::bitwise_and(this->signal_likelihood, this->signal_ring.getCanvas(), temp);
-
-    }
+    if(this->updated == false){ //i.e no new info  (Note: this should always trigger for base & map certainty grid)
+        this->signal_ring = Ring(this->field_x_width, this->field_y_length, this->measurement_point.first, this->measurement_point.second, this->measurement_range,-1);
+    }   
+    // cv::imshow("new measurement", this->signal_ring.getCanvas());
+    // cv::waitKey(WAITKEY_DELAY);
+    cv::bitwise_and(this->signal_likelihood, this->signal_ring.getCanvas(), temp);
 
 
-    if(this->found == false){ //dont need to calculate bounding for base or map
-        BoundingPoints bp = BoundingPoints(temp);
-        if(bp.getArea() >= 30){
-            this->signal_bounds = bp;
-            this->signal_likelihood = temp;           
-        } 
 
-        if(this->signal_bounds.getArea() <= 300){
+
+    if(this->name != BASE && this->name != MAP){ //dont need to calculate bounding for base or map
+        cv::Mat three_std_devs = temp.clone();
+        cv::threshold(temp, three_std_devs, likely*exp(-0.5*pow(3,2)-1), 255, cv::THRESH_BINARY_INV);
+        cv::Mat one_std_dev = temp.clone();
+        cv::threshold(temp, one_std_dev, likely*exp(-0.5*pow(1,2)-1), 255, cv::THRESH_BINARY_INV);
+
+        BoundingPoints three_std_confidence = BoundingPoints(three_std_devs);
+        if(three_std_confidence.getArea() <= 30){
+            return;
+        
+        }else if(three_std_confidence.getArea() <= 300){
             this->found = true;
-            // std::cout << "Signal found at or near: " << this->signal_bounds.getCentre().x  << "," << this->signal_bounds.getCentre().y << std::endl;
-        }  
-    }else{
-        this->signal_likelihood = temp; 
-    }
+            this->signal_bounds = three_std_confidence;
+            this->signal_likelihood = three_std_devs;
+
+        }else{
+            this->found = false;
+            BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
+            this->signal_bounds= one_std_confidence;
+            
+        }
+    } 
 #ifdef SHOW_IMG
     cv::imshow(this->name,this->signal_likelihood );
     cv::waitKey(WAITKEY_DELAY);

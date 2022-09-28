@@ -80,14 +80,14 @@ void Ring::drawRing(){
     
     if(std_dev < 0){
         double scan_radius = this->mean;
-        cv::circle(this->canvas, cv::Point2i(200,200), this->mean,  scan_radius,std_dev);
+        cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y), scan_radius, likely, std_dev);
         cv::bitwise_not(this->canvas, this->canvas);
     }else{
         //change step size for more precision
         for(int c = 2; c >= 0; c = c-1){
-            std::cout << 150*exp(-0.5*pow(c,2)) << std::endl;
+            std::cout << likely*exp(-0.5*pow(c,2)) << std::endl;
             std::cout << 2*(c+1)*std_dev << std::endl;
-            cv::circle(this->canvas, cv::Point2i(200,200), this->mean,  cv::Scalar(likely*exp(-0.5*pow(c,2))), 2*(c+1)*this->std_dev);
+            cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y), this->mean,  cv::Scalar(likely*exp(-0.5*pow(c,2))), 2*(c+1)*this->std_dev);
         }
     }
 
