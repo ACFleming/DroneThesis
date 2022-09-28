@@ -34,11 +34,13 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->field_x_width = field_width;
     this->field_y_length = field_length;
     this->scan_radius = scan_radius;
+    this->measurement_std_dev = measurement_std_dev;
     this->speed = speed;
     this->certainty_grids = certainty_grids;
-    this->certainty_grids->insert(std::pair<std::string, Grid>(BASE,Grid(BASE, this->field_x_width, this->field_y_length, searching)));
+    // this->certainty_grids->insert(std::pair<std::string, Grid>(BASE,Grid(BASE, this->field_x_width, this->field_y_length, searching)));
     this->certainty_grids->insert(std::pair<std::string, Grid>(MAP,Grid(MAP, this->field_x_width, this->field_y_length, searching)));
     this->output = &std::cout;
+
 
 
 }
@@ -125,7 +127,9 @@ void Agent::updateCertainty(Field f){
     for(auto &m: measurements){
 
         if(this->certainty_grids->count(m.first) == 0){ //if no existing grid region
-            this->certainty_grids->insert(std::pair<std::string, Grid> (m.first, Grid(m.first, this->certainty_grids->at(BASE).getLikelihood().clone())));
+            cv::Mat base = this->certainty_grids->at(MAP).getLikelihood().clone();
+            cv::threshold(base, base, searching-1, 255, cv::THRESH_BINARY);
+            this->certainty_grids->insert(std::pair<std::string, Grid> (m.first, Grid(m.first, base)));
             this->certainty_grids->at(m.first).prepareForUpdate(this->coords, this->scan_radius);
         }
         *this->output << "Signal name: " << "," << m.first << "," << " Signal value: " << "," << m.second << std::endl;
@@ -180,7 +184,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
         if(signal_frontiers.count(f) > 0 ){ //if its a signal frontier point;
             double signal_mod = 500;
             // signal_mod = 0;
-            // score += signal_mod;
+            score += signal_mod;
         }
 
         if(hole_centres.count(f) > 0 ){ //if its a signal frontier point;
@@ -193,12 +197,12 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
         // double dist = this->dist(this->coords, this->point2Pair(f));
         double horizontal_dist = abs(this->coords.first - f.x);
         double vertical_dist = abs(this->coords.second - f.y); 
-        double horiz_mod = -0.01;
-        double vert_mod = -1;
+        double horiz_mod = 0.01;
+        double vert_mod = 1;
         double dist = hypot(horiz_mod*horizontal_dist, vert_mod*vertical_dist);
 
 
-        double dist_mod = -0.5;
+        double dist_mod = -5;
         
         score += dist_mod  * dist;
         // score += dist_mod*exp(dist/this->scan_radius);
@@ -227,7 +231,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
 
         double new_scanned_ratio = (new_scanned_count-old_scanned_count)/old_scanned_count;
         
-        double scanned_mod = 5*100;
+        double scanned_mod = 1*100;
         // scanned_mod = 0;
 
 
@@ -240,7 +244,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
 
 
 
-//         new_frontiers = Grid::getImageFrontiers(new_cells);
+        new_frontiers = Grid::getImageFrontiers(new_cells);
 
 
 //     //global dist
@@ -478,7 +482,10 @@ std::pair<int,int> Agent::determineAction(){
         for(auto &f: f_vec){
             double dist = this->dist(this->coords, this->point2Pair(f));
             int edge_root_func = (f.x*(field_x_width-1-f.x)) + (f.y*(field_y_length-1-f.y));
-            if(dist < 2 || dist > 2*this->speed || edge_root_func == 0){
+            if( edge_root_func == 0){
+                continue;
+            }   
+            if(dist < 2 || dist > 2*this->speed){
                 cv::circle(priority_img, f,2,cv::Scalar(255,0,255));
                 reserve_frontiers.push_back(f);
             }else{
@@ -490,7 +497,7 @@ std::pair<int,int> Agent::determineAction(){
 
     //add signal bounds to the priority frontier list
     for(auto &kv_name_grid: *(this->certainty_grids)){
-        if(kv_name_grid.second.isFound() == false && kv_name_grid.first != MAP && kv_name_grid.first != BASE){//if not found
+        if(kv_name_grid.second.isFound() == false && kv_name_grid.first != MAP){//if not found
             for(auto &p: kv_name_grid.second.getSignalBounds().getBounds()){
                 signal_frontiers.insert(p);
                 priority_frontiers.push_back(p);
@@ -558,7 +565,7 @@ std::pair<int,int> Agent::determineAction(){
         // *this->output << "SHOULD BE DONE!" << std::endl;
         std::vector<cv::Point2i> missed_spots;
 
-        cv::findNonZero(this->certainty_grids->at(BASE).getLikelihood(),missed_spots);
+        cv::findNonZero(this->certainty_grids->at(MAP).getLikelihood(),missed_spots);
 
         if(missed_spots.size() == 0){ //fully explored
             // *this->output <<"DONE!" << std::endl;
@@ -566,7 +573,7 @@ std::pair<int,int> Agent::determineAction(){
         }
 
         this->costFunction(seen, reserve_frontiers, signal_frontiers, hole_centres,  best_point,best_score);
-        if(best_score < 1000){ 
+        if(best_score < -1000){ 
             double missed_p_dist = this->field_x_width*this->field_x_width + this->field_y_length*this->field_y_length;
             for(auto &p: missed_spots){
                 if(missed_p_dist > this->dist(this->coords, this->point2Pair(p))){
@@ -657,7 +664,7 @@ cv::Mat Agent::getSignalLocations() {
     cv::Mat confirmed = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
     cv::Mat temp = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
     for(auto &kv_name_grid: *(this->certainty_grids)){
-        if(kv_name_grid.second.isFound() && kv_name_grid.first != BASE && kv_name_grid.first != MAP){
+        if(kv_name_grid.second.isFound() && kv_name_grid.first != MAP){
             temp = kv_name_grid.second.getLikelihood().clone();
             cv::cvtColor(temp, temp, cv::COLOR_GRAY2BGR);
             // cv::imshow(kv_name_grid.first+" coloured", temp);
@@ -689,7 +696,7 @@ void Agent::logAgent() {
     
     *this->output << "Steps taken: " << "," << Agent::step_counter << std::endl;
     for(auto &kv_name_grid: *(this->certainty_grids)){
-        if(kv_name_grid.first == BASE || kv_name_grid.first == MAP ) continue;
+        if(kv_name_grid.first == MAP ) continue;
         *this->output << kv_name_grid.first << ","  << kv_name_grid.second.getSignalBounds().getCentre().x << " , " << kv_name_grid.second.getSignalBounds().getCentre().y << std::endl;
         *this->output << "Likelihood area: " << "," << kv_name_grid.second.getSignalBounds().getArea() << std::endl;
     }

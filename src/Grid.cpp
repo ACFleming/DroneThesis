@@ -64,6 +64,7 @@ Grid::Grid(std::string name, int field_x_width, int field_y_length, int value){
     this->signal_likelihood = cv::Mat(Grid::field_y_length, Grid::field_x_width, CV_8UC1, cv::Scalar(searching));
     this->signal_bounds = BoundingPoints();
     this->found = false;
+    this->ping_counter = 0;
 
 }
 
@@ -74,6 +75,7 @@ Grid::Grid(std::string name, cv::Mat base_certainty){
     this->signal_likelihood = base_certainty.clone();
     this->signal_bounds = BoundingPoints();
     this->found = false;
+    this->ping_counter = 0;
 
 }
 
@@ -114,34 +116,45 @@ void Grid::updateCertainty(){
     if(found) return;
 
     cv::Mat temp = this->signal_likelihood.clone();
-#ifdef SHOW_IMG
-    cv::imshow(this->name,this->signal_likelihood );
+// #ifdef SHOW_IMG
+    cv::imshow(std::string(" Before"),this->signal_likelihood );
     cv::waitKey(WAITKEY_DELAY);
-#endif
+// #endif
 
     if(this->updated == false){ //i.e no new info  (Note: this should always trigger for base & map certainty grid)
         this->signal_ring = Ring(this->field_x_width, this->field_y_length, this->measurement_point.first, this->measurement_point.second, this->measurement_range,-1);
         
+    }else{
+        this->ping_counter++;
     }   
     // cv::imshow("new measurement", this->signal_ring.getCanvas());
     // cv::waitKey(WAITKEY_DELAY);
     this->signal_ring.drawRing();
     cv::bitwise_and(this->signal_likelihood, this->signal_ring.getCanvas(), temp);
+// #ifdef SHOW_IMG
+    cv::imshow(std::string(" result"), temp );
+    cv::waitKey(WAITKEY_DELAY);
+// #endif
 
 
-
-
-    if(this->name != BASE && this->name != MAP){ //dont need to calculate bounding for base or map
+    if(this->name != MAP){ //dont need to calculate bounding for map
         cv::Mat three_std_devs = temp.clone();
-        cv::threshold(temp, three_std_devs, likely*exp(-0.5*pow(3,2)-1), 255, cv::THRESH_BINARY_INV);
+        cv::threshold(temp, three_std_devs, likely*exp(-0.5*pow(3,2))-1, 255, cv::THRESH_BINARY);
         cv::Mat one_std_dev = temp.clone();
-        cv::threshold(temp, one_std_dev, likely*exp(-0.5*pow(1,2)-1), 255, cv::THRESH_BINARY_INV);
+        cv::threshold(temp, one_std_dev, likely*exp(-0.5*pow(1,2))-1, 255, cv::THRESH_BINARY);
+// #ifdef SHOW_IMG
+        cv::imshow(std::string(" 3 std desv"),three_std_devs );
+        cv::waitKey(WAITKEY_DELAY);
+// #endif
+// #ifdef SHOW_IMG
+        cv::imshow(std::string(" 1 std dev"),one_std_dev );
+        cv::waitKey(WAITKEY_DELAY);
+// #endif
+
+
 
         BoundingPoints three_std_confidence = BoundingPoints(three_std_devs);
-        if(three_std_confidence.getArea() <= 30){
-            return;
-        
-        }else if(three_std_confidence.getArea() <= 300){
+        if(three_std_confidence.getArea() <= 300 || this->ping_counter > 5){
             this->found = true;
             this->signal_bounds = three_std_confidence;
             this->signal_likelihood = three_std_devs;
@@ -150,15 +163,16 @@ void Grid::updateCertainty(){
             this->found = false;
             BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
             this->signal_bounds= one_std_confidence;
+            this->signal_likelihood = one_std_dev;
             
         }
     }else{
         this->signal_likelihood = temp;
     }
-#ifdef SHOW_IMG
-    cv::imshow(this->name,this->signal_likelihood );
+// #ifdef SHOW_IMG
+    cv::imshow(std::string(" After"),this->signal_likelihood );
     cv::waitKey(WAITKEY_DELAY);
-#endif
+// #endif
 
 
 

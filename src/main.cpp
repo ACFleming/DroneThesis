@@ -132,7 +132,7 @@ int main (int argc, char* argv[]){
 
 
     int num_tests = 100;
-    int rand_seed_start = 20;
+    int rand_seed_start = 23;
     int source_start = 7;
     int max_sources = 10;
     for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){
@@ -200,13 +200,14 @@ int main (int argc, char* argv[]){
                     std::pair<int,int> a1_curr = a1.getCoords();
                     std::cout << "Drone 1 at: " << a1_curr.first << "," << a1_curr.second << std::endl;
                     std::cout << "Step: " << Agent::step_counter << std::endl;
-                    a1.updateCertainty(f);    
+                       
                     std::pair<int,int> a1_dest = a1.determineAction();
                     if(a1_dest.first == -1 ){ //exploration complete
                         break;
                     }
                     a1_dest = a1.moveToPosition(a1_dest);
-                    a1.updateMap();
+                    // a1.updateMap();
+                    a1.updateCertainty(f); 
 
 
                     cv::line(map, a1.pair2Point(a1_dest), a1.pair2Point(a1_curr),cv::Scalar(0,255,0));
@@ -225,13 +226,14 @@ int main (int argc, char* argv[]){
                     std::pair<int,int> a2_curr = a2.getCoords();
                     std::cout << "Drone 2 at: " << a2_curr.first << "," << a2_curr.second << std::endl;
                     std::cout << "Step: " << Agent::step_counter << std::endl;
-                    a2.updateCertainty(f);    
+                     
                     std::pair<int,int> a2_dest = a2.determineAction();
                     if(a2_dest.first == -1 ){ //exploration complete
                         break;
                     }
                     a2_dest = a2.moveToPosition(a2_dest);
-                    a2.updateMap();
+                    // a2.updateMap();
+                    a2.updateCertainty(f);   
 
                     cv::line(map, a2.pair2Point(a2_dest), a2.pair2Point(a2_curr),cv::Scalar(0,0,255));
                     cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));

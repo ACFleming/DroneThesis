@@ -33,6 +33,7 @@ private:
     BoundingPoints signal_bounds;
     bool updated;
     bool found;
+    int ping_counter;
 
     
 
