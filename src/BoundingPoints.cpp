@@ -1,34 +1,44 @@
 #include "BoundingPoints.hpp"
 BoundingPoints::BoundingPoints(){
-    cv::Mat img  = cv::Mat::ones(10,10,CV_8UC1);
-    this->bound = cv::boundingRect(img);
-    int x_tl = this->bound.tl().x;
-    int y_tl = this->bound.tl().y;
-    int x_br = this->bound.br().x;
-    int y_br = this->bound.br().y;
+    cv::Mat img  = cv::Mat::zeros(100,100,CV_8UC1);
+    cv::line(img, cv::Point2i(20,20), cv::Point2i(20,70), cv::Scalar(255));
+    cv::line(img, cv::Point2i(20,70), cv::Point2i(70,70), cv::Scalar(255));
+    cv::line(img, cv::Point2i(70,70), cv::Point2i(70,20), cv::Scalar(255));
+    cv::line(img, cv::Point2i(70,20), cv::Point2i(20,20), cv::Scalar(255));
+    cv::imshow("IMG", img);
+    cv::waitKey(0);
+    std::vector<cv::Point2i> p;
+    cv::findNonZero(img, p);
+    this->rect = cv::minAreaRect(p);
+    // this->bound = cv::boundingRect(image);
+    cv::Point2f points[4];
+    this->rect.points(points);
+        
 
 
-    this->top = cv::Point2i((x_tl+x_br)/2, y_tl);
-    this->left = cv::Point2i(x_tl, (y_tl+y_br)/2);
-    this->right = cv::Point2i(x_br, (y_tl+y_br)/2);
-    this->bottom = cv::Point2i((x_tl+x_br)/2, y_br);
-    this->centre = cv::Point2i((x_tl+x_br)/2, (y_tl+y_br)/2);
+    this->bottom = points[0];
+    this->left = points[1];
+    this->top = points[2];
+    this->right = points[3];
+    this->centre = this->rect.center;
 }
 
 BoundingPoints::BoundingPoints(cv::Mat image) {
-    this->bound = cv::boundingRect(image);
+    std::vector<cv::Point2i> p;
+    cv::findNonZero(image, p);
+    this->rect = cv::minAreaRect(p);
+    // this->bound = cv::boundingRect(image);
+    cv::Point2f points[4];
+    this->rect.points(points);
         
-    int x_tl = this->bound.tl().x;
-    int y_tl = this->bound.tl().y;
-    int x_br = this->bound.br().x;
-    int y_br = this->bound.br().y;
 
 
-    this->top = cv::Point2i((x_tl+x_br)/2, y_tl);
-    this->left = cv::Point2i(x_tl, (y_tl+y_br)/2);
-    this->right = cv::Point2i(x_br, (y_tl+y_br)/2);
-    this->bottom = cv::Point2i((x_tl+x_br)/2, y_br);
-    this->centre = cv::Point2i((x_tl+x_br)/2, (y_tl+y_br)/2);
+    this->bottom = points[0];
+    this->left = points[1];
+    this->top = points[2];
+    this->right = points[3];
+    this->centre = this->rect.center;
+
     
        /*
           
@@ -58,7 +68,7 @@ BoundingPoints::BoundingPoints(cv::Mat image) {
 
 
 int BoundingPoints::getArea() {
-    return this->bound.area();
+    return this->rect.size.area();
 }
 
 cv::Point2i BoundingPoints::getTop() {

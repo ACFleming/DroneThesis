@@ -90,7 +90,7 @@ void Grid::markPoint(std::pair<int,int> point, int value){
 void Grid::prepareForUpdate(std::pair<int, int> point, int range){
     this->signal_ring = Ring();
     this->updated = false;
-    this->measurement_point = point;
+    this->measurement_point = point; 
     this->measurement_range = range;
 }
 
@@ -140,20 +140,25 @@ void Grid::updateCertainty(){
     if(this->name != MAP){ //dont need to calculate bounding for map
         cv::Mat three_std_devs = temp.clone();
         cv::threshold(temp, three_std_devs, likely*exp(-0.5*pow(3,2))-1, 255, cv::THRESH_BINARY);
-        cv::Mat one_std_dev = temp.clone();
-        cv::threshold(temp, one_std_dev, likely*exp(-0.5*pow(1,2))-1, 255, cv::THRESH_BINARY);
+        BoundingPoints three_std_confidence = BoundingPoints(three_std_devs);
 // #ifdef SHOW_IMG
         cv::imshow(std::string(" 3 std desv"),three_std_devs );
         cv::waitKey(WAITKEY_DELAY);
 // #endif
+
+
+
+        cv::Mat one_std_dev = temp.clone();
+        cv::threshold(temp, one_std_dev, likely*exp(-0.5*pow(1,2))-1, 255, cv::THRESH_BINARY);
+        BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
+        // for(int i = 0; i < 4; i++){
+        //     cv::line(one_std_dev, three_std_confidence.getBounds()[i], three_std_confidence.getBounds()[(i+1)%4], cv::Scalar(255));
+        // }
 // #ifdef SHOW_IMG
         cv::imshow(std::string(" 1 std dev"),one_std_dev );
         cv::waitKey(WAITKEY_DELAY);
 // #endif
 
-
-
-        BoundingPoints three_std_confidence = BoundingPoints(three_std_devs);
         if(three_std_confidence.getArea() <= 300 || this->ping_counter > 5){
             this->found = true;
             this->signal_bounds = three_std_confidence;
@@ -161,7 +166,7 @@ void Grid::updateCertainty(){
 
         }else{
             this->found = false;
-            BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
+            
             this->signal_bounds= one_std_confidence;
             this->signal_likelihood = one_std_dev;
             

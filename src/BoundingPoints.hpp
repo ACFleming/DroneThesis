@@ -14,7 +14,7 @@
 class BoundingPoints
 {
 private:
-    cv::Rect bound;
+    cv::RotatedRect rect;
     cv::Point2i top;
     cv::Point2i left;
     cv::Point2i bottom;
@@ -35,6 +35,7 @@ public:
     cv::Point2i getCentre();
     std::vector<cv::Point2i> getAll();
     std::vector<cv::Point2i> getBounds();
+
 
 };
 

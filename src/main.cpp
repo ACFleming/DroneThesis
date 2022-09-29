@@ -132,7 +132,7 @@ int main (int argc, char* argv[]){
 
 
     int num_tests = 100;
-    int rand_seed_start = 23;
+    int rand_seed_start = 24;
     int source_start = 7;
     int max_sources = 10;
     for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){
@@ -157,6 +157,7 @@ int main (int argc, char* argv[]){
                 std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
 
                 Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
+                std::cout << "SHOWING Agents" << std::endl;
                 Agent a1 = Agent("Drone1", 0 ,15, field_x_width, field_y_length, max_range, std_dev_noise,speed,  &certainty_grids);
                 Agent a2 = Agent("Drone2", 15 , 0, field_x_width, field_y_length, max_range,std_dev_noise, speed, &certainty_grids);
                 // Agent a3 = Agent("Drone2", 299 ,0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
@@ -172,7 +173,7 @@ int main (int argc, char* argv[]){
                 cv::Mat img = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
                 cv::Mat locations = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
                 cv::Mat img2 = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
-
+                
                 //Display true location
                 for(auto &c: f.getSources()){
                     cv::circle(map, cv::Point2i(c.getCoords().first, c.getCoords().second), 3, cv::Scalar(255,0,255) );
