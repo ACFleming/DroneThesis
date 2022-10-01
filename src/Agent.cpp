@@ -180,7 +180,7 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
 
         double repeat_cmd_score = pow(10, this->countCommand(this->point2Pair(f)) - 1);
 
-        // score += repeat_cmd_mod * repeat_cmd_score; 
+        score += repeat_cmd_mod * repeat_cmd_score; 
 
 
 
@@ -345,68 +345,79 @@ void Agent::costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::uno
 
             double frontier_chain_penalty = pow(100, (int)(inverse_frontiers.size()) -1);
             double f_chain_mod = -1;
-            // hole_mod = 0;
+            f_chain_mod = 0;
             score += f_chain_mod * frontier_chain_penalty;
             
 #ifdef COST_VEC_PRINT   
             *this->output << "Frontier contour count: " << "," << inverse_frontiers.size()-1 << "," << " Hole count Contribution " << ","<< f_chain_mod * frontier_chain_penalty << ",";
 #endif
 
-//         if(inverse_frontiers.size() > 0){
-//             double inv_ctr_perim = 0;
-//             double inv_hull_perim = 0;
-//             double inv_ctr_area = 0;
-//             double inv_hull_area = 0;
-//             // if(inverse_frontiers.size() > 1){
-//             //     NO_OP;
-//             // }
-//             for(auto &iif : inverse_frontiers){
-//                 inv_ctr_area += cv::contourArea(iif);
-//                 inv_ctr_perim += cv::arcLength(iif, true);
-//                 std::vector<cv::Point2i> inv_hull_points;
+        if(inverse_frontiers.size() > 0){
+            double inv_ctr_perim = 0;
+            double inv_hull_perim = 0;
+            double inv_ctr_area = 0;
+            double inv_hull_area = 0;
+            // if(inverse_frontiers.size() > 1){
+            //     NO_OP;
+            // }
+            for(auto &iif : inverse_frontiers){
+                inv_ctr_area += cv::contourArea(iif);
+                inv_ctr_perim += cv::arcLength(iif, true);
+               std::vector<cv::Point2i> inv_hull_points;
 
-//                 cv::convexHull(iif, inv_hull_points);
-//                 inv_hull_area += cv::contourArea(inv_hull_points);
-//                 inv_hull_perim += cv::arcLength(inv_hull_points, true);
-//                 if(inv_hull_area == 0){
-//                     // *this->output << "HUH?" << std::endl;
-//                     inv_hull_area = 1;
-//                 }
+                cv::convexHull(iif, inv_hull_points);
+                inv_hull_area += cv::contourArea(inv_hull_points);
+                inv_hull_perim += cv::arcLength(inv_hull_points, true);
+                // std::cout << "arc closed: " << cv::arcLength(inv_hull_points, true) << " arc open: " << cv::arcLength(inv_hull_points, false) << std::endl;
+                if(inv_hull_area == 0){
+                    // *this->output << "HUH?" << std::endl;
+                    inv_hull_area = 1;  
+                }
+                double small_frontier_mod = 0;
+                if(cv::arcLength(inv_hull_points, true) < 50){
+                    small_frontier_mod = -0;
+                    score += small_frontier_mod;
 
-//                 cv::Mat inv_hull_img = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
-//                 cv::drawContours(inv_hull_img, inverse_frontiers, -1, cv::Scalar(0,0,255));
+
+                }
+#ifdef COST_VEC_PRINT   
+                *this->output << "Small frontier Contribution: " << "," << small_frontier_mod << ",";
+#endif
+
+                cv::Mat inv_hull_img = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
+                cv::drawContours(inv_hull_img, inverse_frontiers, -1, cv::Scalar(0,0,255));
                 
-//                 std::vector<std::vector<cv::Point2i>> inv_h = std::vector<std::vector<cv::Point2i>>();
-//                 inv_h.push_back(inv_hull_points);
-//                 cv::drawContours(inv_hull_img, inv_h, -1, cv::Scalar(255,0,0));
+                std::vector<std::vector<cv::Point2i>> inv_h = std::vector<std::vector<cv::Point2i>>();
+                inv_h.push_back(inv_hull_points);
+                cv::drawContours(inv_hull_img, inv_h, -1, cv::Scalar(255,0,0));
 
-// #ifdef SHOW_IMG
-//                 cv::imshow("inv_hull_img", inv_hull_img);
-//                 cv::waitKey(WAITKEY_DELAY);
-// #endif
-//             }
-
-
-//             double inv_area_ratio = inv_ctr_area/inv_hull_area;
-
-//             double inv_area_rt_mod = 3*100;
-//             inv_area_rt_mod = 0;
+#ifdef SHOW_IMG
+                cv::imshow("inv_hull_img", inv_hull_img);
+                cv::waitKey(WAITKEY_DELAY);
+#endif
+            }
 
 
-//             score += inv_area_rt_mod * inv_area_ratio;
+            double inv_area_ratio = inv_ctr_area/inv_hull_area;
 
-//             if(inv_hull_perim == 0) inv_hull_perim = 1;
-//             double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
+            double inv_area_rt_mod = 3*100;
+            // inv_area_rt_mod = 0;
 
-//             double inv_perim_rt_mod = -3*100;
-//             inv_perim_rt_mod = 0;
+
+            score += inv_area_rt_mod * inv_area_ratio;
+
+            if(inv_hull_perim == 0) inv_hull_perim = 1;
+            double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
+
+            double inv_perim_rt_mod = -3*pow(100, inverse_frontiers.size());
+            inv_perim_rt_mod = 0;
 
             
-//             score += inv_perim_rt_mod * inv_perim_ratio;
-// #ifdef COST_VEC_PRINT   
-//             *this->output << "Inverse Area ratio: " << "," << inv_area_ratio << "," << " Inv Area Ratio Contribution: " << "," << inv_area_rt_mod * inv_area_ratio << ",";
-// #endif
-//         }
+            score += inv_perim_rt_mod * inv_perim_ratio;
+#ifdef COST_VEC_PRINT   
+            *this->output << "Inverse Area ratio: " << "," << inv_area_ratio << "," << " Inv Area Ratio Contribution: " << "," << inv_area_rt_mod * inv_area_ratio << ",";
+#endif
+        }
 
             
 
@@ -510,21 +521,21 @@ std::pair<int,int> Agent::determineAction(){
         }
     }
 
-    cv::Mat inverse(seen.size(), CV_8UC1);
-    cv::threshold(seen, inverse, searching-1, 255, cv::THRESH_BINARY);
-    cv::bitwise_not(inverse, inverse);
+//     cv::Mat inverse(seen.size(), CV_8UC1);
+//     cv::threshold(seen, inverse, searching-1, 255, cv::THRESH_BINARY);
+//     cv::bitwise_not(inverse, inverse);
 
 
 
 
-    std::vector<std::vector<cv::Point>> hole_frontiers = Grid::getImageFrontiers(inverse);
-    hole_frontiers.erase(hole_frontiers.begin());
-    cv::Mat hole_img = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
-    cv::drawContours(hole_img, hole_frontiers, -1, cv::Scalar(0,0,255));
-#ifdef SHOW_IMG
-    cv::imshow("Holes", hole_img);
-    cv::waitKey(WAITKEY_DELAY);
-#endif
+//     std::vector<std::vector<cv::Point>> hole_frontiers = Grid::getImageFrontiers(inverse);
+//     hole_frontiers.erase(hole_frontiers.begin());
+//     cv::Mat hole_img = cv::Mat::zeros(this->field_y_length, this->field_x_width, CV_8UC3);
+//     cv::drawContours(hole_img, hole_frontiers, -1, cv::Scalar(0,0,255));
+// #ifdef SHOW_IMG
+//     cv::imshow("Holes", hole_img);
+//     cv::waitKey(WAITKEY_DELAY);
+// #endif
 
     // for(auto &inv_ctr: hole_frontiers){
     //     cv::Moments m = cv::moments(inv_ctr,true);
@@ -568,25 +579,28 @@ std::pair<int,int> Agent::determineAction(){
     if(best_score < -10000){ 
         // *this->output << "SHOULD BE DONE!" << std::endl;
         std::vector<cv::Point2i> missed_spots;
-
-        cv::findNonZero(this->certainty_grids->at(MAP).getLikelihood(),missed_spots);
+        cv::Mat remaining = this->certainty_grids->at(MAP).getLikelihood().clone();
+        cv::threshold(this->certainty_grids->at(MAP).getLikelihood(), remaining, searching-1, 255, cv::THRESH_BINARY);
+        cv::findNonZero(remaining,missed_spots);
+        cv::imshow("remaining",remaining);
+        cv::waitKey(0);
 
         if(missed_spots.size() == 0){ //fully explored
             // *this->output <<"DONE!" << std::endl;
             return std::make_pair(-1,-1);
         }
 
-        this->costFunction(seen, reserve_frontiers, signal_frontiers, hole_centres,  best_point,best_score);
-        if(best_score < -1000){ 
-            double missed_p_dist = this->field_x_width*this->field_x_width + this->field_y_length*this->field_y_length;
-            for(auto &p: missed_spots){
-                if(missed_p_dist > this->dist(this->coords, this->point2Pair(p))){
-                    best_point = p;
-                    best_score = 0;
-                    missed_p_dist = this->dist(this->coords, this->point2Pair(p));
-                }
+        // this->costFunction(seen, reserve_frontiers, signal_frontiers, hole_centres,  best_point,best_score);
+        // if(best_score < -1000){ 
+        double missed_p_dist = this->field_x_width*this->field_x_width + this->field_y_length*this->field_y_length;
+        for(auto &p: missed_spots){
+            if(missed_p_dist > this->dist(this->coords, this->point2Pair(p))){
+                best_point = p;
+                best_score = 0;
+                missed_p_dist = this->dist(this->coords, this->point2Pair(p));
             }
         }
+        // }
         
         
 

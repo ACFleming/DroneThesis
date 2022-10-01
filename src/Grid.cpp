@@ -116,10 +116,10 @@ void Grid::updateCertainty(){
     if(found) return;
 
     cv::Mat temp = this->signal_likelihood.clone();
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
     cv::imshow(std::string(" Before"),this->signal_likelihood );
     cv::waitKey(WAITKEY_DELAY);
-// #endif
+#endif
 
     if(this->updated == false){ //i.e no new info  (Note: this should always trigger for base & map certainty grid)
         this->signal_ring = Ring(this->field_x_width, this->field_y_length, this->measurement_point.first, this->measurement_point.second, this->measurement_range,-1);
@@ -131,20 +131,20 @@ void Grid::updateCertainty(){
     // cv::waitKey(WAITKEY_DELAY);
     this->signal_ring.drawRing();
     cv::bitwise_and(this->signal_likelihood, this->signal_ring.getCanvas(), temp);
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
     cv::imshow(std::string(" result"), temp );
     cv::waitKey(WAITKEY_DELAY);
-// #endif
+#endif
 
 
     if(this->name != MAP){ //dont need to calculate bounding for map
         cv::Mat three_std_devs = temp.clone();
         cv::threshold(temp, three_std_devs, likely*exp(-0.5*pow(3,2))-1, 255, cv::THRESH_BINARY);
         BoundingPoints three_std_confidence = BoundingPoints(three_std_devs);
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
         cv::imshow(std::string(" 3 std desv"),three_std_devs );
         cv::waitKey(WAITKEY_DELAY);
-// #endif
+#endif
 
 
 
@@ -154,10 +154,10 @@ void Grid::updateCertainty(){
         // for(int i = 0; i < 4; i++){
         //     cv::line(one_std_dev, three_std_confidence.getBounds()[i], three_std_confidence.getBounds()[(i+1)%4], cv::Scalar(255));
         // }
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
         cv::imshow(std::string(" 1 std dev"),one_std_dev );
         cv::waitKey(WAITKEY_DELAY);
-// #endif
+#endif
 
         if(three_std_confidence.getArea() <= 300 || this->ping_counter > 5){
             this->found = true;
@@ -174,10 +174,10 @@ void Grid::updateCertainty(){
     }else{
         this->signal_likelihood = temp;
     }
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
     cv::imshow(std::string(" After"),this->signal_likelihood );
     cv::waitKey(WAITKEY_DELAY);
-// #endif
+#endif
 
 
 

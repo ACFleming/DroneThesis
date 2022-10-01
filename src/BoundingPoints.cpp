@@ -5,8 +5,8 @@ BoundingPoints::BoundingPoints(){
     cv::line(img, cv::Point2i(20,70), cv::Point2i(70,70), cv::Scalar(255));
     cv::line(img, cv::Point2i(70,70), cv::Point2i(70,20), cv::Scalar(255));
     cv::line(img, cv::Point2i(70,20), cv::Point2i(20,20), cv::Scalar(255));
-    cv::imshow("IMG", img);
-    cv::waitKey(0);
+    // cv::imshow("IMG", img);
+    // cv::waitKey(0);
     std::vector<cv::Point2i> p;
     cv::findNonZero(img, p);
     this->rect = cv::minAreaRect(p);
