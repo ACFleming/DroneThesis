@@ -74,9 +74,9 @@ Grid::Grid(std::string name, int field_x_rows, int field_y_cols){
 
     this->edge_of_map.push_back(cv::Point2i(40,260));
     this->edge_of_map.push_back(cv::Point2i(140,280));
-    this->edge_of_map.push_back(cv::Point2i(240,260));
-    this->edge_of_map.push_back(cv::Point2i(280, 100));
-    this->edge_of_map.push_back(cv::Point2i(220, 20));
+    // this->edge_of_map.push_back(cv::Point2i(240,260));
+    // this->edge_of_map.push_back(cv::Point2i(280, 100));
+    // this->edge_of_map.push_back(cv::Point2i(220, 20));
     this->edge_of_map.push_back(cv::Point2i(60,20));
 
 
@@ -152,11 +152,15 @@ void Grid::updateCertainty(){
         cv::Mat cleared_zone = this->signal_likelihood.clone();
         cv::Mat valid_zone = this->signal_likelihood.clone();
         cv::threshold(valid_zone, valid_zone, 0, 255, cv::THRESH_BINARY);
+#ifdef SHOW_IMG
         cv::imshow("Valid Zone", valid_zone);
         cv::waitKey(WAITKEY_DELAY);
+#endif
         cv::circle(cleared_zone, cv::Point2i(this->measurement_point.first,this->measurement_point.second), this->measurement_range, cleared, -1 );
+#ifdef SHOW_IMG
         cv::imshow("Cleared Zone", cleared_zone);
         cv::waitKey(WAITKEY_DELAY);
+#endif
         // cv::subtract(this->signal_likelihood, cleared_zone, this->signal_likelihood);
         cv::bitwise_and(cleared_zone, valid_zone, this->signal_likelihood);
         // for(int i = 0; i < 50; i++){

@@ -82,8 +82,10 @@ void Ring::drawRing(){
         double scan_radius = this->mean;
         cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y), scan_radius, 255, std_dev);
         cv::bitwise_not(this->canvas, this->canvas);
+#ifdef SHOW_IMG
         cv::imshow("Canvas", this->canvas);
         cv::waitKey(WAITKEY_DELAY);
+#endif
     }else{
         //change step size for more precision
         for(int c = 2; c >= 0; c = c-1){

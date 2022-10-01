@@ -282,6 +282,8 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
 
 
+        int frontier_chains = this->frontiers.size();
+
         
         new_frontiers = Grid::getImageFrontiers(new_cells);
 
@@ -384,14 +386,14 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
         std::vector<std::vector<cv::Point>> inverse_frontiers = Grid::getImageFrontiers(inverse);
 
-            double frontier_chain_penalty = pow(100, (int)(inverse_frontiers.size()) -1);
-            double f_chain_mod = -1;
-            f_chain_mod = 0;
-            score += f_chain_mod * frontier_chain_penalty;
+            // double frontier_chain_penalty = pow(100, (int)(inverse_frontiers.size()) -1);
+            // double f_chain_mod = -1;
+            // f_chain_mod = 0;
+            // score += f_chain_mod * frontier_chain_penalty;
             
-#ifdef COST_VEC_PRINT   
-            *this->output << "Frontier contour count: " << "," << inverse_frontiers.size()-1 << "," << " Hole count Contribution " << ","<< f_chain_mod * frontier_chain_penalty << ",";
-#endif
+// #ifdef COST_VEC_PRINT   
+//             *this->output << "Frontier contour count: " << "," << inverse_frontiers.size()-1 << "," << " Hole count Contribution " << ","<< f_chain_mod * frontier_chain_penalty << ",";
+// #endif
 
         if(inverse_frontiers.size() > 0){
             double inv_ctr_perim = 0;
@@ -401,6 +403,20 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             // if(inverse_frontiers.size() > 1){
             //     NO_OP;
             // }
+
+
+            int frontier_chain_diff = frontier_chains - inverse_frontiers.size();
+            double chain_diff_mod = 100;
+            score += chain_diff_mod * frontier_chain_diff;
+
+
+// #ifdef COST_VEC_PRINT   
+            *this->output << "Frontier diff: " << "," << frontier_chain_diff << "," << " Frontier diff Contribution " << ","<< chain_diff_mod * frontier_chain_diff << ",";
+// #endif
+
+            
+
+
             for(auto &iif : inverse_frontiers){
                 inv_ctr_area += cv::contourArea(iif);
                 inv_ctr_perim += cv::arcLength(iif, true);
@@ -414,16 +430,10 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
                     // *this->output << "HUH?" << std::endl;
                     inv_hull_area = 1;  
                 }
-                double small_frontier_mod = 0;
-                if(cv::arcLength(inv_hull_points, true) < 50){
-                    small_frontier_mod = -0;
-                    score += small_frontier_mod;
 
-
-                }
-#ifdef COST_VEC_PRINT   
-                *this->output << "Small frontier Contribution: " << "," << small_frontier_mod << ",";
-#endif
+// #ifdef COST_VEC_PRINT   
+//                 *this->output << "Small frontier Contribution: " << "," << small_frontier_mod << ",";
+// #endif
 
                 cv::Mat inv_hull_img = cv::Mat::zeros(this->field_y_cols, this->field_x_rows, CV_8UC3);
                 cv::drawContours(inv_hull_img, inverse_frontiers, -1, cv::Scalar(0,0,255));
@@ -513,10 +523,10 @@ std::pair<int,int> Agent::determineAction(){
     double best_score = LONG_MIN;
     cv::Point2i best_point = cv::Point2i(-1,-1);
 
-#ifdef SHOW_IMG
-    cv::imshow("BASE", this->certainty_grids->at(BASE).getLikelihood());
-    cv::waitKey(WAITKEY_DELAY);
-#endif
+// #ifdef SHOW_IMG
+//     cv::imshow("BASE", this->certainty_grids->at(BASE).getLikelihood());
+//     cv::waitKey(WAITKEY_DELAY);
+// #endif
 
 
         cv::Mat seen = cv::Mat::zeros(this->field_y_cols,this->field_x_rows,CV_8UC3); 
@@ -543,6 +553,11 @@ std::pair<int,int> Agent::determineAction(){
 
 
     this->frontiers = Grid::getImageFrontiers(remaining);
+    int frontier_chains = this->frontiers.size();
+    if(frontier_chains == 0){
+        //pixels remaining but no frontiers???
+        exit(7);
+    }
 
 
 
@@ -588,9 +603,13 @@ std::pair<int,int> Agent::determineAction(){
     for(auto &kv_name_grid: *(this->certainty_grids)){
         if(kv_name_grid.second.isFound() == false && kv_name_grid.first != BASE && kv_name_grid.first != MAP){//if not found
             for(auto &p: kv_name_grid.second.getSignalBounds().getBounds()){
-                signal_frontiers.insert(p);
-                priority_frontiers.push_back(p);
-                cv::circle(priority_img, p,2,cv::Scalar(255,255,0));
+                double dist_to_edge = cv::pointPolygonTest(this->certainty_grids->at(MAP).getMapEdges(), p, false);
+                if(cv::pointPolygonTest(this->certainty_grids->at(MAP).getMapEdges(), p, false)  >= 0){
+                    signal_frontiers.insert(p);
+                    priority_frontiers.push_back(p);
+                    cv::circle(priority_img, p,2,cv::Scalar(255,255,0));
+                }
+
             }
         }
     }
@@ -617,8 +636,10 @@ std::pair<int,int> Agent::determineAction(){
         cv::Mat remaining = this->certainty_grids->at(BASE).getLikelihood().clone();
         cv::threshold(this->certainty_grids->at(BASE).getLikelihood(), remaining, searching-1, 255, cv::THRESH_BINARY);
         cv::findNonZero(remaining,missed_spots);
+#ifdef SHOW_IMG
         cv::imshow("done yet?",remaining);
         cv::waitKey(0);
+#endif
 
         if(missed_spots.size() == 0){ //fully explored
             // *this->output <<"DONE!" << std::endl;

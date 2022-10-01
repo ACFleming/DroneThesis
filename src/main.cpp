@@ -77,7 +77,7 @@ int main (int argc, char* argv[]){
 
                 Field f = Field(field_x_rows,field_y_cols,num_sources, std_dev_noise, max_range);  
                 std::cout << "SHOWING Agents" << std::endl;
-                Agent a1 = Agent("Drone1", 40 ,40, field_x_rows, field_y_cols, max_range, std_dev_noise,speed,  &certainty_grids);
+                Agent a1 = Agent("Drone1", 0 ,0, field_x_rows, field_y_cols, max_range, std_dev_noise,speed,  &certainty_grids);
                 // Agent a2 = Agent("Drone2", 15 , 0, field_x_rows, field_y_cols, max_range,std_dev_noise, speed, &certainty_grids);
                 // Agent a3 = Agent("Drone2", 299 ,0, field_x_rows, field_y_cols, max_range,speed, &certainty_grids);
                 Agent::step_counter = 0;
