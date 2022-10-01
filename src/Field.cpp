@@ -1,12 +1,12 @@
 #include "Field.hpp"
 
 
-Field::Field(int x_width, int y_length, int n_source) : Field(x_width, y_length, n_source, 5, 100) {
+Field::Field(int x_rows, int y_cols, int n_source) : Field(x_rows, y_cols, n_source, 5, 100) {
 }
 
-Field::Field(int x_width, int y_length, int n_sources, double std_dev, double range_cap) {
-    this->x_width = x_width;
-    this->y_length = y_length;
+Field::Field(int x_rows, int y_cols, int n_sources, double std_dev, double range_cap) {
+    this->x_rows = x_rows;
+    this->y_cols = y_cols;
     this->std_dev = std_dev;
     this->range_cap = range_cap;
     
@@ -14,14 +14,14 @@ Field::Field(int x_width, int y_length, int n_sources, double std_dev, double ra
     
 
     if(n_sources < 0){
-        this->signal_sources.push_back(SignalSource(int(x_width/2),int(y_length/2),"DEAD CENTRE"));
+        this->signal_sources.push_back(SignalSource(int(x_rows/2),int(y_cols/2),"DEAD CENTRE"));
     }else{
 
         //place all the random sources
         std::vector<SignalSource> mt;
         this->signal_sources = mt;
         for(int i = 0; i < n_sources; i++){
-            this->signal_sources.push_back(SignalSource(this->x_width, this->y_length));
+            this->signal_sources.push_back(SignalSource(this->x_rows, this->y_cols));
         }
     }
     
@@ -60,7 +60,7 @@ std::vector<std::pair<std::string,double>> Field::getMeasurements(std::pair<int,
 
 void Field::logField(std::ostream* output_file) {
     *output_file << "Name, x, y" << std::endl;
-    *output_file << "Field Dimensions"  << "," << this->x_width << "," << this->y_length <<  std::endl;
+    *output_file << "Field Dimensions"  << "," << this->x_rows << "," << this->y_cols <<  std::endl;
     for(auto &source: this->signal_sources){
         *output_file << source.getId() << "," << source.getCoords().first << "," << source.getCoords().second << std::endl;
     }

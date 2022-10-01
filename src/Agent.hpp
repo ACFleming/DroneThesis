@@ -30,8 +30,8 @@ private:
     std::map<std::pair<int,int>, int> command_history;
    
     std::string name;
-    int field_x_width;
-    int field_y_length;
+    int field_x_rows;
+    int field_y_cols;
     double scan_radius;
     double measurement_std_dev;
     double speed;
@@ -62,7 +62,9 @@ public:
 
     std::pair<int,int> determineAction();
 
-    void costFunction(cv::Mat seen, std::vector<cv::Point2i> points, std::unordered_set<cv::Point,point_hash> signal_frontiers, std::unordered_set<cv::Point,point_hash> hole_centres, cv::Point2i &best_point, double &best_score);
+    cv::Mat validateGrid(cv::Mat in);
+
+    void costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv::Point,point_hash> signal_frontiers, std::unordered_set<cv::Point,point_hash> hole_centres, cv::Point2i &best_point, double &best_score);
 
     std::pair<int,int> moveToPosition(std::pair<int,int> pos) ;
 
@@ -78,13 +80,13 @@ public:
 
 
 
-    std::vector<std::vector<cv::Point2i>> getImageFrontiers(cv::Mat frontier_img);
+    // std::vector<std::vector<cv::Point2i>> getImageFrontiers(cv::Mat frontier_img);
 
 
     void updateCertainty(Field f); // this will be changed to read bluetooth signals
 
  
-    void updateMap();
+    // void updateBase();
     
 
     
@@ -95,6 +97,7 @@ public:
     void logAgent();
     void showOccGrid();
     cv::Mat getMap();
+
 
 
     cv::Mat getSignalLocations();

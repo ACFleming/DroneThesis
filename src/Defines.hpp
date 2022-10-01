@@ -12,11 +12,13 @@
 
 
 #define COST_VEC_PRINT
-#define SHOW_IMG
+// #define SHOW_IMG
 
 
 enum grid_vals{
     empty = 0,
+    cleared = 75,
     searching = 125,
-    likely = 250,
+    likely = 200,
+    occupied = 255
 };

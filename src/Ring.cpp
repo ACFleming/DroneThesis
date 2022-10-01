@@ -1,7 +1,7 @@
 #include "Ring.hpp"
 
 // cv::Mat Ring::intersectRings(std::vector<Ring> other_rings){
-//     cv::Mat ret = cv::Mat::zeros(other_rings[0].y_length, other_rings[0].x_width, CV_8UC1)*255;
+//     cv::Mat ret = cv::Mat::zeros(other_rings[0].y_cols, other_rings[0].x_rows, CV_8UC1)*255;
 //     for(int i = 0; i  < other_rings.size(); i++){
 //         other_rings[i].drawRing();
 //         cv::bitwise_or(ret, other_rings[i].getCanvas(), ret);
@@ -49,26 +49,26 @@
 
 
 
-Ring::Ring(int x_width, int y_length, int centre_x, int centre_y, double mean, double std_dev){
-    this->x_width = x_width;
-    this->y_length = y_length;
+Ring::Ring(int x_rows, int y_cols, int centre_x, int centre_y, double mean, double std_dev){
+    this->x_rows = x_rows;
+    this->y_cols = y_cols;
     this->centre_x = centre_x;
     this->centre_y = centre_y;
     this->mean = std::max(mean, 1.0);  
     this->std_dev = std_dev;
-    this->canvas = cv::Mat::zeros(cv::Size(this->x_width, this->y_length), CV_8UC1);
+    this->canvas = cv::Mat::zeros(cv::Size(this->x_rows, this->y_cols), CV_8UC1);
 
     
 }
 
 Ring::Ring(){
-    this->x_width = 1;
-    this->y_length = 1;
+    this->x_rows = 1;
+    this->y_cols = 1;
     this->centre_x = 0;
     this->centre_y = 0;
     this->mean = 1;
     this->std_dev = 0;
-    this->canvas = cv::Mat::zeros(cv::Size(this->x_width, this->y_length), CV_8UC1);
+    this->canvas = cv::Mat::zeros(cv::Size(this->x_rows, this->y_cols), CV_8UC1);
 }
 
 Ring::~Ring() {
@@ -80,16 +80,17 @@ void Ring::drawRing(){
     
     if(std_dev < 0){
         double scan_radius = this->mean;
-        cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y), scan_radius, likely, std_dev);
+        cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y), scan_radius, 255, std_dev);
         cv::bitwise_not(this->canvas, this->canvas);
+        cv::imshow("Canvas", this->canvas);
+        cv::waitKey(WAITKEY_DELAY);
     }else{
         //change step size for more precision
         for(int c = 2; c >= 0; c = c-1){
             std::cout << likely*exp(-0.5*pow(c,2)) << std::endl;
             std::cout << 2*(c+1)*std_dev << std::endl;
             cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y), this->mean,  cv::Scalar(likely*exp(-0.5*pow(c,2))), 2*(c+1)*this->std_dev);
-            // cv::imshow("Canvas", this->canvas);
-            // cv::waitKey(WAITKEY_DELAY);
+
         }
     }
 

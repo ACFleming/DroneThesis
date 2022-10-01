@@ -11,6 +11,39 @@
 int main (int argc, char* argv[]){
 
 
+        // cv::Mat field_shape = cv::Mat(300, 300, CV_8UC1, cv::Scalar(empty));
+        // cv::imshow("Field shape", field_shape);
+        // cv::waitKey(0);
+        // cv::Point2i p1 = cv::Point2i(50,50);
+        // cv::Point2i p2 = cv::Point2i(100,250);
+        // cv::Point2i p3 = cv::Point2i(200,250);
+        // cv::Point2i p4 = cv::Point2i(250,50);
+        // std::vector<cv::Point2i> boundary;
+        // boundary.push_back(p1);
+        // boundary.push_back(p2);
+        // boundary.push_back(p3);
+        // boundary.push_back(p4);
+        // for(int i = 0; i < 4; i++){
+        //     cv::line(field_shape, boundary[i],boundary[(i+1)%4], cv::Scalar(occupied));
+        // }
+        
+
+        
+
+        // cv::imshow("Field shape", field_shape);
+        // cv::waitKey(0);
+        
+        // cv::fillConvexPoly(field_shape, boundary, cv::Scalar(searching));
+        // for(int i = 0; i < 4; i++){
+        //     cv::line(field_shape, boundary[i],boundary[(i+1)%4], cv::Scalar(occupied));
+        // }
+        
+        // cv::imshow("Field shape", field_shape);
+        // cv::waitKey(0);
+
+
+        // std:: cout << cv::pointPolygonTest(boundary, cv::Point2i(200,50), false) << std::endl;
+
 
 
     std::string number_of_agents = std::string("single/");
@@ -33,8 +66,8 @@ int main (int argc, char* argv[]){
                 std::string file_path_map =         number_of_agents + type_of_test + std::string("/images/map")        + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
                 std::string file_path_locations =   number_of_agents + type_of_test + std::string("/images/locations")  + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".png";
 
-                int field_x_width = 300;
-                int field_y_length = 300;
+                int field_x_rows = 300;
+                int field_y_cols = 300;
                 int num_sources = source_count;
                 double std_dev_noise = 3.0;
                 double max_range = 15.0; 
@@ -42,11 +75,11 @@ int main (int argc, char* argv[]){
                 srand((unsigned int)(test));
                 std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
 
-                Field f = Field(field_x_width,field_y_length,num_sources, std_dev_noise, max_range);  
+                Field f = Field(field_x_rows,field_y_cols,num_sources, std_dev_noise, max_range);  
                 std::cout << "SHOWING Agents" << std::endl;
-                Agent a1 = Agent("Drone1", 0 ,15, field_x_width, field_y_length, max_range, std_dev_noise,speed,  &certainty_grids);
-                // Agent a2 = Agent("Drone2", 15 , 0, field_x_width, field_y_length, max_range,std_dev_noise, speed, &certainty_grids);
-                // Agent a3 = Agent("Drone2", 299 ,0, field_x_width, field_y_length, max_range,speed, &certainty_grids);
+                Agent a1 = Agent("Drone1", 40 ,40, field_x_rows, field_y_cols, max_range, std_dev_noise,speed,  &certainty_grids);
+                // Agent a2 = Agent("Drone2", 15 , 0, field_x_rows, field_y_cols, max_range,std_dev_noise, speed, &certainty_grids);
+                // Agent a3 = Agent("Drone2", 299 ,0, field_x_rows, field_y_cols, max_range,speed, &certainty_grids);
                 Agent::step_counter = 0;
                 // a1.output = &output_agent;
                 // a2.output = &output_agent;
@@ -55,10 +88,10 @@ int main (int argc, char* argv[]){
 
                 // RUN FUNCTION
 
-                cv::Mat map = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
-                cv::Mat img = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
-                cv::Mat locations = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
-                cv::Mat img2 = cv::Mat::zeros(field_y_length, field_x_width, CV_8UC3);
+                cv::Mat map = cv::Mat::zeros(field_y_cols, field_x_rows, CV_8UC3);
+                cv::Mat img = cv::Mat::zeros(field_y_cols, field_x_rows, CV_8UC3);
+                cv::Mat locations = cv::Mat::zeros(field_y_cols, field_x_rows, CV_8UC3);
+                cv::Mat img2 = cv::Mat::zeros(field_y_cols, field_x_rows, CV_8UC3);
                 
                 //Display true location
                 for(auto &c: f.getSources()){

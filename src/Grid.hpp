@@ -18,10 +18,12 @@
 
 class Grid
 {
-private:
+protected:
 
-    static int field_x_width;
-    static int field_y_length;
+    static int field_x_rows;
+    static int field_y_cols;
+
+    std::vector<cv::Point2i> edge_of_map;
 
     std::pair<int,int> measurement_point;
     int measurement_range;
@@ -43,7 +45,7 @@ private:
 
 public:
     Grid();
-    Grid(std::string name, int field_x_width, int field_y_length, int value);
+    Grid(std::string name, int field_x_rows, int field_y_cols);
     Grid(std::string name, cv::Mat base_certainty);
     ~Grid();
 
@@ -53,7 +55,7 @@ public:
 
     void receiveMeasurement(double measurement, double std_dev);
 
-    void updateCertainty();
+    virtual void updateCertainty();
 
     std::vector<std::vector<cv::Point2i>>getImageFrontiers();
 
@@ -65,6 +67,8 @@ public:
 
     BoundingPoints getSignalBounds();
     cv::Mat getLikelihood();
+
+    std::vector<cv::Point2i> getMapEdges();
 
 
 };

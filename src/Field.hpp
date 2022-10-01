@@ -15,8 +15,8 @@
 class Field
 {
 private:
-    int x_width;
-    int y_length;
+    int x_rows;
+    int y_cols;
     double std_dev;
     double range_cap;
     std::vector<SignalSource> signal_sources;
@@ -24,8 +24,8 @@ private:
     
     
 public:
-    Field(int x_width, int y_length, int n_sources);
-    Field(int x_width, int y_length, int n_sources, double std_dev, double range_cap);
+    Field(int x_rows, int y_cols, int n_sources);
+    Field(int x_rows, int y_cols, int n_sources, double std_dev, double range_cap);
     ~Field();
     std::vector<SignalSource> getSources();
     std::vector<std::pair<std::string,double>> getMeasurements(std::pair<int,int> pos);

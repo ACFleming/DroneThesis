@@ -14,8 +14,8 @@ class Ring
 {
 private:
     /* data */
-    int x_width;
-    int y_length;
+    int x_rows;
+    int y_cols;
     int centre_x;
     int centre_y;
     double mean;   
@@ -25,7 +25,7 @@ private:
     cv::Mat canvas;
 
 public:
-    Ring(int x_width, int y_length, int centre_x, int centre_y, double mean, double std_dev);
+    Ring(int x_rows, int y_cols, int centre_x, int centre_y, double mean, double std_dev);
     Ring();
     ~Ring();
 
