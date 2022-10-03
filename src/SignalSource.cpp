@@ -3,6 +3,8 @@
 
 SignalSource::SignalSource(int field_width, int field_length) {
 
+    
+
     this->x_coord= std::rand() % field_width;
     this->y_coord = std::rand() % field_length;
     this->id = this->randomString(6);

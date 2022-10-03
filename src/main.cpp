@@ -51,9 +51,9 @@ int main (int argc, char* argv[]){
 
 
     int num_tests = 100;
-    int rand_seed_start = 24;
-    int source_start = 0;
-    int max_sources = 10;
+    int rand_seed_start = 33;
+    int source_start = 3;
+    int max_sources = 5;
     for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){
         for (int source_count = source_start; source_count < max_sources; source_count++){
                 std::cout << "Seed: " << test << " Num sources: " << source_count << " ***********************" << std::endl;
@@ -69,16 +69,16 @@ int main (int argc, char* argv[]){
                 int field_x_rows = 300;
                 int field_y_cols = 300;
                 int num_sources = source_count;
-                double std_dev_noise = 3.0;
-                double max_range = 15.0; 
-                double speed = 15.0;
+                double std_dev_noise = 3;
+                double max_range = 20; 
+                double speed = 20;
                 srand((unsigned int)(test));
                 std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
 
                 Field f = Field(field_x_rows,field_y_cols,num_sources, std_dev_noise, max_range);  
                 std::cout << "SHOWING Agents" << std::endl;
-                Agent a1 = Agent("Drone1", 0 ,0, field_x_rows, field_y_cols, max_range, std_dev_noise,speed,  &certainty_grids);
-                Agent a2 = Agent("Drone2", 15 , 0, field_x_rows, field_y_cols, max_range,std_dev_noise, speed, &certainty_grids);
+                Agent a1 = Agent("Drone1", 40 ,40, field_x_rows, field_y_cols, max_range, std_dev_noise,speed,  &certainty_grids);
+                // Agent a2 = Agent("Drone2", 15 , 0, field_x_rows, field_y_cols, max_range,std_dev_noise, speed, &certainty_grids);
                 // Agent a3 = Agent("Drone2", 299 ,0, field_x_rows, field_y_cols, max_range,speed, &certainty_grids);
                 Agent::step_counter = 0;
                 // a1.output = &output_agent;
@@ -96,7 +96,7 @@ int main (int argc, char* argv[]){
                 //Display true location
                 for(auto &c: f.getSources()){
                     cv::circle(map, cv::Point2i(c.getCoords().first, c.getCoords().second), 3, cv::Scalar(255,0,255) );
-                    cv::circle(locations, cv::Point2i(c.getCoords().first, c.getCoords().second), 2, cv::Scalar(255,255,255 ), -1);
+                    cv::circle(locations, cv::Point2i(c.getCoords().first, c.getCoords().second), 2, cv::Scalar(255,255,255 ));
                 }
 
 #ifdef SHOW_IMG
@@ -126,10 +126,6 @@ int main (int argc, char* argv[]){
                         break;
                     }
                     a1_dest = a1.moveToPosition(a1_dest);
-                    // a1.updateMap();
-                    a1.updateCertainty(f); 
-
-
                     cv::line(map, a1.pair2Point(a1_dest), a1.pair2Point(a1_curr),cv::Scalar(0,255,0));
                     cv::circle(map, a1.pair2Point(a1_curr),2,cv::Scalar(0,255,0));
                     cv::Mat cert_grid = a1.getMap();
@@ -142,31 +138,41 @@ int main (int argc, char* argv[]){
                     cv::imshow("locations", img2);
                     cv::waitKey(WAITKEY_DELAY);
 // #endif
-                    //plot a2
-                    std::pair<int,int> a2_curr = a2.getCoords();
-                    std::cout << "Drone 2 at: " << a2_curr.first << "," << a2_curr.second << std::endl;
-                    std::cout << "Step: " << Agent::step_counter << std::endl;
-                     
-                    std::pair<int,int> a2_dest = a2.determineAction();
-                    if(a2_dest.first == -1 ){ //exploration complete
-                        break;
-                    }
-                    a2_dest = a2.moveToPosition(a2_dest);
-                    // a2.updateMap();
-                    a2.updateCertainty(f);   
 
-                    cv::line(map, a2.pair2Point(a2_dest), a2.pair2Point(a2_curr),cv::Scalar(0,0,255));
-                    cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
-                    cert_grid = a2.getMap();
-                    cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
-                    cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
-// #ifdef SHOW_IMG
-                    cv::imshow("map", img);
-                    cv::waitKey(WAITKEY_DELAY);
-                    cv::bitwise_or(locations, a1.getSignalLocations(), img2);
-                    cv::imshow("locations", img2);
-                    cv::waitKey(WAITKEY_DELAY);
-// #endif
+
+
+                    // a1.updateMap();
+                    a1.updateCertainty(f); 
+
+
+
+//                     //plot a2
+//                     std::pair<int,int> a2_curr = a2.getCoords();
+//                     std::cout << "Drone 2 at: " << a2_curr.first << "," << a2_curr.second << std::endl;
+//                     std::cout << "Step: " << Agent::step_counter << std::endl;
+                     
+//                     std::pair<int,int> a2_dest = a2.determineAction();
+//                     if(a2_dest.first == -1 ){ //exploration complete
+//                         break;
+//                     }
+//                     a2_dest = a2.moveToPosition(a2_dest);
+//                     cv::line(map, a2.pair2Point(a2_dest), a2.pair2Point(a2_curr),cv::Scalar(0,0,255));
+//                     cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
+//                     cert_grid = a2.getMap();
+//                     cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
+//                     cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
+// // #ifdef SHOW_IMG
+//                     cv::imshow("map", img);
+//                     cv::waitKey(WAITKEY_DELAY);
+//                     cv::bitwise_or(locations, a1.getSignalLocations(), img2);
+//                     cv::imshow("locations", img2);
+//                     cv::waitKey(WAITKEY_DELAY);
+// // #endif
+
+//                     // a2.updateMap();
+//                     a2.updateCertainty(f);   
+
+
 
                     // //plot a3
                     // std::pair<int,int> a3_curr = a3.getCoords();

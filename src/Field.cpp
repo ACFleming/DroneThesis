@@ -50,7 +50,7 @@ std::vector<std::pair<std::string,double>> Field::getMeasurements(std::pair<int,
         // cant have negative distance
         if(dist_with_noise < 0) dist_with_noise = 0;
         // if too far away no signal detected
-        if(dist_with_noise > this->range_cap){ 
+        if(true_distance > this->range_cap){ 
             continue;
         }
         distances.push_back(std::make_pair(source.getId(), dist_with_noise));

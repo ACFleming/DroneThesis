@@ -23,7 +23,7 @@ std::vector<std::vector<cv::Point2i>> Grid::getImageFrontiers(cv::Mat frontier_i
     std::vector<std::vector<cv::Point2i>> ctr_approx;
     for(auto &e: contours){
         std::vector<cv::Point2i> a;
-        cv::approxPolyDP(e, a, 0.2, true);
+        cv::approxPolyDP(e, a, 0.5, true);
         ctr_approx.push_back(a);
     }
 
@@ -32,8 +32,8 @@ std::vector<std::vector<cv::Point2i>> Grid::getImageFrontiers(cv::Mat frontier_i
     }
 
 #ifdef SHOW_IMG
-    cv::imshow("OCC approx map", approx_img);
-    cv::waitKey(WAITKEY_DELAY);
+    // cv::imshow("OCC approx map", approx_img);
+    // cv::waitKey(WAITKEY_DELAY);
 #endif
 
   
@@ -72,18 +72,26 @@ Grid::Grid(std::string name, int field_x_rows, int field_y_cols){
     // boundary.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
 
 
-    // this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.1*field_y_cols));
-    // this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.9*field_y_cols));
-    // this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.9*field_y_cols));
-    // this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
+    this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.1*field_y_cols));
+    this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.9*field_y_cols));
+    this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.9*field_y_cols));
+    this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
 
 
-    this->edge_of_map.push_back(cv::Point2i(40,260));
-    this->edge_of_map.push_back(cv::Point2i(140,280));
-    this->edge_of_map.push_back(cv::Point2i(240,260));
-    this->edge_of_map.push_back(cv::Point2i(280, 100));
-    this->edge_of_map.push_back(cv::Point2i(220, 20));
-    this->edge_of_map.push_back(cv::Point2i(60,20));
+    // this->edge_of_map.push_back(cv::Point2i(40,260));
+    // this->edge_of_map.push_back(cv::Point2i(140,280));
+    // this->edge_of_map.push_back(cv::Point2i(240,260));
+    // this->edge_of_map.push_back(cv::Point2i(280, 100));
+    // this->edge_of_map.push_back(cv::Point2i(220, 20));
+    // this->edge_of_map.push_back(cv::Point2i(60,20));
+
+    // this->edge_of_map.push_back(cv::Point2i(60,120));
+    // this->edge_of_map.push_back(cv::Point2i(60,260));
+    // this->edge_of_map.push_back(cv::Point2i(240,260));
+    // this->edge_of_map.push_back(cv::Point2i(160, 180));
+    // this->edge_of_map.push_back(cv::Point2i(240, 120));
+    // this->edge_of_map.push_back(cv::Point2i(60,20));
+
 
 
 
@@ -159,13 +167,13 @@ void Grid::updateCertainty(){
         cv::Mat valid_zone = this->signal_likelihood.clone();
         cv::threshold(valid_zone, valid_zone, 0, 255, cv::THRESH_BINARY);
 #ifdef SHOW_IMG
-        cv::imshow("Valid Zone", valid_zone);
-        cv::waitKey(WAITKEY_DELAY);
+        // cv::imshow("Valid Zone", valid_zone);
+        // cv::waitKey(WAITKEY_DELAY);
 #endif
         cv::circle(cleared_zone, cv::Point2i(this->measurement_point.first,this->measurement_point.second), this->measurement_range, cleared, -1 );
 #ifdef SHOW_IMG
-        cv::imshow("Cleared Zone", cleared_zone);
-        cv::waitKey(WAITKEY_DELAY);
+        // cv::imshow("Cleared Zone", cleared_zone);
+        // cv::waitKey(WAITKEY_DELAY);
 #endif
         // cv::subtract(this->signal_likelihood, cleared_zone, this->signal_likelihood);
         cv::bitwise_and(cleared_zone, valid_zone, this->signal_likelihood);
@@ -191,51 +199,59 @@ void Grid::updateCertainty(){
 
         if(this->updated == false){ //i.e no new info  (Note: this should always trigger for base & map certainty grid)
             this->signal_ring = Ring(this->field_x_rows, this->field_y_cols, this->measurement_point.first, this->measurement_point.second, this->measurement_range,-1);
+            this->signal_ring.drawRing();
             
         }else{
             this->ping_counter++;
         }  
-        // cv::imshow("new measurement", this->signal_ring.getCanvas());
-        // cv::waitKey(WAITKEY_DELAY);
-        this->signal_ring.drawRing();
+// #ifdef SHOW_IMG
+        cv::imshow("new measurement", this->signal_ring.getCanvas());
+        cv::waitKey(0);
+// #endif
+        
         cv::bitwise_and(this->signal_likelihood, this->signal_ring.getCanvas(), temp);
 
 
-#ifdef SHOW_IMG
+// #ifdef SHOW_IMG
         cv::imshow(std::string("ring & before"), temp );
-        cv::waitKey(WAITKEY_DELAY);
-#endif
+        cv::waitKey(0);
+// #endif
 
         cv::Mat one_std_dev = temp.clone();
         cv::threshold(temp, one_std_dev, likely*exp(-0.5*pow(1,2))-1, 255, cv::THRESH_BINARY);
-        BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
-
-
-#ifdef SHOW_IMG
-        cv::imshow(std::string(" 1 std dev"),one_std_dev );
-        cv::waitKey(WAITKEY_DELAY);
-#endif
-
-
-        cv::Mat three_std_devs = temp.clone();
-        cv::threshold(temp, three_std_devs, likely*exp(-0.5*pow(3,2))-1, 255, cv::THRESH_BINARY);
-        BoundingPoints three_std_confidence = BoundingPoints(three_std_devs);
-#ifdef SHOW_IMG
-        cv::imshow(std::string(" 3 std desv"),three_std_devs );
-        cv::waitKey(WAITKEY_DELAY);
-#endif
-
-        if(three_std_confidence.getArea() <= 300 || this->ping_counter > 5){
-            this->found = true;
-            this->signal_bounds = three_std_confidence;
-            this->signal_likelihood = three_std_devs;
-
-        }else{
-            this->found = false;
+        if(cv::countNonZero(one_std_dev) > 10){
             
-            this->signal_bounds= one_std_confidence;
-            this->signal_likelihood = one_std_dev;
+
+
+
+
+
+            cv::Mat three_std_devs = temp.clone();
+            cv::threshold(temp, three_std_devs, likely*exp(-0.5*pow(3,2))-1, 255, cv::THRESH_BINARY);
+            BoundingPoints three_std_confidence = BoundingPoints(three_std_devs);
             
+// #ifdef SHOW_IMG
+            cv::imshow(std::string(" 3 std desv"),three_std_devs );
+            cv::waitKey(0);
+// #endif
+
+            if(three_std_confidence.getArea() <= (0.1*this->measurement_range*this->measurement_range*PI) || this->ping_counter > 3){
+                this->found = true;
+                this->signal_bounds = three_std_confidence;
+                this->signal_likelihood = three_std_devs;
+            
+
+            }else{
+                BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
+    // #ifdef SHOW_IMG
+                cv::imshow(std::string(" 1 std dev"),one_std_dev );
+                cv::waitKey(0);
+    // #endif
+                this->found = false;
+                this->signal_bounds= one_std_confidence;
+                this->signal_likelihood = one_std_dev;
+            
+            }
         }
 
 
@@ -265,8 +281,8 @@ void Grid::updateCertainty(){
 
 
 #ifdef SHOW_IMG
-    cv::imshow(std::string(" After"),this->signal_likelihood );
-    cv::waitKey(WAITKEY_DELAY);
+    // cv::imshow(std::string(" After"),this->signal_likelihood );
+    // cv::waitKey(WAITKEY_DELAY);
 #endif
 
 

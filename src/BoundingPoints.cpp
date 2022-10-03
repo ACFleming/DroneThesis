@@ -24,6 +24,7 @@ BoundingPoints::BoundingPoints(){
 }
 
 BoundingPoints::BoundingPoints(cv::Mat image) {
+    assert(cv::countNonZero(image) > 0);
     std::vector<cv::Point2i> p;
     cv::findNonZero(image, p);
     this->rect = cv::minAreaRect(p);

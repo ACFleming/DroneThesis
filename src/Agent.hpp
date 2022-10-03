@@ -12,9 +12,10 @@
 #include "Ring.hpp"
 #include "Grid.hpp"
 #include "BoundingPoints.hpp"
+#include "Defines.hpp"
 
 
-#define PI 3.1415926535
+
 
 struct point_hash {
     inline std::size_t operator()(const cv::Point2i & v) const {

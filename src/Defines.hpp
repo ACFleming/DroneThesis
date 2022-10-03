@@ -1,4 +1,9 @@
 #pragma once
+#include <iostream>
+#include <stack>
+#include <ctime>
+
+#define PI 3.1415926535
 
 #define NO_OP [](){}()
 
@@ -22,3 +27,6 @@ enum grid_vals{
     likely = 200,
     occupied = 255
 };
+
+
+

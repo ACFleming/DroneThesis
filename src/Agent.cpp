@@ -1,6 +1,20 @@
 #include "Agent.hpp"
 
 
+std::stack<clock_t> tictoc_stack;
+
+extern void tic() {
+    tictoc_stack.push(clock());
+}
+
+extern void toc() {
+    std::cout << "Time elapsed: "
+              << ((double)(clock() - tictoc_stack.top())) / CLOCKS_PER_SEC
+              << std::endl;
+    tictoc_stack.pop();
+}
+
+
 
 int Agent::step_counter = 0;
 
@@ -173,7 +187,9 @@ cv::Mat Agent::validateGrid(cv::Mat in){
 
 
 void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv::Point,point_hash> signal_frontiers, std::unordered_set<cv::Point,point_hash> hole_centres,  cv::Point2i &best_point, double &best_score){
+    
     for(auto &f: points ){
+        // tic();F
 #ifdef COST_VEC_PRINT
         *this->output << "Point: " << ","  << f.x << "," << f.y << ",";
 #endif
@@ -222,11 +238,11 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             score += signal_mod;
         }
 
-        if(hole_centres.count(f) > 0 ){ //if its a signal frontier point;
-            double hole_mod = 1000;
-            // hole_mod = 0;
-            // score += hole_mod;
-        }
+        // if(hole_centres.count(f) > 0 ){ //if its a signal frontier point;
+        //     double hole_mod = 1000;
+        //     // hole_mod = 0;
+        //     // score += hole_mod;
+        // }
 
 
         // double dist = this->dist(this->coords, this->point2Pair(f));
@@ -270,12 +286,17 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
         double new_scanned_ratio = (new_scanned_count-old_scanned_count)/old_scanned_count;
         
-        double scanned_mod = 1*100;
+
+        //hyperbolic scoring for seen
+
+        
+        double scanned_mod = 0.5*100;
         // scanned_mod = 0;
-
-
-
+        
+        
         score += scanned_mod * new_scanned_ratio;
+
+        
 #ifdef COST_VEC_PRINT
         *this->output << " New scanned ratio: "<<  "," << new_scanned_ratio << "," << " New Scanned Cells Contribution: " << "," <<  scanned_mod  *new_scanned_ratio << ",";
 #endif
@@ -410,9 +431,9 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             score += chain_diff_mod * frontier_chain_diff;
 
 
-// #ifdef COST_VEC_PRINT   
+#ifdef COST_VEC_PRINT   
             *this->output << "Frontier diff: " << "," << frontier_chain_diff << "," << " Frontier diff Contribution " << ","<< chain_diff_mod * frontier_chain_diff << ",";
-// #endif
+#endif
 
             
 
@@ -491,8 +512,10 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
 
         // cv::waitKey(0);
+        // toc();
         
     }
+    
 
 }
 
@@ -602,7 +625,7 @@ std::pair<int,int> Agent::determineAction(){
     //add signal bounds to the priority frontier list
     for(auto &kv_name_grid: *(this->certainty_grids)){
         if(kv_name_grid.second.isFound() == false && kv_name_grid.first != BASE && kv_name_grid.first != MAP){//if not found
-            for(auto &p: kv_name_grid.second.getSignalBounds().getBounds()){
+            for(auto &p: kv_name_grid.second.getSignalBounds().getAll()){
                 double dist_to_edge = cv::pointPolygonTest(this->certainty_grids->at(MAP).getMapEdges(), p, false);
                 if(cv::pointPolygonTest(this->certainty_grids->at(MAP).getMapEdges(), p, false)  >= 0){
                     signal_frontiers.insert(p);
@@ -636,10 +659,10 @@ std::pair<int,int> Agent::determineAction(){
         cv::Mat remaining = this->certainty_grids->at(BASE).getLikelihood().clone();
         cv::threshold(this->certainty_grids->at(BASE).getLikelihood(), remaining, searching-1, 255, cv::THRESH_BINARY);
         cv::findNonZero(remaining,missed_spots);
-#ifdef SHOW_IMG
-        cv::imshow("done yet?",remaining);
-        cv::waitKey(0);
-#endif
+// #ifdef SHOW_IMG
+//         cv::imshow("done yet?",remaining);
+//         cv::waitKey(0);
+// #endif
 
         if(missed_spots.size() == 0){ //fully explored
             // *this->output <<"DONE!" << std::endl;
@@ -731,7 +754,7 @@ std::pair<int,int> Agent::getCoords(){
 
 
 cv::Mat Agent::getMap(){
-    return this->certainty_grids->at(MAP).getLikelihood();
+    return this->certainty_grids->at(BASE).getLikelihood();
 }
 
 cv::Mat Agent::getSignalLocations() {
