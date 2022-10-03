@@ -188,7 +188,7 @@ void Grid::updateCertainty(){
 
 
     }else{
-        if(found) return;
+        if(found && !updated) return;
             
             
         cv::Mat temp = this->signal_likelihood.clone();
@@ -204,18 +204,23 @@ void Grid::updateCertainty(){
         }else{
             this->ping_counter++;
         }  
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
         cv::imshow("new measurement", this->signal_ring.getCanvas());
-        cv::waitKey(0);
-// #endif
-        
+        cv::waitKey(WAITKEY_DELAY);
+#endif
+        // if(this->ping_counter <= 10){
         cv::bitwise_and(this->signal_likelihood, this->signal_ring.getCanvas(), temp);
+        // }else{
+            // cv::addWeighted(this->signal_likelihood, 0.1, this->signal_ring.getCanvas(),0.9, 0, temp);
+        // }
+        
+        
 
 
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
         cv::imshow(std::string("ring & before"), temp );
-        cv::waitKey(0);
-// #endif
+        cv::waitKey(WAITKEY_DELAY);
+#endif
 
         cv::Mat one_std_dev = temp.clone();
         cv::threshold(temp, one_std_dev, likely*exp(-0.5*pow(1,2))-1, 255, cv::THRESH_BINARY);
@@ -230,10 +235,10 @@ void Grid::updateCertainty(){
             cv::threshold(temp, three_std_devs, likely*exp(-0.5*pow(3,2))-1, 255, cv::THRESH_BINARY);
             BoundingPoints three_std_confidence = BoundingPoints(three_std_devs);
             
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
             cv::imshow(std::string(" 3 std desv"),three_std_devs );
-            cv::waitKey(0);
-// #endif
+            cv::waitKey(WAITKEY_DELAY);
+#endif
 
             if(three_std_confidence.getArea() <= (0.1*this->measurement_range*this->measurement_range*PI) || this->ping_counter > 3){
                 this->found = true;
@@ -243,10 +248,10 @@ void Grid::updateCertainty(){
 
             }else{
                 BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
-    // #ifdef SHOW_IMG
+#ifdef SHOW_IMG
                 cv::imshow(std::string(" 1 std dev"),one_std_dev );
-                cv::waitKey(0);
-    // #endif
+                cv::waitKey(WAITKEY_DELAY);
+#endif
                 this->found = false;
                 this->signal_bounds= one_std_confidence;
                 this->signal_likelihood = one_std_dev;

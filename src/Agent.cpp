@@ -138,11 +138,29 @@ void Agent::updateCertainty(Field f){
 
     //step 1 get any signal measurements
 
+    std::map<std::string, std::vector<double>> all_measurements;
+    for(int repeat_ping = 0; repeat_ping < 3; repeat_ping++){
+        
+        std::vector<std::pair<std::string, double>> raw_measurement = f.getMeasurements(this->coords);
+        for(auto &m: raw_measurement){
+            if(all_measurements.count(m.first) == 0){
+                // std::pair<
+                all_measurements.insert(std::pair<std::string, std::vector<double>>(m.first,{}));
+            }
+            all_measurements.at(m.first).push_back(m.second);
+        }
+    }
 
-    std::vector<std::pair<std::string, double>> measurements = f.getMeasurements(this->coords); //to change for BT ping
 
 
-    for(auto &m: measurements){
+    std::map<std::string, double> avg_measurements;
+
+    for(auto &all: all_measurements){
+        avg_measurements.insert(std::pair<std::string, double>(all.first, std::accumulate(all.second.begin(), all.second.end(), 0.0)/all.second.size()));
+    }
+
+
+    for(auto &m: avg_measurements){
 
         if(this->certainty_grids->count(m.first) == 0){ //if no existing grid region
             cv::Mat base = this->certainty_grids->at(BASE).getLikelihood().clone();

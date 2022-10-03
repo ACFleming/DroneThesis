@@ -8,6 +8,7 @@
 #include <functional>
 #include <opencv2/opencv.hpp>
 #include <set>
+#include <numeric>
 #include "Field.hpp"
 #include "Ring.hpp"
 #include "Grid.hpp"
