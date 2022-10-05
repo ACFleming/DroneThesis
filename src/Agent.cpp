@@ -205,7 +205,9 @@ cv::Mat Agent::validateGrid(cv::Mat in){
 
 
 void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv::Point,point_hash> signal_frontiers, std::unordered_set<cv::Point,point_hash> hole_centres,  cv::Point2i &best_point, double &best_score){
-    
+#ifdef COST_VEC_PRINT
+        *this->output << "At: " << ","  << this->coords.first << "," << this->coords.second << "," << std::endl;
+#endif
     for(auto &f: points ){
         // tic();F
 #ifdef COST_VEC_PRINT
@@ -309,7 +311,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
         
         double scanned_mod = 0.5*100;
-        // scanned_mod = 0;
+        scanned_mod = 0;
         
         
         score += scanned_mod * new_scanned_ratio;
@@ -380,7 +382,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
             double area_rt_mod = 3*100;
 
-            // area_rt_mod = 0;
+            area_rt_mod = 0;
 
             score += area_rt_mod * area_rt;
 #ifdef COST_VEC_PRINT
@@ -391,7 +393,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
             double perim_mod = -0.3;
 
-            // perim_mod = 0;
+            perim_mod = 0;
 
             score += perim_mod * perim_diff;
 #ifdef COST_VEC_PRINT
@@ -446,6 +448,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
             int frontier_chain_diff = frontier_chains - inverse_frontiers.size();
             double chain_diff_mod = 100;
+            chain_diff_mod = 0;
             score += chain_diff_mod * frontier_chain_diff;
 
 
@@ -491,19 +494,19 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             double inv_area_ratio = inv_ctr_area/inv_hull_area;
 
             double inv_area_rt_mod = 3*100;
-            // inv_area_rt_mod = 0;
+            inv_area_rt_mod = 0;
 
 
             score += inv_area_rt_mod * inv_area_ratio;
 
-            if(inv_hull_perim == 0) inv_hull_perim = 1;
-            double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
+            // if(inv_hull_perim == 0) inv_hull_perim = 1;
+            // double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
 
-            double inv_perim_rt_mod = -3*pow(100, inverse_frontiers.size());
-            inv_perim_rt_mod = 0;
+            // double inv_perim_rt_mod = -3*pow(100, inverse_frontiers.size());
+            // inv_perim_rt_mod = 0;
 
             
-            score += inv_perim_rt_mod * inv_perim_ratio;
+            // score += inv_perim_rt_mod * inv_perim_ratio;
 #ifdef COST_VEC_PRINT   
             *this->output << "Inverse Area ratio: " << "," << inv_area_ratio << "," << " Inv Area Ratio Contribution: " << "," << inv_area_rt_mod * inv_area_ratio << ",";
 #endif

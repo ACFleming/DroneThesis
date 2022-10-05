@@ -72,10 +72,15 @@ Grid::Grid(std::string name, int field_x_rows, int field_y_cols){
     // boundary.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
 
 
-    this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.1*field_y_cols));
-    this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.9*field_y_cols));
-    this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.9*field_y_cols));
-    this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
+    // this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.1*field_y_cols));
+    // this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.9*field_y_cols));
+    // this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.9*field_y_cols));
+    // this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
+
+    this->edge_of_map.push_back(cv::Point2i(0*field_x_rows,0*field_y_cols));
+    this->edge_of_map.push_back(cv::Point2i(0*field_x_rows,1*field_y_cols));
+    this->edge_of_map.push_back(cv::Point2i(1*field_x_rows,1*field_y_cols));
+    this->edge_of_map.push_back(cv::Point2i(1*field_x_rows,0*field_y_cols));
 
 
     // this->edge_of_map.push_back(cv::Point2i(40,260));
