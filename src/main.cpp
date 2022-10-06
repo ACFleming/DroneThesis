@@ -46,7 +46,7 @@ int main (int argc, char* argv[]){
 
 
 
-    std::string number_of_agents = std::string("single/");
+    std::string number_of_agents = std::string("double/");
     std::string type_of_test = std::string("dist");
 
 
@@ -78,11 +78,11 @@ int main (int argc, char* argv[]){
                 Field f = Field(field_x_rows,field_y_cols,num_sources, std_dev_noise, max_range);  
                 std::cout << "SHOWING Agents" << std::endl;
                 Agent a1 = Agent("Drone1", 15 ,0, field_x_rows, field_y_cols, max_range, std_dev_noise,speed,  &certainty_grids);
-                // Agent a2 = Agent("Drone2", 0 , 15, field_x_rows, field_y_cols, max_range,std_dev_noise, speed, &certainty_grids);
+                Agent a2 = Agent("Drone2", 0 , 15, field_x_rows, field_y_cols, max_range,std_dev_noise, speed, &certainty_grids);
                 // Agent a3 = Agent("Drone2", 299 ,0, field_x_rows, field_y_cols, max_range,speed, &certainty_grids);
                 Agent::step_counter = 0;
                 a1.output = &output_agent;
-                // a2.output = &output_agent;
+                a2.output = &output_agent;
                 // a3.output = &output_agent;
 
 
@@ -146,31 +146,31 @@ int main (int argc, char* argv[]){
 
 
 
-//                     //plot a2
-//                     std::pair<int,int> a2_curr = a2.getCoords();
-//                     std::cout << "Drone 2 at: " << a2_curr.first << "," << a2_curr.second << std::endl;
-//                     std::cout << "Step: " << Agent::step_counter << std::endl;
+                    //plot a2
+                    std::pair<int,int> a2_curr = a2.getCoords();
+                    std::cout << "Drone 2 at: " << a2_curr.first << "," << a2_curr.second << std::endl;
+                    std::cout << "Step: " << Agent::step_counter << std::endl;
                      
-//                     std::pair<int,int> a2_dest = a2.determineAction();
-//                     if(a2_dest.first == -1 ){ //exploration complete
-//                         break;
-//                     }
-//                     a2_dest = a2.moveToPosition(a2_dest);
-//                     cv::line(map, a2.pair2Point(a2_dest), a2.pair2Point(a2_curr),cv::Scalar(0,0,255));
-//                     cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
-//                     cert_grid = a2.getMap();
-//                     cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
-//                     cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
-// // #ifdef SHOW_IMG
-//                     cv::imshow("map", img);
-//                     cv::waitKey(WAITKEY_DELAY);
-//                     cv::bitwise_or(locations, a1.getSignalLocations(), img2);
-//                     cv::imshow("locations", img2);
-//                     cv::waitKey(WAITKEY_DELAY);
-// // #endif
+                    std::pair<int,int> a2_dest = a2.determineAction();
+                    if(a2_dest.first == -1 ){ //exploration complete
+                        break;
+                    }
+                    a2_dest = a2.moveToPosition(a2_dest);
+                    cv::line(map, a2.pair2Point(a2_dest), a2.pair2Point(a2_curr),cv::Scalar(0,0,255));
+                    cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
+                    cert_grid = a2.getMap();
+                    cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
+                    cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
+// #ifdef SHOW_IMG
+                    cv::imshow("map", img);
+                    cv::waitKey(WAITKEY_DELAY);
+                    cv::bitwise_or(locations, a1.getSignalLocations(), img2);
+                    cv::imshow("locations", img2);
+                    cv::waitKey(WAITKEY_DELAY);
+// #endif
 
-//                     // a2.updateMap();
-//                     a2.updateCertainty(f);   
+                    // a2.updateMap();
+                    a2.updateCertainty(f);   
 
 
 
