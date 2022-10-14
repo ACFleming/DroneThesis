@@ -35,6 +35,7 @@ public:
     cv::Point2i getCentre();
     std::vector<cv::Point2i> getAll();
     std::vector<cv::Point2i> getBounds();
+    cv::RotatedRect getRotRect();
 
 
 };

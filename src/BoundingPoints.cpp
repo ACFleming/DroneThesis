@@ -112,3 +112,7 @@ std::vector<cv::Point2i> BoundingPoints::getBounds() {
     pts.push_back(this->bottom);
     return pts;
 }
+
+cv::RotatedRect BoundingPoints::getRotRect(){
+    return this->rect;
+}

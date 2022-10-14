@@ -104,6 +104,8 @@ public:
 
     cv::Mat getSignalLocations();
 
+    bool verifySignalLocations(std::string name, std::pair<int,int> true_location);
+
 
 
 };

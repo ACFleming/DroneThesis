@@ -49,7 +49,7 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->field_x_rows = field_width;
     this->field_y_cols = field_length;
     this->scan_radius = scan_radius;
-    this->measurement_std_dev = measurement_std_dev;
+    this->measurement_std_dev = measurement_std_dev*2;
     this->speed = speed;
     this->certainty_grids = certainty_grids;
     
@@ -139,7 +139,7 @@ void Agent::updateCertainty(Field f){
     //step 1 get any signal measurements
 
     std::map<std::string, std::vector<double>> all_measurements;
-    for(int repeat_ping = 0; repeat_ping < 3; repeat_ping++){
+    for(int repeat_ping = 0; repeat_ping < 5; repeat_ping++){
         
         std::vector<std::pair<std::string, double>> raw_measurement = f.getMeasurements(this->coords);
         for(auto &m: raw_measurement){
@@ -274,6 +274,10 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
 
         double dist_mod = -5;
+
+#ifndef DIST
+        dist_mod = 0;
+#endif
         
         score += dist_mod  * dist;
         // score += dist_mod*exp(dist/this->scan_radius);
@@ -311,8 +315,10 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
         
         double scanned_mod = 0.5*100;
+
+#ifndef SEEN
         scanned_mod = 0;
-        
+#endif        
         
         score += scanned_mod * new_scanned_ratio;
 
@@ -380,10 +386,10 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 #endif
             double area_rt = (ctr_area)/hull_area;
 
-            double area_rt_mod = 3*100;
-
+            double area_rt_mod = 3*10;
+#ifndef HULL_AREA
             area_rt_mod = 0;
-
+#endif
             score += area_rt_mod * area_rt;
 #ifdef COST_VEC_PRINT
             *this->output << "Area ratio: " << "," << area_rt << "," << " Area ratio Contribution: " << "," << area_rt_mod * area_rt << ",";
@@ -393,8 +399,9 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
             double perim_mod = -0.3;
 
+#ifndef HULL_PERIM
             perim_mod = 0;
-
+#endif
             score += perim_mod * perim_diff;
 #ifdef COST_VEC_PRINT
             *this->output << "Perim diff: " << "," << perim_diff << "," << " Perim diff Contribution: " << "," << perim_mod * perim_diff << ",";
@@ -494,8 +501,11 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             double inv_area_ratio = inv_ctr_area/inv_hull_area;
 
             double inv_area_rt_mod = 3*100;
-            inv_area_rt_mod = 0;
 
+#ifndef INV_HULL_AREA
+
+            inv_area_rt_mod = 0;
+#endif
 
             score += inv_area_rt_mod * inv_area_ratio;
 
@@ -810,14 +820,73 @@ cv::Mat Agent::getSignalLocations() {
     return confirmed;
 }
 
+
+bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_location){
+
+//  Source; https://gamedev.stackexchange.com/questions/110229/how-do-i-efficiently-check-if-a-point-is-inside-a-rotated-rectangle
+
+
+    // BoundingPoints signal_prediction =  this->certainty_grids->at(name).getLikelihood().clone();
+    // for(auto & corner: signal_prediction.
+    cv::Mat mask = this->certainty_grids->at(name).getLikelihood().clone(); 
+    
+
+// #ifdef SHOW_IMG
+    cv::imshow("Mask for", mask);
+    cv::waitKey(0);
+// #endif
+
+
+    //now the black region is where the signal should be
+    cv::bitwise_not(mask, mask);
+    
+    cv::Mat tmp = cv::Mat::zeros(mask.size(), CV_8UC1);
+    cv::circle(tmp, this->pair2Point(true_location), 1, cv::Scalar(255));
+
+// #ifdef SHOW_IMG
+    cv::imshow("True location", tmp);
+    cv::waitKey(0);
+// #endif
+
+    cv::bitwise_and(tmp, mask, tmp);
+
+    
+// #ifdef SHOW_IMG
+    cv::imshow("Missed overlap", tmp);
+    cv::waitKey(0);
+// #endif
+
+    int remaining = cv::countNonZero(tmp);
+    if(remaining == 0){
+        *this->output << "Signal name: " << "," << name << "," << "Inside likelihood area? : " << "," << "True" << std::endl;
+        return true;
+    }else{
+        *this->output << "Signal name: " << "," << name << "," << "Inside likelihood area? : " << "," << "False" << std::endl;
+        return false;
+    }
+    
+
+
+//     //as this is after completion, this is the 3 std dev likelihood
+
+
+//     // cv::threshold()
+}
+
+
+
 void Agent::logAgent() {
     
     *this->output << "Steps taken: " << "," << Agent::step_counter << std::endl;
     for(auto &kv_name_grid: *(this->certainty_grids)){
-        if(kv_name_grid.first == BASE ) continue;
+        if(kv_name_grid.first == BASE || kv_name_grid.first == MAP ) continue;
         *this->output << kv_name_grid.first << ","  << kv_name_grid.second.getSignalBounds().getCentre().x << " , " << kv_name_grid.second.getSignalBounds().getCentre().y << std::endl;
         *this->output << "Likelihood area: " << "," << kv_name_grid.second.getSignalBounds().getArea() << std::endl;
+        
     }
 }
+
+
+
 
 

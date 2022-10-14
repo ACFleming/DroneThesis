@@ -3,11 +3,11 @@
 #include <stack>
 #include <ctime>
 
-#define PI 3.1415926535
+#define PI 3.1415926535897
 
 #define NO_OP [](){}()
 
-#define WAITKEY_DELAY 1
+#define WAITKEY_DELAY 0
 #define BASE "base_certainty"
 #define MAP "map_of_grid"
 #define LOCATIONS "locations_of_sources"
@@ -17,7 +17,16 @@
 
 
 #define COST_VEC_PRINT
-// #define SHOW_IMG
+#define SHOW_IMG
+
+
+#define DIST
+#define SEEN
+#define HULL_AREA
+#define HULL_PERIM
+#define INV_HULL_AREA
+#define INV_HULL_PERIM
+#define CHAIN
 
 
 enum grid_vals{

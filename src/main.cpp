@@ -46,8 +46,8 @@ int main (int argc, char* argv[]){
 
 
 
-    std::string number_of_agents = std::string("double/");
-    std::string type_of_test = std::string("dist");
+    std::string number_of_agents = std::string("single/");
+    std::string type_of_test = std::string("full");
 
 
     int num_tests = 100;
@@ -81,8 +81,8 @@ int main (int argc, char* argv[]){
                 Agent a2 = Agent("Drone2", 0 , 15, field_x_rows, field_y_cols, max_range,std_dev_noise, speed, &certainty_grids);
                 // Agent a3 = Agent("Drone2", 299 ,0, field_x_rows, field_y_cols, max_range,speed, &certainty_grids);
                 Agent::step_counter = 0;
-                a1.output = &output_agent;
-                a2.output = &output_agent;
+                // a1.output = &output_agent;
+                // a2.output = &output_agent;
                 // a3.output = &output_agent;
 
 
@@ -199,8 +199,11 @@ int main (int argc, char* argv[]){
 
                 }
                 a1.logAgent();
+                for(auto &s: f.getSources()){
+                    a1.verifySignalLocations(s.getId(), s.getCoords());
+                }
                 f.logField(&output_field);
-                
+            
                 cv::imwrite(file_path_map, map);
                 cv::imwrite(file_path_locations, a1.getSignalLocations());
                 output_agent.close();
