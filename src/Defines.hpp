@@ -7,17 +7,17 @@
 
 #define NO_OP [](){}()
 
-#define WAITKEY_DELAY 0
+#define WAITKEY_DELAY 1
 #define BASE "base_certainty"
 #define MAP "map_of_grid"
-#define LOCATIONS "locations_of_sources"
+// #define LOCATIONS "locations_of_sources"
 
 #define HERE std::cout << "HERE" << std::endl;
 
 
 
 #define COST_VEC_PRINT
-#define SHOW_IMG
+// #define SHOW_IMG
 
 
 #define DIST
@@ -27,6 +27,9 @@
 #define INV_HULL_AREA
 #define INV_HULL_PERIM
 #define CHAIN
+
+#define DOUBLE
+
 
 
 enum grid_vals{

@@ -46,7 +46,7 @@ int main (int argc, char* argv[]){
 
 
 
-    std::string number_of_agents = std::string("single/");
+    std::string number_of_agents = std::string("double/");
     std::string type_of_test = std::string("full");
 
 
@@ -78,11 +78,15 @@ int main (int argc, char* argv[]){
                 Field f = Field(field_x_rows,field_y_cols,num_sources, std_dev_noise, max_range);  
                 std::cout << "SHOWING Agents" << std::endl;
                 Agent a1 = Agent("Drone1", 15 ,0, field_x_rows, field_y_cols, max_range, std_dev_noise,speed,  &certainty_grids);
+#ifdef DOUBLE
                 Agent a2 = Agent("Drone2", 0 , 15, field_x_rows, field_y_cols, max_range,std_dev_noise, speed, &certainty_grids);
+#endif
                 // Agent a3 = Agent("Drone2", 299 ,0, field_x_rows, field_y_cols, max_range,speed, &certainty_grids);
                 Agent::step_counter = 0;
-                // a1.output = &output_agent;
-                // a2.output = &output_agent;
+                a1.output = &output_agent;
+#ifdef DOUBLE
+                a2.output = &output_agent;
+#endif
                 // a3.output = &output_agent;
 
 
@@ -102,15 +106,17 @@ int main (int argc, char* argv[]){
 #ifdef SHOW_IMG
                 std::pair<int,int> a1_curr = a1.getCoords();    
                 cv::circle(map, a1.pair2Point(a1_curr),2,cv::Scalar(0,255,0));  
-
-                // std::pair<int,int> a2_curr = a2.getCoords();
-                // cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
-                    
+#ifdef DOUBLE
+                std::pair<int,int> a2_curr = a2.getCoords();
+                cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
+#endif
                 cv::imshow("map", map);
                 cv::waitKey(WAITKEY_DELAY);
 #endif
                 a1.updateCertainty(f);
-                // a2.updateCertainty(f); 
+#ifdef DOUBLE
+                a2.updateCertainty(f);
+#endif
 
                 while(true){
                     // cv::waitKey(0);
@@ -126,6 +132,7 @@ int main (int argc, char* argv[]){
                         break;
                     }
                     a1_dest = a1.moveToPosition(a1_dest);
+                    a1.updateCertainty(f); 
                     cv::line(map, a1.pair2Point(a1_dest), a1.pair2Point(a1_curr),cv::Scalar(0,255,0));
                     cv::circle(map, a1.pair2Point(a1_curr),2,cv::Scalar(0,255,0));
                     cv::Mat cert_grid = a1.getMap();
@@ -142,10 +149,11 @@ int main (int argc, char* argv[]){
 
 
                     // a1.updateMap();
-                    a1.updateCertainty(f); 
+
+                    // cv::waitKey(0);
 
 
-
+#ifdef DOUBLE
                     //plot a2
                     std::pair<int,int> a2_curr = a2.getCoords();
                     std::cout << "Drone 2 at: " << a2_curr.first << "," << a2_curr.second << std::endl;
@@ -156,6 +164,8 @@ int main (int argc, char* argv[]){
                         break;
                     }
                     a2_dest = a2.moveToPosition(a2_dest);
+                    a2.updateCertainty(f);
+
                     cv::line(map, a2.pair2Point(a2_dest), a2.pair2Point(a2_curr),cv::Scalar(0,0,255));
                     cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
                     cert_grid = a2.getMap();
@@ -170,31 +180,8 @@ int main (int argc, char* argv[]){
 // #endif
 
                     // a2.updateMap();
-                    a2.updateCertainty(f);   
 
-
-
-                    // //plot a3
-                    // std::pair<int,int> a3_curr = a3.getCoords();
-                    // std::cout << "Drone 3 at: " << a3_curr.first << "," << a3_curr.second << std::endl;
-                    // a3.updateCertainty(f);    
-                    // std::pair<int,int> a3_dest = a3.determineAction();
-                    // if(a3_dest.first == -1 ){ //exploration complete
-                    //     break;
-                    // }
-                    // a3_dest = a3.moveToPosition(a3_dest);
-                    // a3.updateMap();
-
-                    // cv::line(map, a3.pair2Point(a3_dest), a3.pair2Point(a3_curr),cv::Scalar(255,0,0));
-                    // cv::circle(map, a3.pair2Point(a3_curr),2,cv::Scalar(255,0,0));
-                    // cert_grid = a3.getMap();
-                    // cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
-                    // cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
-#ifdef SHOW_IMG
-                    // // cv::imshow("map", img);
-                    // // cv::waitKey(1);
-                    // // cv::imshow("locations", a2.getSignalLocations());
-                    // // cv::waitKey(1);
+                    // cv::waitKey(0);  
 #endif
 
                 }

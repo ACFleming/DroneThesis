@@ -454,8 +454,10 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
 
             int frontier_chain_diff = frontier_chains - inverse_frontiers.size();
-            double chain_diff_mod = 100;
+            double chain_diff_mod = 300;
+#ifndef CHAIN
             chain_diff_mod = 0;
+#endif
             score += chain_diff_mod * frontier_chain_diff;
 
 
@@ -500,7 +502,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
             double inv_area_ratio = inv_ctr_area/inv_hull_area;
 
-            double inv_area_rt_mod = 3*100;
+            double inv_area_rt_mod = 7*100;
 
 #ifndef INV_HULL_AREA
 
@@ -831,10 +833,10 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
     cv::Mat mask = this->certainty_grids->at(name).getLikelihood().clone(); 
     
 
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
     cv::imshow("Mask for", mask);
     cv::waitKey(0);
-// #endif
+#endif
 
 
     //now the black region is where the signal should be
@@ -843,18 +845,18 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
     cv::Mat tmp = cv::Mat::zeros(mask.size(), CV_8UC1);
     cv::circle(tmp, this->pair2Point(true_location), 1, cv::Scalar(255));
 
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
     cv::imshow("True location", tmp);
     cv::waitKey(0);
-// #endif
+#endif
 
     cv::bitwise_and(tmp, mask, tmp);
 
     
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
     cv::imshow("Missed overlap", tmp);
     cv::waitKey(0);
-// #endif
+#endif
 
     int remaining = cv::countNonZero(tmp);
     if(remaining == 0){
