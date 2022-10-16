@@ -172,13 +172,13 @@ void Grid::updateCertainty(){
         cv::Mat valid_zone = this->signal_likelihood.clone();
         cv::threshold(valid_zone, valid_zone, 0, 255, cv::THRESH_BINARY);
 #ifdef SHOW_IMG
-        // cv::imshow("Valid Zone", valid_zone);
-        // cv::waitKey(WAITKEY_DELAY);
+        cv::imshow("Valid Zone", valid_zone);
+        cv::waitKey(WAITKEY_DELAY);
 #endif
         cv::circle(cleared_zone, cv::Point2i(this->measurement_point.first,this->measurement_point.second), this->measurement_range, cleared, -1 );
 #ifdef SHOW_IMG
-        // cv::imshow("Cleared Zone", cleared_zone);
-        // cv::waitKey(WAITKEY_DELAY);
+        cv::imshow("Cleared Zone", cleared_zone);
+        cv::waitKey(WAITKEY_DELAY);
 #endif
         // cv::subtract(this->signal_likelihood, cleared_zone, this->signal_likelihood);
         cv::bitwise_and(cleared_zone, valid_zone, this->signal_likelihood);

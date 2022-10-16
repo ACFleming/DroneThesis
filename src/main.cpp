@@ -46,12 +46,12 @@ int main (int argc, char* argv[]){
 
 
 
-    std::string number_of_agents = std::string("single/");
+    std::string number_of_agents = std::string("double/");
     std::string type_of_test = std::string("dist");
 
 
     int num_tests = 100;
-    int rand_seed_start = 0;
+    int rand_seed_start = 58;
     int source_start = 1;
     int max_sources = 5;
     for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){

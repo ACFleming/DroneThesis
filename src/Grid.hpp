@@ -27,7 +27,7 @@ protected:
 
     std::pair<int,int> measurement_point;
     int measurement_range;
-    std::vector<double> measurements;
+    // std::vector<double> measurements;
 
     std::string name;
     Ring signal_ring;
