@@ -7,6 +7,20 @@
 #include <string>
 
 
+std::stack<clock_t> tictoc_stack;
+
+extern void tic() {
+    tictoc_stack.push(clock());
+}
+
+std::string toc() {
+    double ticks =  ((double)(clock() - tictoc_stack.top())) / CLOCKS_PER_SEC;
+    std::string time =  "Time elapsed: " + std::to_string(ticks);
+    return time;
+}
+
+
+
 
 int main (int argc, char* argv[]){
 
@@ -45,17 +59,20 @@ int main (int argc, char* argv[]){
         // std:: cout << cv::pointPolygonTest(boundary, cv::Point2i(200,50), false) << std::endl;
 
 
-
+    //ARE THE HASH DEFINES SET CORRECTLY????!!!
     std::string number_of_agents = std::string("double/");
-    std::string type_of_test = std::string("dist");
+    std::string type_of_test = std::string("seen_dist");
 
 
     int num_tests = 100;
-    int rand_seed_start = 58;
+    int rand_seed_start = 0;
     int source_start = 1;
     int max_sources = 5;
     for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){
         for (int source_count = source_start; source_count <= max_sources; source_count++){
+                
+                tic();
+
                 std::cout << "Seed: " << test << " Num sources: " << source_count << " ***********************" << std::endl;
                 std::ofstream output_field;
                 std::string file_path_field =       number_of_agents + type_of_test + std::string("/logs/field_log")    + std::string("_test_") + std::to_string(test) + "_sc_" + std::to_string(source_count) + ".csv";
@@ -76,7 +93,7 @@ int main (int argc, char* argv[]){
                 std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
 
                 Field f = Field(field_x_rows,field_y_cols,num_sources, std_dev_noise, max_range);  
-                std::cout << "SHOWING Agents" << std::endl;
+                // std::cout << "SHOWING Agents" << std::endl;
                 Agent a1 = Agent("Drone1", 15 ,0, field_x_rows, field_y_cols, max_range, std_dev_noise,speed,  &certainty_grids);
 #ifdef DOUBLE
                 Agent a2 = Agent("Drone2", 0 , 15, field_x_rows, field_y_cols, max_range,std_dev_noise, speed, &certainty_grids);
@@ -124,8 +141,8 @@ int main (int argc, char* argv[]){
 
 
                     std::pair<int,int> a1_curr = a1.getCoords();
-                    std::cout << "Drone 1 at: " << a1_curr.first << "," << a1_curr.second << std::endl;
-                    std::cout << "Step: " << Agent::step_counter << std::endl;
+                    // std::cout << "Drone 1 at: " << a1_curr.first << "," << a1_curr.second << std::endl;
+                    // std::cout << "Step: " << Agent::step_counter << std::endl;
                        
                     std::pair<int,int> a1_dest = a1.determineAction();
                     if(a1_dest.first == -1 ){ //exploration complete
@@ -156,8 +173,8 @@ int main (int argc, char* argv[]){
 #ifdef DOUBLE
                     //plot a2
                     std::pair<int,int> a2_curr = a2.getCoords();
-                    std::cout << "Drone 2 at: " << a2_curr.first << "," << a2_curr.second << std::endl;
-                    std::cout << "Step: " << Agent::step_counter << std::endl;
+                    // std::cout << "Drone 2 at: " << a2_curr.first << "," << a2_curr.second << std::endl;
+                    // std::cout << "Step: " << Agent::step_counter << std::endl;
                      
                     std::pair<int,int> a2_dest = a2.determineAction();
                     if(a2_dest.first == -1 ){ //exploration complete
@@ -190,6 +207,7 @@ int main (int argc, char* argv[]){
                     a1.verifySignalLocations(s.getId(), s.getCoords());
                 }
                 f.logField(&output_field);
+                output_field << toc() << std::endl;
             
                 cv::imwrite(file_path_map, map);
                 cv::imwrite(file_path_locations, a1.getSignalLocations());

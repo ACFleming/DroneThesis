@@ -88,8 +88,8 @@ void Ring::drawRing(){
     }else{
         //change step size for more precision
         for(int c = 2; c >= 0; c = c-1){
-            std::cout << likely*exp(-0.5*pow(c,2)) << std::endl;
-            std::cout << 2*(c+1)*std_dev << std::endl;
+            // std::cout << likely*exp(-0.5*pow(c,2)) << std::endl;
+            // std::cout << 2*(c+1)*std_dev << std::endl;
             cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y), this->mean,  cv::Scalar(likely*exp(-0.5*pow(c,2))), 2*(c+1)*this->std_dev);
 
         }

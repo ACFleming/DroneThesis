@@ -21,7 +21,7 @@
 
 
 #define DIST
-// #define SEEN
+#define SEEN
 // #define HULL_AREA
 // #define HULL_PERIM
 // #define INV_HULL_AREA
@@ -29,6 +29,9 @@
 // #define CHAIN
 
 #define DOUBLE
+
+
+
 
 
 

@@ -202,7 +202,7 @@ void Grid::updateCertainty(){
     cv::waitKey(WAITKEY_DELAY);
 #endif
 
-        if(this->updated == false){ //i.e no new info  (Note: this should always trigger for base & map certainty grid)
+        if(this->updated == false){ //i.e no new info  
             this->signal_ring = Ring(this->field_x_rows, this->field_y_cols, this->measurement_point.first, this->measurement_point.second, this->measurement_range,-1);
             this->signal_ring.drawRing();
             
@@ -245,7 +245,7 @@ void Grid::updateCertainty(){
             cv::waitKey(WAITKEY_DELAY);
 #endif
 
-            if(three_std_confidence.getArea() <= (0.1*this->measurement_range*this->measurement_range*PI) || this->ping_counter > 3){
+            if(three_std_confidence.getArea() <= (0.1*this->measurement_range*this->measurement_range*PI) || this->ping_counter > 5){
                 this->found = true;
                 this->signal_bounds = three_std_confidence;
                 this->signal_likelihood = three_std_devs;

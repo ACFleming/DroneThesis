@@ -1,18 +1,7 @@
 #include "Agent.hpp"
 
 
-std::stack<clock_t> tictoc_stack;
 
-extern void tic() {
-    tictoc_stack.push(clock());
-}
-
-extern void toc() {
-    std::cout << "Time elapsed: "
-              << ((double)(clock() - tictoc_stack.top())) / CLOCKS_PER_SEC
-              << std::endl;
-    tictoc_stack.pop();
-}
 
 
 
@@ -55,7 +44,7 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     
     this->certainty_grids->insert(std::pair<std::string, Grid>(BASE,Grid(BASE, this->field_x_rows, this->field_y_cols)));
     this->certainty_grids->insert(std::pair<std::string, Grid>(MAP, Grid(MAP,  this->field_x_rows, this->field_y_cols)));
-    HERE
+    // HERE
     this->output = &std::cout;
     *this->output << name << " fininshed loading" << std::endl;
 
@@ -701,18 +690,23 @@ std::pair<int,int> Agent::determineAction(){
             // *this->output <<"DONE!" << std::endl;
             return std::make_pair(-1,-1);
         }
+        *this->output << "Checking reserve frontiers" << std::endl;
+        this->costFunction(reserve_frontiers, signal_frontiers, hole_centres,  best_point,best_score);
 
-        // this->costFunction(seen, reserve_frontiers, signal_frontiers, hole_centres,  best_point,best_score);
-        // if(best_score < -1000){ 
-        double missed_p_dist = this->field_x_rows*this->field_x_rows + this->field_y_cols*this->field_y_cols;
-        for(auto &p: missed_spots){
-            if(missed_p_dist > this->dist(this->coords, this->point2Pair(p))){
-                best_point = p;
-                best_score = 0;
-                missed_p_dist = this->dist(this->coords, this->point2Pair(p));
+
+
+
+        if(best_score < -100000){ 
+            *this->output << "Checking for remaining cells" << std::endl;
+            double missed_p_dist = this->field_x_rows*this->field_x_rows + this->field_y_cols*this->field_y_cols;
+            for(auto &p: missed_spots){
+                if(missed_p_dist > this->dist(this->coords, this->point2Pair(p))){
+                    best_point = p;
+                    best_score = 0;
+                    missed_p_dist = this->dist(this->coords, this->point2Pair(p));
+                }
             }
         }
-        // }
         
         
 
