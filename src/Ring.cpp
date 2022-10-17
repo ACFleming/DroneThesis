@@ -87,20 +87,15 @@ void Ring::drawRing(){
 // #endif
     }else{
         //change step size for more precision
-        for(double c = 3; c >= 0; c = c-0.5){
-            // std::cout << c << std::endl;
-            // cv::waitKey(0);
+        for(int c = 2; c >= 0; c = c-1){
             // std::cout << likely*exp(-0.5*pow(c,2)) << std::endl;
             // std::cout << 2*(c+1)*std_dev << std::endl;
             cv::circle(this->canvas, cv::Point2i(this->centre_x,this->centre_y), this->mean,  cv::Scalar(likely*exp(-0.5*pow(c,2))), 2*(c+1)*this->std_dev);
 
         }
     }
-#ifdef SHOW_IMG
     cv::imshow("Canvas", this->canvas);
     cv::waitKey(WAITKEY_DELAY);
-
-#endif
 
     
 

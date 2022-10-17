@@ -17,18 +17,18 @@
 
 
 #define COST_VEC_PRINT
-#define SHOW_IMG
+// #define SHOW_IMG
 
 
 #define DIST
 #define SEEN
-#define HULL_AREA
-#define HULL_PERIM
-#define INV_HULL_AREA
-// #define INV_HULL_PERIM
-#define CHAIN
+// #define HULL_AREA
+// #define HULL_PERIM
+// #define INV_HULL_AREA
+// // #define INV_HULL_PERIM
+// #define CHAIN
 
-#define SINGLE
+#define DOUBLE
 
 
 

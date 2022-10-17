@@ -837,8 +837,7 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
     cv::bitwise_not(mask, mask);
     
     cv::Mat tmp = cv::Mat::zeros(mask.size(), CV_8UC1);
-    tmp.at<uint8_t>(this->pair2Point(true_location)) = 255;
-    // cv::circle(tmp, this->pair2Point(true_location), 1, cv::Scalar(255));
+    cv::circle(tmp, this->pair2Point(true_location), 1, cv::Scalar(255));
 
 #ifdef SHOW_IMG
     cv::imshow("True location", tmp);
@@ -856,14 +855,10 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
     int remaining = cv::countNonZero(tmp);
     if(remaining == 0){
         *this->output << "Signal name: " << "," << name << "," << "Inside likelihood area? : " << "," << "True" << std::endl;
-        std::cout << "True" << std::endl;
         return true;
     }else{
         *this->output << "Signal name: " << "," << name << "," << "Inside likelihood area? : " << "," << "False" << std::endl;
-        std::cout << "False" << std::endl;
-        exit(EXIT_FAILURE);
         return false;
-        
     }
     
 

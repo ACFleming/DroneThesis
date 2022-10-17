@@ -198,7 +198,7 @@ void Grid::updateCertainty(){
             
         cv::Mat temp = this->signal_likelihood.clone();
 #ifdef SHOW_IMG
-    cv::imshow(" Before",this->signal_likelihood );
+    cv::imshow(std::string(" Before"),this->signal_likelihood );
     cv::waitKey(WAITKEY_DELAY);
 #endif
 
@@ -223,7 +223,7 @@ void Grid::updateCertainty(){
 
 
 #ifdef SHOW_IMG
-        cv::imshow("ring & before", temp );
+        cv::imshow(std::string("ring & before"), temp );
         cv::waitKey(WAITKEY_DELAY);
 #endif
 
@@ -241,11 +241,11 @@ void Grid::updateCertainty(){
             BoundingPoints three_std_confidence = BoundingPoints(three_std_devs);
             
 #ifdef SHOW_IMG
-            cv::imshow("3 std devs",three_std_devs );
+            cv::imshow(std::string(" 3 std desv"),three_std_devs );
             cv::waitKey(WAITKEY_DELAY);
 #endif
 
-            if(three_std_confidence.getArea() <= (0.5*this->measurement_range*this->measurement_range*PI) ||   this->ping_counter >= 10){
+            if(three_std_confidence.getArea() <= (0.1*this->measurement_range*this->measurement_range*PI) || this->ping_counter > 5){
                 this->found = true;
                 this->signal_bounds = three_std_confidence;
                 this->signal_likelihood = three_std_devs;
@@ -254,7 +254,7 @@ void Grid::updateCertainty(){
             }else{
                 BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
 #ifdef SHOW_IMG
-                cv::imshow("1 std dev",one_std_dev );
+                cv::imshow(std::string(" 1 std dev"),one_std_dev );
                 cv::waitKey(WAITKEY_DELAY);
 #endif
                 this->found = false;
@@ -262,22 +262,6 @@ void Grid::updateCertainty(){
                 this->signal_likelihood = one_std_dev;
             
             }
-
-#ifdef SHOW_IMG
-                cv::Mat rect_img = this->signal_likelihood.clone();
-
-                cv::line(rect_img, this->getSignalBounds().getTop(),this->getSignalBounds().getLeft(), cv::Scalar(255), 1);
-                cv::line(rect_img, this->getSignalBounds().getLeft(),this->getSignalBounds().getBottom(), cv::Scalar(255), 1);
-                cv::line(rect_img, this->getSignalBounds().getBottom(),this->getSignalBounds().getRight(), cv::Scalar(255), 1);
-                cv::line(rect_img, this->getSignalBounds().getRight(),this->getSignalBounds().getTop(), cv::Scalar(255), 1);
-
-
-
-                cv::imshow("likelihood and bounding",rect_img );
-                cv::waitKey(WAITKEY_DELAY);
-#endif
-
-
         }
 
 
