@@ -77,10 +77,10 @@ Grid::Grid(std::string name, int field_x_rows, int field_y_cols){
     // this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.9*field_y_cols));
     // this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
 
-    this->edge_of_map.push_back(cv::Point2i(0*field_x_rows,0*field_y_cols));
-    this->edge_of_map.push_back(cv::Point2i(0*field_x_rows,1*field_y_cols-1));
-    this->edge_of_map.push_back(cv::Point2i(1*field_x_rows-1,1*field_y_cols-1));
-    this->edge_of_map.push_back(cv::Point2i(1*field_x_rows-1,0*field_y_cols));
+    this->edge_of_map.push_back(cv::Point2i(0,0));
+    this->edge_of_map.push_back(cv::Point2i(0,field_y_cols-1));
+    this->edge_of_map.push_back(cv::Point2i(field_x_rows-1,field_y_cols-1));
+    this->edge_of_map.push_back(cv::Point2i(field_x_rows-1,0));
 
 
     // this->edge_of_map.push_back(cv::Point2i(40,260));
@@ -229,7 +229,8 @@ void Grid::updateCertainty(){
 
         cv::Mat one_std_dev = temp.clone();
         cv::threshold(temp, one_std_dev, likely*exp(-0.5*pow(1,2))-1, 255, cv::THRESH_BINARY);
-        if(cv::countNonZero(one_std_dev) > 10){
+        // BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
+        if(true ){
             
 
 
@@ -237,6 +238,7 @@ void Grid::updateCertainty(){
 
 
             cv::Mat three_std_devs = temp.clone();
+            //using 4 std dev
             cv::threshold(temp, three_std_devs, likely*exp(-0.5*pow(3,2))-1, 255, cv::THRESH_BINARY);
             BoundingPoints three_std_confidence = BoundingPoints(three_std_devs);
             
@@ -245,10 +247,12 @@ void Grid::updateCertainty(){
             cv::waitKey(WAITKEY_DELAY);
 #endif
 
-            if(three_std_confidence.getArea() <= (0.1*this->measurement_range*this->measurement_range*PI) || this->ping_counter > 5){
+            if(three_std_confidence.getArea() <= (0.5*this->measurement_range*this->measurement_range*PI) || this->ping_counter > 5){
                 this->found = true;
                 this->signal_bounds = three_std_confidence;
+                
                 this->signal_likelihood = three_std_devs;
+                // cv::fillPoly(this->signal_likelihood, this->signal_bounds.getBounds(), cv::Scalar(255));
             
 
             }else{

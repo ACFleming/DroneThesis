@@ -40,15 +40,17 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->scan_radius = scan_radius;
     this->measurement_std_dev = measurement_std_dev*2; //Factor of safety
     this->speed = speed;
+    
     this->certainty_grids = certainty_grids;
     
     this->certainty_grids->insert(std::pair<std::string, Grid>(BASE,Grid(BASE, this->field_x_rows, this->field_y_cols)));
+    
     this->certainty_grids->insert(std::pair<std::string, Grid>(MAP, Grid(MAP,  this->field_x_rows, this->field_y_cols)));
-    // HERE
+    
     this->output = &std::cout;
     *this->output << name << " fininshed loading" << std::endl;
 
-
+    
 
 }
 
@@ -128,7 +130,7 @@ void Agent::updateCertainty(Field f){
     //step 1 get any signal measurements
 
     std::map<std::string, std::vector<double>> all_measurements;
-    for(int repeat_ping = 0; repeat_ping < 5; repeat_ping++){
+    for(int repeat_ping = 0; repeat_ping < 10; repeat_ping++){
         
         std::vector<std::pair<std::string, double>> raw_measurement = f.getMeasurements(this->coords);
         for(auto &m: raw_measurement){
@@ -150,7 +152,7 @@ void Agent::updateCertainty(Field f){
 
 
     for(auto &m: avg_measurements){
-
+        std::cout << m.first << ":" << m.second << std::endl;
         if(this->certainty_grids->count(m.first) == 0){ //if no existing grid region
             cv::Mat base = this->certainty_grids->at(BASE).getLikelihood().clone();
             cv::threshold(base, base, searching-1, 255, cv::THRESH_BINARY);
@@ -235,9 +237,15 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         // }
         double repeat_cmd_mod = -1;
 
-        double repeat_cmd_score = pow(10, this->countCommand(this->point2Pair(f)) - 1);
+        double repeat_cmd_score = pow(100, this->countCommand(this->point2Pair(f)));
 
-        score += repeat_cmd_mod * repeat_cmd_score; 
+        score += repeat_cmd_mod * repeat_cmd_score;
+
+#ifdef COST_VEC_PRINT
+        *this->output << "Repeat score:" << "," << repeat_cmd_score << "," << " Repeat contribution: " << "," << repeat_cmd_mod * repeat_cmd_score << ",";
+#endif
+
+ 
 
 
 
@@ -259,7 +267,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         double vertical_dist = abs(this->coords.second - f.y); 
         double horiz_mod = 1;
         double vert_mod = 1.3;
-        double dist = hypot(horiz_mod*horizontal_dist, vert_mod*vertical_dist);
+        double distance = hypot(horiz_mod*horizontal_dist, vert_mod*vertical_dist);
 
 
         double dist_mod = -5;
@@ -268,11 +276,11 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         dist_mod = 0;
 #endif
         
-        score += dist_mod  * dist;
+        score += dist_mod  * distance;
         // score += dist_mod*exp(dist/this->scan_radius);
 
 #ifdef COST_VEC_PRINT
-        *this->output << "Dist:" << "," << dist << "," << " Dist contribution: " << "," << dist_mod * dist << ",";
+        *this->output << "Dist:" << "," << distance << "," << " Dist contribution: " << "," << dist_mod * dist << ",";
 #endif
 
         cv::bitwise_or(seen, this->rangeMask(f.x, f.y, searching), new_cells);  
@@ -726,6 +734,7 @@ std::pair<int,int> Agent::determineAction(){
     cv::waitKey(WAITKEY_DELAY);
 #endif
     this->recordCommand(this->point2Pair(best_point));
+    std::cout << "COUNT COMMAND: " << this->countCommand(this->point2Pair(best_point)) << std::endl;
     return this->point2Pair(best_point);
 
 
@@ -733,6 +742,7 @@ std::pair<int,int> Agent::determineAction(){
 
 std::pair<int,int> Agent::moveToPosition(std::pair<int,int> pos){
     // this->certainty_grid.at<uint8_t>(this->coords.second, this->coords.first) = scanned;
+    std::cout << pos.first << '.' << pos.second << std::endl;
     pos.first = this->clipRange(0, this->field_x_rows, pos.first);
     pos.second = this->clipRange(0, this->field_y_cols, pos.second);
 
@@ -741,7 +751,7 @@ std::pair<int,int> Agent::moveToPosition(std::pair<int,int> pos){
     double factor = this->speed/this->dist(pos, this->coords);
     
 
-
+    std::cout << factor << std::endl;
     
     if(factor < 1){
         interpolated_pos.first = (pos.first-this->coords.first)*factor + this->coords.first;
@@ -853,11 +863,15 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
 #endif
 
     int remaining = cv::countNonZero(tmp);
+
     if(remaining == 0){
-        *this->output << "Signal name: " << "," << name << "," << "Inside likelihood area? : " << "," << "True" << std::endl;
+        *this->output << "Signal name: " << "," << name << "," <<  "x:"  << "," <<  true_location.first << "," << "y:" << "," << true_location.second  << "," << "Inside likelihood area? : " << "," << "True" << std::endl;
+        std::cout << "Signal name: " << "," << name << "," <<  "x:"  << "," <<  true_location.first << "," << "y:" << "," << true_location.second  << "," << "Inside likelihood area? : " << "," << "True" << std::endl;
         return true;
     }else{
-        *this->output << "Signal name: " << "," << name << "," << "Inside likelihood area? : " << "," << "False" << std::endl;
+        *this->output << "Signal name: " << "," << name << "," <<  "x:"  << "," <<  true_location.first << "," << "y:" << "," << true_location.second  << "," << "Inside likelihood area? : " << "," << "False" << std::endl;
+        std::cout << "Signal name: " << "," << name << "," <<  "x:"  << "," <<  true_location.first << "," << "y:" << "," << true_location.second  << "," << "Inside likelihood area? : " << "," << "False" << std::endl;
+        cv::waitKey(0);
         return false;
     }
     

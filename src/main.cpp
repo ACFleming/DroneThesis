@@ -25,6 +25,9 @@ std::string toc() {
 int main (int argc, char* argv[]){
 
 
+        
+        
+
         // cv::Mat field_shape = cv::Mat(300, 300, CV_8UC1, cv::Scalar(empty));
         // cv::imshow("Field shape", field_shape);
         // cv::waitKey(0);
@@ -60,17 +63,17 @@ int main (int argc, char* argv[]){
 
 
     //ARE THE HASH DEFINES SET CORRECTLY????!!!
-    std::string number_of_agents = std::string("double/");
-    std::string type_of_test = std::string("seen_dist");
+    std::string number_of_agents = std::string("single/");
+    std::string type_of_test = std::string("full");
 
 
     int num_tests = 100;
-    int rand_seed_start = 0;
-    int source_start = 1;
-    int max_sources = 5;
+    int rand_seed_start = 10;
+    int source_start = 10;
+    int max_sources = 10;
     for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){
         for (int source_count = source_start; source_count <= max_sources; source_count++){
-                
+                // cv::waitKey(0);
                 tic();
 
                 std::cout << "Seed: " << test << " Num sources: " << source_count << " ***********************" << std::endl;
@@ -88,27 +91,27 @@ int main (int argc, char* argv[]){
                 int num_sources = source_count;
                 double std_dev_noise = 3;
                 double max_range = 20;
-                double speed = 20;
+                double speed = 40;
                 srand((unsigned int)(test));
                 std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
-
+                
                 Field f = Field(field_x_rows,field_y_cols,num_sources, std_dev_noise, max_range);  
                 // std::cout << "SHOWING Agents" << std::endl;
+                
                 Agent a1 = Agent("Drone1", 15 ,0, field_x_rows, field_y_cols, max_range, std_dev_noise,speed,  &certainty_grids);
 #ifdef DOUBLE
                 Agent a2 = Agent("Drone2", 0 , 15, field_x_rows, field_y_cols, max_range,std_dev_noise, speed, &certainty_grids);
 #endif
                 // Agent a3 = Agent("Drone2", 299 ,0, field_x_rows, field_y_cols, max_range,speed, &certainty_grids);
                 Agent::step_counter = 0;
-                a1.output = &output_agent;
+                // a1.output = &output_agent;
 #ifdef DOUBLE
                 a2.output = &output_agent;
 #endif
                 // a3.output = &output_agent;
-
+                
 
                 // RUN FUNCTION
-
                 cv::Mat map = cv::Mat::zeros(field_y_cols, field_x_rows, CV_8UC3);
                 cv::Mat img = cv::Mat::zeros(field_y_cols, field_x_rows, CV_8UC3);
                 cv::Mat locations = cv::Mat::zeros(field_y_cols, field_x_rows, CV_8UC3);
@@ -120,7 +123,7 @@ int main (int argc, char* argv[]){
                     cv::circle(locations, cv::Point2i(c.getCoords().first, c.getCoords().second), 2, cv::Scalar(255,255,255 ));
                 }
 
-#ifdef SHOW_IMG
+
                 std::pair<int,int> a1_curr = a1.getCoords();    
                 cv::circle(map, a1.pair2Point(a1_curr),2,cv::Scalar(0,255,0));  
 #ifdef DOUBLE
@@ -129,7 +132,7 @@ int main (int argc, char* argv[]){
 #endif
                 cv::imshow("map", map);
                 cv::waitKey(WAITKEY_DELAY);
-#endif
+
                 a1.updateCertainty(f);
 #ifdef DOUBLE
                 a2.updateCertainty(f);
@@ -141,8 +144,8 @@ int main (int argc, char* argv[]){
 
 
                     std::pair<int,int> a1_curr = a1.getCoords();
-                    // std::cout << "Drone 1 at: " << a1_curr.first << "," << a1_curr.second << std::endl;
-                    // std::cout << "Step: " << Agent::step_counter << std::endl;
+                    std::cout << "Drone 1 at: " << a1_curr.first << "," << a1_curr.second << std::endl;
+                    std::cout << "Step: " << Agent::step_counter << std::endl;
                        
                     std::pair<int,int> a1_dest = a1.determineAction();
                     if(a1_dest.first == -1 ){ //exploration complete

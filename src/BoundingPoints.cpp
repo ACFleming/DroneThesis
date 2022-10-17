@@ -108,8 +108,9 @@ std::vector<cv::Point2i> BoundingPoints::getBounds() {
     std::vector<cv::Point2i> pts;
     pts.push_back(this->top);
     pts.push_back(this->left);
-    pts.push_back(this->right);
     pts.push_back(this->bottom);
+    pts.push_back(this->right);
+
     return pts;
 }
 
