@@ -195,6 +195,8 @@ void Grid::updateCertainty(){
     }else{
         if(found && !updated) return;
             
+
+        this->ping_counter++;
             
         cv::Mat temp = this->signal_likelihood.clone();
 #ifdef SHOW_IMG
@@ -205,68 +207,107 @@ void Grid::updateCertainty(){
         if(this->updated == false){ //i.e no new info  
             this->signal_ring = Ring(this->field_x_rows, this->field_y_cols, this->measurement_point.first, this->measurement_point.second, this->measurement_range,-1);
             this->signal_ring.drawRing();
+#ifdef SHOW_IMG
+            cv::imshow("negative measurement", this->signal_ring.getCanvas());
+            cv::waitKey(WAITKEY_DELAY);
+        
+#endif
+
+            cv::subtract(this->signal_likelihood, this->signal_ring.getCanvas(), temp);
+
+            
             
         }else{
-            this->ping_counter++;
-        }  
-#ifdef SHOW_IMG
-        cv::imshow("new measurement", this->signal_ring.getCanvas());
-        cv::waitKey(WAITKEY_DELAY);
-#endif
-        // if(this->ping_counter <= 10){
-        cv::bitwise_and(this->signal_likelihood, this->signal_ring.getCanvas(), temp);
-        // }else{
-            // cv::addWeighted(this->signal_likelihood, 0.1, this->signal_ring.getCanvas(),0.9, 0, temp);
-        // }
-        
-        
-
 
 #ifdef SHOW_IMG
-        cv::imshow(std::string("ring & before"), temp );
-        cv::waitKey(WAITKEY_DELAY);
-#endif
-
-        cv::Mat one_std_dev = temp.clone();
-        cv::threshold(temp, one_std_dev, likely*exp(-0.5*pow(1,2))-1, 255, cv::THRESH_BINARY);
-        // BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
-        if(true ){
-            
-
-
-
-
-
-            cv::Mat three_std_devs = temp.clone();
-            //using 4 std dev
-            cv::threshold(temp, three_std_devs, likely*exp(-0.5*pow(3,2))-1, 255, cv::THRESH_BINARY);
-            BoundingPoints three_std_confidence = BoundingPoints(three_std_devs);
-            
-#ifdef SHOW_IMG
-            cv::imshow(std::string(" 3 std desv"),three_std_devs );
+            cv::imshow("new measurement", this->signal_ring.getCanvas());
             cv::waitKey(WAITKEY_DELAY);
 #endif
 
-            if(three_std_confidence.getArea() <= (0.5*this->measurement_range*this->measurement_range*PI) || this->ping_counter > 5){
-                this->found = true;
-                this->signal_bounds = three_std_confidence;
-                
-                this->signal_likelihood = three_std_devs;
-                // cv::fillPoly(this->signal_likelihood, this->signal_bounds.getBounds(), cv::Scalar(255));
-            
 
-            }else{
-                BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
-#ifdef SHOW_IMG
-                cv::imshow(std::string(" 1 std dev"),one_std_dev );
-                cv::waitKey(WAITKEY_DELAY);
-#endif
-                this->found = false;
-                this->signal_bounds= one_std_confidence;
-                this->signal_likelihood = one_std_dev;
-            
-            }
+            cv::addWeighted(this->signal_likelihood, (ping_counter)/(ping_counter+1.0), this->signal_ring.getCanvas(),(1.0)/(ping_counter+1.0),0 , temp);
+
+
+
         }
+
+
+
+#ifdef SHOW_IMG
+        cv::imshow(std::string("ring before weighted avg"), temp );
+        cv::waitKey(WAITKEY_DELAY);
+#endif
+
+
+
+
+//find top 3 pixel values
+
+        double max_first = 0.0;
+        // cv::Point2i max_first_point(0,0);
+        cv::minMaxLoc(temp, NULL, &max_first, NULL, NULL);
+        // *this-> << "MAX VALUE: " << max_first << std::endl;:
+
+
+
+
+        int histSize = 256;
+        float range[] = { 0, 256 }; //the upper boundary is exclusive
+        const float* histRange[] = { range };
+        bool uniform = true, accumulate = false;
+        cv::Mat hist_img;
+        cv::calcHist( &temp, 1, 0, cv::Mat(), hist_img, 1, &histSize, histRange, uniform, accumulate );
+        int hist_w = 512;
+        int hist_h = 400;
+        int bin_w = cvRound( (double) hist_w/histSize );
+        cv::Mat hist_res( hist_h, hist_w, CV_8UC3, cv::Scalar( 0,0,0) );
+        cv::normalize(hist_img, hist_img, 0, 255, cv::NORM_MINMAX, -1, cv::Mat() );
+        for( int i = 1; i < histSize; i++ )
+        {
+            cv::line( hist_res, cv::Point( bin_w*(i-1), hist_h - cvRound(hist_img.at<float>(i-1)) ),
+                cv::Point( bin_w*(i), hist_h - cvRound(hist_img.at<float>(i)) ),
+                cv::Scalar( 255, 0, 0));
+
+        }
+#ifdef SHOW_IMG
+
+        // cv::imshow("hist_img", hist_img );
+        cv::imshow("hist result", hist_res );
+        cv::waitKey(WAITKEY_DELAY);
+#endif
+
+
+
+
+
+
+        cv::Mat one_std_dev = temp.clone();
+        cv::threshold(temp, one_std_dev, max_first-1, 255, cv::THRESH_BINARY);
+        BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
+
+#ifdef SHOW_IMG
+            cv::imshow(std::string(" 1 std dev"),one_std_dev );
+            cv::waitKey(WAITKEY_DELAY);
+#endif
+        this->signal_bounds= one_std_confidence;
+        this->signal_likelihood = one_std_dev;
+
+
+        if(one_std_confidence.getArea() <= (0.5*this->measurement_range*this->measurement_range*PI) 
+        // || max_first > 200 
+        || this->ping_counter > 10){
+            this->found = true;
+            // BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
+
+            // cv::fillPoly(this->signal_likelihood, this->signal_bounds.getBounds(), cv::Scalar(255));
+    
+        }else{
+            // BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
+
+            this->found = false;
+        
+        }
+        
 
 
 

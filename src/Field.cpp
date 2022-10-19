@@ -14,7 +14,7 @@ Field::Field(int x_rows, int y_cols, int n_sources, double std_dev, double range
     
 
     if(n_sources < 0){
-        this->signal_sources.push_back(SignalSource(int(0.5*x_rows),int(0.1*y_cols),"DEAD CENTRE"));
+        this->signal_sources.push_back(SignalSource(int(0.3*x_rows),int(0.1*y_cols),"DEAD CENTRE"));
     }else{
 
         //place all the random sources
@@ -46,7 +46,7 @@ std::vector<std::pair<std::string,double>> Field::getMeasurements(std::pair<int,
         if(true_distance > this->range_cap){ 
             continue;
         }
-        std::cout << "True: " << true_distance; 
+        // std::cout << "True: " << true_distance; 
 
 
         //generating sensor reading using gaussian noise assumption. mean is true measurement. std dev is set manually on creation.
@@ -54,10 +54,10 @@ std::vector<std::pair<std::string,double>> Field::getMeasurements(std::pair<int,
         std::normal_distribution<double> distribution(true_distance,this->std_dev);
         
 
-        // double dist_with_noise = distribution(generator);
-        double dist_with_noise = true_distance;
+        double dist_with_noise = distribution(generator);
+        // double dist_with_noise = true_distance;
 
-        std::cout << "Noisy: " <<  dist_with_noise << std::endl;
+        // std::cout << " Noisy: " <<  dist_with_noise << std::endl;
 
         // cant have negative distance
         if(dist_with_noise < 0) dist_with_noise = 0;

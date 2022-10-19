@@ -38,7 +38,7 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->field_x_rows = field_width;
     this->field_y_cols = field_length;
     this->scan_radius = scan_radius;
-    this->measurement_std_dev = measurement_std_dev*2; //Factor of safety
+    this->measurement_std_dev = measurement_std_dev*1.5; //Factor of safety
     this->speed = speed;
     
     this->certainty_grids = certainty_grids;
@@ -152,10 +152,10 @@ void Agent::updateCertainty(Field f){
 
 
     for(auto &m: avg_measurements){
-        std::cout << m.first << ":" << m.second << std::endl;
+        // std::cout << "" <<  m.first << " AVG:" << m.second << std::endl;
         if(this->certainty_grids->count(m.first) == 0){ //if no existing grid region
             cv::Mat base = this->certainty_grids->at(BASE).getLikelihood().clone();
-            cv::threshold(base, base, searching-1, 255, cv::THRESH_BINARY);
+            // cv::threshold(base, base, searching-1, 255, cv::THRESH_BINARY);
 #ifdef SHOW_IMG
         cv::imshow("init signal likelihood", base);
         cv::waitKey(WAITKEY_DELAY);
@@ -180,11 +180,7 @@ void Agent::updateCertainty(Field f){
 
 }
 
-// void Agent::updateBase(){
-//     this->certainty_grids->at(BASE).prepareForUpdate(this->coords, this->scan_radius);
-//     this->certainty_grids->at(BASE).updateCertainty();
-//     // this->certainty_grids->at(BASE).getLikelihood().at<uint8_t>(this->pair2Point(this->coords)) = occupied;
-// }
+
 
 cv::Mat Agent::validateGrid(cv::Mat in){
     cv::Mat valid_zone = this->certainty_grids->at(MAP).getLikelihood().clone();
@@ -280,7 +276,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         // score += dist_mod*exp(dist/this->scan_radius);
 
 #ifdef COST_VEC_PRINT
-        *this->output << "Dist:" << "," << distance << "," << " Dist contribution: " << "," << dist_mod * dist << ",";
+        *this->output << "Dist:" << "," << distance << "," << " Dist contribution: " << "," << dist_mod * distance << ",";
 #endif
 
         cv::bitwise_or(seen, this->rangeMask(f.x, f.y, searching), new_cells);  
@@ -734,7 +730,7 @@ std::pair<int,int> Agent::determineAction(){
     cv::waitKey(WAITKEY_DELAY);
 #endif
     this->recordCommand(this->point2Pair(best_point));
-    std::cout << "COUNT COMMAND: " << this->countCommand(this->point2Pair(best_point)) << std::endl;
+    *this->output << "COUNT COMMAND: " << this->countCommand(this->point2Pair(best_point)) << std::endl;
     return this->point2Pair(best_point);
 
 
@@ -742,7 +738,7 @@ std::pair<int,int> Agent::determineAction(){
 
 std::pair<int,int> Agent::moveToPosition(std::pair<int,int> pos){
     // this->certainty_grid.at<uint8_t>(this->coords.second, this->coords.first) = scanned;
-    std::cout << pos.first << '.' << pos.second << std::endl;
+    // std::cout << pos.first << '.' << pos.second << std::endl;
     pos.first = this->clipRange(0, this->field_x_rows, pos.first);
     pos.second = this->clipRange(0, this->field_y_cols, pos.second);
 
@@ -751,7 +747,7 @@ std::pair<int,int> Agent::moveToPosition(std::pair<int,int> pos){
     double factor = this->speed/this->dist(pos, this->coords);
     
 
-    std::cout << factor << std::endl;
+    // std::cout << factor << std::endl;
     
     if(factor < 1){
         interpolated_pos.first = (pos.first-this->coords.first)*factor + this->coords.first;
@@ -829,25 +825,25 @@ cv::Mat Agent::getSignalLocations() {
 
 bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_location){
 
-//  Source; https://gamedev.stackexchange.com/questions/110229/how-do-i-efficiently-check-if-a-point-is-inside-a-rotated-rectangle
 
 
-    // BoundingPoints signal_prediction =  this->certainty_grids->at(name).getLikelihood().clone();
-    // for(auto & corner: signal_prediction.
     cv::Mat mask = this->certainty_grids->at(name).getLikelihood().clone(); 
     
 
+
+
+    //now the black region is where the signal should be
+    cv::bitwise_not(mask, mask);
 #ifdef SHOW_IMG
     cv::imshow("Mask for", mask);
     cv::waitKey(0);
 #endif
 
 
-    //now the black region is where the signal should be
-    cv::bitwise_not(mask, mask);
     
     cv::Mat tmp = cv::Mat::zeros(mask.size(), CV_8UC1);
-    cv::circle(tmp, this->pair2Point(true_location), 1, cv::Scalar(255));
+    // cv::circle(tmp, this->pair2Point(true_location), 1, cv::Scalar(255));
+    tmp.at<uint8_t>(this->pair2Point(true_location))= 255;
 
 #ifdef SHOW_IMG
     cv::imshow("True location", tmp);
@@ -871,7 +867,7 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
     }else{
         *this->output << "Signal name: " << "," << name << "," <<  "x:"  << "," <<  true_location.first << "," << "y:" << "," << true_location.second  << "," << "Inside likelihood area? : " << "," << "False" << std::endl;
         std::cout << "Signal name: " << "," << name << "," <<  "x:"  << "," <<  true_location.first << "," << "y:" << "," << true_location.second  << "," << "Inside likelihood area? : " << "," << "False" << std::endl;
-        cv::waitKey(0);
+        exit(1);
         return false;
     }
     

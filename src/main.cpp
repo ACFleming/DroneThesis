@@ -25,41 +25,7 @@ std::string toc() {
 int main (int argc, char* argv[]){
 
 
-        
-        
 
-        // cv::Mat field_shape = cv::Mat(300, 300, CV_8UC1, cv::Scalar(empty));
-        // cv::imshow("Field shape", field_shape);
-        // cv::waitKey(0);
-        // cv::Point2i p1 = cv::Point2i(50,50);
-        // cv::Point2i p2 = cv::Point2i(100,250);
-        // cv::Point2i p3 = cv::Point2i(200,250);
-        // cv::Point2i p4 = cv::Point2i(250,50);
-        // std::vector<cv::Point2i> boundary;
-        // boundary.push_back(p1);
-        // boundary.push_back(p2);
-        // boundary.push_back(p3);
-        // boundary.push_back(p4);
-        // for(int i = 0; i < 4; i++){
-        //     cv::line(field_shape, boundary[i],boundary[(i+1)%4], cv::Scalar(occupied));
-        // }
-        
-
-        
-
-        // cv::imshow("Field shape", field_shape);
-        // cv::waitKey(0);
-        
-        // cv::fillConvexPoly(field_shape, boundary, cv::Scalar(searching));
-        // for(int i = 0; i < 4; i++){
-        //     cv::line(field_shape, boundary[i],boundary[(i+1)%4], cv::Scalar(occupied));
-        // }
-        
-        // cv::imshow("Field shape", field_shape);
-        // cv::waitKey(0);
-
-
-        // std:: cout << cv::pointPolygonTest(boundary, cv::Point2i(200,50), false) << std::endl;
 
 
     //ARE THE HASH DEFINES SET CORRECTLY????!!!
@@ -68,9 +34,9 @@ int main (int argc, char* argv[]){
 
 
     int num_tests = 100;
-    int rand_seed_start = 10;
-    int source_start = 10;
-    int max_sources = 10;
+    int rand_seed_start = 30;
+    int source_start = 1;
+    int max_sources = 5;
     for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){
         for (int source_count = source_start; source_count <= max_sources; source_count++){
                 // cv::waitKey(0);
@@ -91,12 +57,12 @@ int main (int argc, char* argv[]){
                 int num_sources = source_count;
                 double std_dev_noise = 3;
                 double max_range = 20;
-                double speed = 40;
+                double speed = 20;
                 srand((unsigned int)(test));
                 std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
                 
                 Field f = Field(field_x_rows,field_y_cols,num_sources, std_dev_noise, max_range);  
-                // std::cout << "SHOWING Agents" << std::endl;
+                std::cout << "SHOWING Agents" << std::endl;
                 
                 Agent a1 = Agent("Drone1", 15 ,0, field_x_rows, field_y_cols, max_range, std_dev_noise,speed,  &certainty_grids);
 #ifdef DOUBLE
@@ -104,7 +70,7 @@ int main (int argc, char* argv[]){
 #endif
                 // Agent a3 = Agent("Drone2", 299 ,0, field_x_rows, field_y_cols, max_range,speed, &certainty_grids);
                 Agent::step_counter = 0;
-                // a1.output = &output_agent;
+                a1.output = &output_agent;
 #ifdef DOUBLE
                 a2.output = &output_agent;
 #endif
@@ -144,8 +110,8 @@ int main (int argc, char* argv[]){
 
 
                     std::pair<int,int> a1_curr = a1.getCoords();
-                    std::cout << "Drone 1 at: " << a1_curr.first << "," << a1_curr.second << std::endl;
-                    std::cout << "Step: " << Agent::step_counter << std::endl;
+                    // std::cout << "Drone 1 at: " << a1_curr.first << "," << a1_curr.second << std::endl;
+                    // std::cout << "Step: " << Agent::step_counter << std::endl;
                        
                     std::pair<int,int> a1_dest = a1.determineAction();
                     if(a1_dest.first == -1 ){ //exploration complete
