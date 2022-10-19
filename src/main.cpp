@@ -34,7 +34,7 @@ int main (int argc, char* argv[]){
 
 
     int num_tests = 100;
-    int rand_seed_start = 30;
+    int rand_seed_start = 0;
     int source_start = 1;
     int max_sources = 5;
     for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){
