@@ -39,7 +39,7 @@ enum grid_vals{
     empty = 0,
     cleared = 50,
     searching = 100,
-    likely = 150,
+    likely = 200,
     occupied = 255
 };
 

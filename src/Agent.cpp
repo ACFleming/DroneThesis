@@ -795,7 +795,7 @@ cv::Mat Agent::getSignalLocations() {
     cv::Mat temp = cv::Mat::zeros(this->field_y_cols, this->field_x_rows, CV_8UC3);
     for(auto &kv_name_grid: *(this->certainty_grids)){
         if(kv_name_grid.second.isFound() && kv_name_grid.first != BASE){
-            temp = kv_name_grid.second.getLikelihood().clone();
+            temp = kv_name_grid.second.getSignalLocation().clone();
             cv::cvtColor(temp, temp, cv::COLOR_GRAY2BGR);
             // cv::imshow(kv_name_grid.first+" coloured", temp);
             // cv::waitKey(0);
@@ -827,7 +827,7 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
 
 
 
-    cv::Mat mask = this->certainty_grids->at(name).getLikelihood().clone(); 
+    cv::Mat mask = this->certainty_grids->at(name).getSignalLocation().clone(); 
     
 
 
@@ -842,8 +842,9 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
 
     
     cv::Mat tmp = cv::Mat::zeros(mask.size(), CV_8UC1);
-    // cv::circle(tmp, this->pair2Point(true_location), 1, cv::Scalar(255));
-    tmp.at<uint8_t>(this->pair2Point(true_location))= 255;
+    cv::circle(tmp, this->pair2Point(true_location), 1, cv::Scalar(255));
+    int before = cv::countNonZero(tmp);
+    // tmp.at<uint8_t>(this->pair2Point(true_location))= 255;
 
 #ifdef SHOW_IMG
     cv::imshow("True location", tmp);
@@ -860,7 +861,9 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
 
     int remaining = cv::countNonZero(tmp);
 
-    if(remaining == 0){
+    std::cout << remaining - before << std::endl;
+
+    if(remaining < before){
         *this->output << "Signal name: " << "," << name << "," <<  "x:"  << "," <<  true_location.first << "," << "y:" << "," << true_location.second  << "," << "Inside likelihood area? : " << "," << "True" << std::endl;
         std::cout << "Signal name: " << "," << name << "," <<  "x:"  << "," <<  true_location.first << "," << "y:" << "," << true_location.second  << "," << "Inside likelihood area? : " << "," << "True" << std::endl;
         return true;

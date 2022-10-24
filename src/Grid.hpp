@@ -67,6 +67,7 @@ public:
 
     BoundingPoints getSignalBounds();
     cv::Mat getLikelihood();
+    cv::Mat getSignalLocation();
 
     std::vector<cv::Point2i> getMapEdges();
 

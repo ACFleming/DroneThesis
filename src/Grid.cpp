@@ -199,6 +199,16 @@ void Grid::updateCertainty(){
         this->ping_counter++;
             
         cv::Mat temp = this->signal_likelihood.clone();
+
+        double max_temp = 0.0;
+        double min_temp = 0.0;
+        // cv::Point2i max_first_point(0,0);
+        cv::minMaxLoc(temp, &min_temp, &max_temp, NULL, NULL);
+        std::cout << "MAX Temp: " << max_temp << std::endl;
+        std::cout << "Min Temp: " << min_temp << std::endl;
+
+
+
 #ifdef SHOW_IMG
     cv::imshow(std::string(" Before"),this->signal_likelihood );
     cv::waitKey(WAITKEY_DELAY);
@@ -207,13 +217,25 @@ void Grid::updateCertainty(){
         if(this->updated == false){ //i.e no new info  
             this->signal_ring = Ring(this->field_x_rows, this->field_y_cols, this->measurement_point.first, this->measurement_point.second, this->measurement_range,-1);
             this->signal_ring.drawRing();
-#ifdef SHOW_IMG
+// #ifdef SHOW_IMG
             cv::imshow("negative measurement", this->signal_ring.getCanvas());
             cv::waitKey(WAITKEY_DELAY);
         
-#endif
+
+// #endif
+
+            double old_max = 0.0;
+            cv::minMaxLoc(this->signal_likelihood, NULL, &old_max, NULL, NULL);
+            double new_max = 0.0;
+            cv::minMaxLoc(this->signal_ring.getCanvas(), NULL, &new_max, NULL, NULL);
+            std::cout << "Old max: " << old_max << " New max : " << new_max << std::endl;
+
 
             cv::subtract(this->signal_likelihood, this->signal_ring.getCanvas(), temp);
+            cv::bitwise_not(temp, temp);
+            cv::threshold(temp, temp, 255 - min_temp,255 - min_temp, cv::THRESH_TRUNC );
+            cv::bitwise_not(temp, temp);
+            // cv::subtract(this->signal_ring.getCanvas(), this->signal_likelihood, temp);
 
             
             
@@ -224,8 +246,18 @@ void Grid::updateCertainty(){
             cv::waitKey(WAITKEY_DELAY);
 #endif
 
+            std::cout << "Old factor: " <<  (ping_counter)/(ping_counter+1.0) << " New factor: " << (1.0)/(ping_counter+1.0) << std::endl;
+            double old_max = 0.0;
+            cv::minMaxLoc(this->signal_likelihood, NULL, &old_max, NULL, NULL);
+            double new_max = 0.0;
+            cv::minMaxLoc(this->signal_ring.getCanvas(), NULL, &new_max, NULL, NULL);
+            std::cout << "Old max: " << old_max << " New max : " << new_max << std::endl;
+
+
 
             cv::addWeighted(this->signal_likelihood, (ping_counter)/(ping_counter+1.0), this->signal_ring.getCanvas(),(1.0)/(ping_counter+1.0),0 , temp);
+
+
 
 
 
@@ -233,10 +265,10 @@ void Grid::updateCertainty(){
 
 
 
-#ifdef SHOW_IMG
-        cv::imshow(std::string("ring before weighted avg"), temp );
+// #ifdef SHOW_IMG
+        cv::imshow(std::string("ring and weighted avg"), temp );
         cv::waitKey(WAITKEY_DELAY);
-#endif
+// #endif
 
 
 
@@ -246,7 +278,7 @@ void Grid::updateCertainty(){
         double max_first = 0.0;
         // cv::Point2i max_first_point(0,0);
         cv::minMaxLoc(temp, NULL, &max_first, NULL, NULL);
-        // *this-> << "MAX VALUE: " << max_first << std::endl;:
+        std::cout << "MAX VALUE: " << max_first << std::endl;
 
 
 
@@ -290,20 +322,22 @@ void Grid::updateCertainty(){
             cv::waitKey(WAITKEY_DELAY);
 #endif
         this->signal_bounds= one_std_confidence;
-        this->signal_likelihood = one_std_dev;
+        
 
 
-        if(one_std_confidence.getArea() <= (0.5*this->measurement_range*this->measurement_range*PI) 
-        // || max_first > 200 
-        || this->ping_counter > 10){
+        if(
+        one_std_confidence.getArea() <= (0.5*this->measurement_range*this->measurement_range*PI) 
+        || max_first > 180 ||
+        this->ping_counter > 10){
             this->found = true;
+            this->signal_likelihood = temp;
             // BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
 
             // cv::fillPoly(this->signal_likelihood, this->signal_bounds.getBounds(), cv::Scalar(255));
     
         }else{
             // BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
-
+            this->signal_likelihood = temp;
             this->found = false;
         
         }
@@ -361,6 +395,17 @@ bool Grid::isFound()    { return this->found;     }
 BoundingPoints Grid::getSignalBounds()  { 
     return this->signal_bounds; 
 }
-cv::Mat Grid::getLikelihood()           { return this->signal_likelihood;}
+cv::Mat Grid::getLikelihood() { return this->signal_likelihood;}
+
+
+cv::Mat Grid::getSignalLocation(){
+    cv::Mat one_std_dev = this->signal_likelihood.clone();
+    double max = 0.0;
+    // cv::Point2i max_first_point(0,0);
+    cv::minMaxLoc(one_std_dev, NULL, &max, NULL, NULL);
+    // std::cout << "MAX VALUE: " << max_first << std::endl
+    cv::threshold(one_std_dev, one_std_dev, max-1, 255, cv::THRESH_BINARY);
+    return one_std_dev;
+}
 
 std::vector<cv::Point2i> Grid::getMapEdges() {return this->edge_of_map;}
