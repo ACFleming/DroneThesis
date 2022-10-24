@@ -861,7 +861,7 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
 
     int remaining = cv::countNonZero(tmp);
 
-    std::cout << remaining - before << std::endl;
+    // std::cout << remaining - before << std::endl;
 
     if(remaining < before){
         *this->output << "Signal name: " << "," << name << "," <<  "x:"  << "," <<  true_location.first << "," << "y:" << "," << true_location.second  << "," << "Inside likelihood area? : " << "," << "True" << std::endl;
