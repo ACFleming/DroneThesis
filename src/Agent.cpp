@@ -307,7 +307,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         //hyperbolic scoring for seen
 
         
-        double scanned_mod = 0.5*100;
+        double scanned_mod = 5*100;
 
 #ifndef SEEN
         scanned_mod = 0;
@@ -326,25 +326,6 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
         
         new_frontiers = Grid::getImageFrontiers(new_cells);
-
-
-//     //global dist
-
-//         double global_dist = 0;
-//         for(auto &frontier_vec : new_frontiers){
-//             for(auto &nf: frontier_vec){
-//                 global_dist += this->dist(point2Pair(nf), point2Pair(f));
-//             }
-//         }
-
-//         double global_dist_mod = -0.001;
-//         global_dist_mod = 0;
-//         score += global_dist_mod * global_dist;
-// #ifdef COST_VEC_PRINT
-//         *this->output << " Global Dist "<<  "," <<global_dist << "," << " Global Dist Contribution: " << "," <<  global_dist_mod * global_dist << ",";
-// #endif
-
-
 
 
         for(auto &nf : new_frontiers){
@@ -388,9 +369,9 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             *this->output << "Area ratio: " << "," << area_rt << "," << " Area ratio Contribution: " << "," << area_rt_mod * area_rt << ",";
 #endif
 
-            double perim_diff = abs(ctr_perim);
+            double perim_diff = abs(ctr_perim/hull_perim);
 
-            double perim_mod = -0.3;
+            double perim_mod = -30*100;
 
 #ifndef HULL_PERIM
             perim_mod = 0;

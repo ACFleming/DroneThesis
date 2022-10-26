@@ -42,7 +42,7 @@ Debug/*
 .vscode/*
 
 # Log files
-*.csv
+
 
 # Exe files
 multiAgent

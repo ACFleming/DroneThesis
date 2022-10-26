@@ -16,7 +16,7 @@
 
 
 #define COST_VEC_PRINT
-#define SHOW_IMG
+// #define SHOW_IMG
 
 
 #define DIST
@@ -27,7 +27,7 @@
 // #define INV_HULL_PERIM
 #define CHAIN
 
-#define DOUBLE
+// #define DOUBLE
 
 
 

@@ -330,7 +330,7 @@ void Grid::updateCertainty(){
         
         if(this->signal_bounds.getArea() > 1){
             this->signal_likelihood = temp;
-            if(max_val > 150 || this->ping_counter > 10){
+            if(max_val > 170 || this->ping_counter > 10){
                 this->found = true;
     
             }else{
