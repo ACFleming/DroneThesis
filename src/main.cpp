@@ -34,7 +34,7 @@ int main (int argc, char* argv[]){
 
 
     int num_tests = 100;
-    int rand_seed_start = 5;
+    int rand_seed_start = 17;
     int source_start = 5;
     int max_sources = 5;
     for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){
@@ -70,9 +70,9 @@ int main (int argc, char* argv[]){
 #endif
                 // Agent a3 = Agent("Drone2", 299 ,0, field_x_rows, field_y_cols, max_range,speed, &certainty_grids);
                 Agent::step_counter = 0;
-                a1.output = &output_agent;
+                // a1.output = &output_agent;
 #ifdef DOUBLE
-                a2.output = &output_agent;
+                // a2.output = &output_agent;
 #endif
                 // a3.output = &output_agent;
                 

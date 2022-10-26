@@ -251,7 +251,7 @@ void Grid::updateCertainty(){
             cv::minMaxLoc(this->signal_likelihood, NULL, &old_max, NULL, NULL);
             double new_max = 0.0;
             cv::minMaxLoc(this->signal_ring.getCanvas(), NULL, &new_max, NULL, NULL);
-            std::cout << "Old max: " << old_max << " New max : " << new_max << std::endl;
+            // std::cout << "Old max: " << old_max << " New max : " << new_max << std::endl;
 
 
 

@@ -379,7 +379,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 #endif
             double area_rt = (ctr_area)/hull_area;
 
-            double area_rt_mod = 3*10;
+            double area_rt_mod = 3*100;
 #ifndef HULL_AREA
             area_rt_mod = 0;
 #endif
