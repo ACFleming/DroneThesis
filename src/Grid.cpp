@@ -171,15 +171,15 @@ void Grid::updateCertainty(){
         cv::Mat cleared_zone = this->signal_likelihood.clone();
         cv::Mat valid_zone = this->signal_likelihood.clone();
         cv::threshold(valid_zone, valid_zone, 0, 255, cv::THRESH_BINARY);
-#ifdef SHOW_IMG
-        cv::imshow("Valid Zone", valid_zone);
-        cv::waitKey(WAITKEY_DELAY);
-#endif
+// #ifdef SHOW_IMG
+//         cv::imshow("Valid Zone", valid_zone);
+//         cv::waitKey(WAITKEY_DELAY);
+// #endif
         cv::circle(cleared_zone, cv::Point2i(this->measurement_point.first,this->measurement_point.second), this->measurement_range, cleared, -1 );
-#ifdef SHOW_IMG
-        cv::imshow("Cleared Zone", cleared_zone);
-        cv::waitKey(WAITKEY_DELAY);
-#endif
+// #ifdef SHOW_IMG
+//         cv::imshow("Cleared Zone", cleared_zone);
+//         cv::waitKey(WAITKEY_DELAY);
+// #endif
         // cv::subtract(this->signal_likelihood, cleared_zone, this->signal_likelihood);
         cv::bitwise_and(cleared_zone, valid_zone, this->signal_likelihood);
         // for(int i = 0; i < 50; i++){
@@ -209,20 +209,20 @@ void Grid::updateCertainty(){
 
 
 
-#ifdef SHOW_IMG
-    cv::imshow(std::string(" Before"),this->signal_likelihood );
-    cv::waitKey(WAITKEY_DELAY);
-#endif
+// #ifdef SHOW_IMG
+//     cv::imshow(std::string(" Before"),this->signal_likelihood );
+//     cv::waitKey(WAITKEY_DELAY);
+// #endif
 
         if(this->updated == false){ //i.e no new info  
             this->signal_ring = Ring(this->field_x_rows, this->field_y_cols, this->measurement_point.first, this->measurement_point.second, this->measurement_range,-1);
             this->signal_ring.drawRing();
-#ifdef SHOW_IMG
-            cv::imshow("negative measurement", this->signal_ring.getCanvas());
-            cv::waitKey(WAITKEY_DELAY);
+// #ifdef SHOW_IMG
+//             cv::imshow("negative measurement", this->signal_ring.getCanvas());
+//             cv::waitKey(WAITKEY_DELAY);
         
 
-#endif
+// #endif
 
             double old_max = 0.0;
             cv::minMaxLoc(this->signal_likelihood, NULL, &old_max, NULL, NULL);
@@ -241,10 +241,10 @@ void Grid::updateCertainty(){
             
         }else{
 
-#ifdef SHOW_IMG
-            cv::imshow("new measurement", this->signal_ring.getCanvas());
-            cv::waitKey(WAITKEY_DELAY);
-#endif
+// #ifdef SHOW_IMG
+//             cv::imshow("new measurement", this->signal_ring.getCanvas());
+//             cv::waitKey(WAITKEY_DELAY);
+// #endif
 
             // std::cout << "Old factor: " <<  (ping_counter)/(ping_counter+1.0) << " New factor: " << (1.0)/(ping_counter+1.0) << std::endl;
             double old_max = 0.0;
@@ -298,12 +298,12 @@ void Grid::updateCertainty(){
             cv::Scalar( 255, 0, 0));
 
         }
-#ifdef SHOW_IMG
+// #ifdef SHOW_IMG
 
-        // cv::imshow("hist_img", hist_img );
-        cv::imshow("hist result", hist_res );
-        cv::waitKey(WAITKEY_DELAY);
-#endif
+//         // cv::imshow("hist_img", hist_img );
+//         cv::imshow("hist result", hist_res );
+//         cv::waitKey(WAITKEY_DELAY);
+// #endif
 
 
 
@@ -384,19 +384,19 @@ void Grid::updateCertainty(){
 int Grid::getTruncMax(cv::Mat img, int iterations){
         cv::Mat thresh = img.clone();
         double max = 0.0;
-#ifdef SHOW_IMG
-            cv::imshow(std::string("thresh"),thresh );
-            cv::waitKey(WAITKEY_DELAY);
-#endif
+// #ifdef SHOW_IMG
+//             cv::imshow(std::string("thresh"),thresh );
+//             cv::waitKey(WAITKEY_DELAY);
+// #endif
         for(int threshold_inc = 0; threshold_inc < iterations; threshold_inc ++){
             
             cv::minMaxLoc(thresh, NULL, &max, NULL, NULL);
             // std::cout << "MAX  " << threshold_inc << " : " << max << std::endl;
             cv::threshold(thresh, thresh, max-1-1, 255, cv::THRESH_TOZERO_INV);
-#ifdef SHOW_IMG
-            cv::imshow(std::string("thresh"),thresh );
-            cv::waitKey(WAITKEY_DELAY);
-#endif
+// #ifdef SHOW_IMG
+//             cv::imshow(std::string("thresh"),thresh );
+//             cv::waitKey(WAITKEY_DELAY);
+// #endif
         }
         return max;
 

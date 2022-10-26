@@ -3,10 +3,10 @@
 
 SignalSource::SignalSource(int field_width, int field_length) {
 
-    int x_max = 0.9*field_width-1;
-    int x_min = 0.1*field_width;
-    int y_max = 0.9*field_length-1;
-    int y_min = 0.1*field_length;
+    int x_max = 0.99*field_width-1;
+    int x_min = 0.01*field_width;
+    int y_max = 0.99*field_length-1;
+    int y_min = 0.01*field_length;
 
     // min + rand() % (( max + 1 ) - min);
 

@@ -156,10 +156,10 @@ void Agent::updateCertainty(Field f){
         if(this->certainty_grids->count(m.first) == 0){ //if no existing grid region
             cv::Mat base = this->certainty_grids->at(BASE).getLikelihood().clone();
             // cv::threshold(base, base, searching-1, 255, cv::THRESH_BINARY);
-#ifdef SHOW_IMG
-        cv::imshow("init signal likelihood", base);
-        cv::waitKey(WAITKEY_DELAY);
-#endif
+// #ifdef SHOW_IMG
+//         cv::imshow("init signal likelihood", base);
+//         cv::waitKey(WAITKEY_DELAY);
+// #endif
             this->certainty_grids->insert(std::pair<std::string, Grid> (m.first, Grid(m.first, base)));
             this->certainty_grids->at(m.first).prepareForUpdate(this->coords, this->scan_radius);
         }
@@ -170,10 +170,10 @@ void Agent::updateCertainty(Field f){
 
     for(auto &kv_name_grid: *(this->certainty_grids)){
         kv_name_grid.second.updateCertainty();
-#ifdef SHOW_IMG
-        cv::imshow(kv_name_grid.first,kv_name_grid.second.getLikelihood() );
-        cv::waitKey(WAITKEY_DELAY);
-#endif        
+// #ifdef SHOW_IMG
+//         cv::imshow(kv_name_grid.first,kv_name_grid.second.getLikelihood() );
+//         cv::waitKey(WAITKEY_DELAY);
+// #endif        
     }
 
     
@@ -196,7 +196,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         *this->output << "At: " << ","  << this->coords.first << "," << this->coords.second << "," << std::endl;
 #endif
     for(auto &f: points ){
-        // tic();F
+        // tic();
 #ifdef COST_VEC_PRINT
         *this->output << "Point: " << ","  << f.x << "," << f.y << ",";
 #endif
@@ -834,10 +834,10 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
 
     //now the black region is where the signal should be
     cv::bitwise_not(mask, mask);
-#ifdef SHOW_IMG
-    cv::imshow("Mask for", mask);
-    cv::waitKey(0);
-#endif
+// #ifdef SHOW_IMG
+//     cv::imshow("Mask for", mask);
+//     cv::waitKey(0);
+// #endif
 
 
     
@@ -846,18 +846,18 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
     int before = cv::countNonZero(tmp);
     // tmp.at<uint8_t>(this->pair2Point(true_location))= 255;
 
-#ifdef SHOW_IMG
-    cv::imshow("True location", tmp);
-    cv::waitKey(0);
-#endif
+// #ifdef SHOW_IMG
+//     cv::imshow("True location", tmp);
+//     cv::waitKey(0);
+// #endif
 
     cv::bitwise_and(tmp, mask, tmp);
 
     
-#ifdef SHOW_IMG
-    cv::imshow("Missed overlap", tmp);
-    cv::waitKey(0);
-#endif
+// #ifdef SHOW_IMG
+//     cv::imshow("Missed overlap", tmp);
+//     cv::waitKey(0);
+// #endif
 
     int remaining = cv::countNonZero(tmp);
 
