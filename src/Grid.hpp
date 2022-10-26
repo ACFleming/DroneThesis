@@ -71,6 +71,8 @@ public:
 
     std::vector<cv::Point2i> getMapEdges();
 
+    int getTruncMax(cv::Mat img, int iterations);
+
 
 };
 

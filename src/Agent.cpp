@@ -804,9 +804,9 @@ cv::Mat Agent::getSignalLocations() {
             // srand((unsigned int)(time(0)));
             std::hash<std::string> colour_name_hasher;
             uint hash_colour = colour_name_hasher(kv_name_grid.first);
-            int colour1 = hash_colour%200+55;
-            int colour2 = (hash_colour/1000)%200+55;
-            int colour3 = (hash_colour/1000000)%200+55;
+            int colour1 = hash_colour%150+105;
+            int colour2 = (hash_colour/1000)%150+105;
+            int colour3 = (hash_colour/1000000)%150+105;
 
             temp.setTo(cv::Scalar(colour1, colour2, colour3), temp);
             cv::cvtColor(temp, temp, cv::COLOR_HSV2BGR);
@@ -861,7 +861,7 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
 
     int remaining = cv::countNonZero(tmp);
 
-    // std::cout << remaining - before << std::endl;
+    std::cout << remaining - before << std::endl;
 
     if(remaining < before){
         *this->output << "Signal name: " << "," << name << "," <<  "x:"  << "," <<  true_location.first << "," << "y:" << "," << true_location.second  << "," << "Inside likelihood area? : " << "," << "True" << std::endl;

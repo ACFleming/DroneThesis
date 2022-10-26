@@ -273,79 +273,75 @@ void Grid::updateCertainty(){
 
 
 
-//find top 3 pixel values
-
-        double max_first = 0.0;
-        // cv::Point2i max_first_point(0,0);
-        cv::minMaxLoc(temp, NULL, &max_first, NULL, NULL);
-        std::cout << "MAX VALUE: " << max_first << std::endl;
 
 
 
 
-        int histSize = 256;
+
+
+        int histSize = 20;
         float range[] = { 0, 256 }; //the upper boundary is exclusive
         const float* histRange[] = { range };
         bool uniform = true, accumulate = false;
         cv::Mat hist_img;
         cv::calcHist( &temp, 1, 0, cv::Mat(), hist_img, 1, &histSize, histRange, uniform, accumulate );
-        int hist_w = 512;
-        int hist_h = 400;
+        int hist_w = 300;
+        int hist_h = 300;
         int bin_w = cvRound( (double) hist_w/histSize );
         cv::Mat hist_res( hist_h, hist_w, CV_8UC3, cv::Scalar( 0,0,0) );
-        cv::normalize(hist_img, hist_img, 0, 255, cv::NORM_MINMAX, -1, cv::Mat() );
+        // cv::normalize(hist_img, hist_img, 0, 255, cv::NORM_MINMAX, -1, cv::Mat() );
         for( int i = 1; i < histSize; i++ )
         {
+            // std::cout << "Brightness: " <<  i << " Amount: " << cvRound(hist_img.at<float>(i)) << std::endl;
             cv::line( hist_res, cv::Point( bin_w*(i-1), hist_h - cvRound(hist_img.at<float>(i-1)) ),
-                cv::Point( bin_w*(i), hist_h - cvRound(hist_img.at<float>(i)) ),
-                cv::Scalar( 255, 0, 0));
+            cv::Point( bin_w*(i), hist_h - cvRound(hist_img.at<float>(i)) ),
+            cv::Scalar( 255, 0, 0));
 
         }
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
 
         // cv::imshow("hist_img", hist_img );
         cv::imshow("hist result", hist_res );
         cv::waitKey(WAITKEY_DELAY);
-// #endif
+#endif
 
 
 
+        
 
 
 
-        cv::Mat one_std_dev = temp.clone();
+        int max_val = this->getTruncMax(temp, 5);
 
 
-        cv::threshold(temp, one_std_dev, likely*exp(-0.5*pow(3/3,2))-1, 255, cv::THRESH_BINARY);
-        BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
+
+        cv::Mat max_region = temp.clone();
+
+
+        // cv::threshold(temp, one_std_dev, likely*exp(-0.5*pow(3/3,2))-1, 255, cv::THRESH_BINARY);
+        cv::threshold(temp, max_region, max_val-1, 255, cv::THRESH_BINARY);
+        BoundingPoints max_confidence = BoundingPoints(max_region);
 
 // #ifdef SHOW_IMG
-            cv::imshow(std::string(" 1 std dev"),one_std_dev );
+            cv::imshow(std::string("max_region"),max_region );
             cv::waitKey(WAITKEY_DELAY);
 // #endif
-        this->signal_bounds= one_std_confidence;
+        this->signal_bounds= max_confidence;
         
-
-
-        if(
-        one_std_confidence.getArea() <= (0.1*this->measurement_range*this->measurement_range*PI) 
-        ||
-        max_first > 180 
-        ||
-        this->ping_counter > 10
-        ){
-            this->found = true;
+        if(this->signal_bounds.getArea() > 1){
             this->signal_likelihood = temp;
-            // BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
-
-            // cv::fillPoly(this->signal_likelihood, this->signal_bounds.getBounds(), cv::Scalar(255));
+            if(max_val > 150 || this->ping_counter > 10){
+                this->found = true;
     
-        }else{
-            // BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
-            this->signal_likelihood = temp;
-            this->found = false;
-        
+            }else{
+                this->found = false;
+            }
         }
+        
+
+
+
+
         
 
 
@@ -380,14 +376,33 @@ void Grid::updateCertainty(){
 #endif
 
 
+}
 
 
-    
 
 
-
+int Grid::getTruncMax(cv::Mat img, int iterations){
+        cv::Mat thresh = img.clone();
+        double max = 0.0;
+#ifdef SHOW_IMG
+            cv::imshow(std::string("thresh"),thresh );
+            cv::waitKey(WAITKEY_DELAY);
+#endif
+        for(int threshold_inc = 0; threshold_inc < iterations; threshold_inc ++){
+            
+            cv::minMaxLoc(thresh, NULL, &max, NULL, NULL);
+            // std::cout << "MAX  " << threshold_inc << " : " << max << std::endl;
+            cv::threshold(thresh, thresh, max-1-1, 255, cv::THRESH_TOZERO_INV);
+#ifdef SHOW_IMG
+            cv::imshow(std::string("thresh"),thresh );
+            cv::waitKey(WAITKEY_DELAY);
+#endif
+        }
+        return max;
 
 }
+
+
 
 std::vector<std::vector<cv::Point2i>> Grid::getImageFrontiers() {
     return Grid::getImageFrontiers(this->signal_likelihood);
@@ -404,13 +419,14 @@ cv::Mat Grid::getLikelihood() { return this->signal_likelihood;}
 
 
 cv::Mat Grid::getSignalLocation(){
-    cv::Mat one_std_dev = this->signal_likelihood.clone();
-    double max = 0.0;
-    // cv::Point2i max_first_point(0,0);
-    cv::minMaxLoc(one_std_dev, NULL, &max, NULL, NULL);
+    cv::Mat ret = this->signal_likelihood.clone();
+    int max_final = this->getTruncMax(ret, 5);
+
+
+
     // std::cout << "MAX VALUE: " << max_first << std::endl
-    cv::threshold(one_std_dev, one_std_dev, max-1, 255, cv::THRESH_BINARY);
-    return one_std_dev;
+    cv::threshold(ret, ret, max_final-1, 255, cv::THRESH_BINARY);
+    return ret;
 }
 
 std::vector<cv::Point2i> Grid::getMapEdges() {return this->edge_of_map;}

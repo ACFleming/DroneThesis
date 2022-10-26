@@ -6,7 +6,7 @@
 #define PI 3.1415926535897
 
 #define NO_OP [](){}()
-#define WAITKEY_DELAY 0
+#define WAITKEY_DELAY 1
 #define BASE "base_certainty"
 #define MAP "map_of_grid"
 // #define LOCATIONS "locations_of_sources"
@@ -27,7 +27,7 @@
 // #define INV_HULL_PERIM
 #define CHAIN
 
-// #define DOUBLE
+#define DOUBLE
 
 
 
