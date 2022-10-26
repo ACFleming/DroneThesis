@@ -482,20 +482,29 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
             inv_area_rt_mod = 0;
 #endif
-
-            score += inv_area_rt_mod * inv_area_ratio;
-
-            // if(inv_hull_perim == 0) inv_hull_perim = 1;
-            // double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
-
-            // double inv_perim_rt_mod = -3*pow(100, inverse_frontiers.size());
-            // inv_perim_rt_mod = 0;
-
-            
-            // score += inv_perim_rt_mod * inv_perim_ratio;
 #ifdef COST_VEC_PRINT   
             *this->output << "Inverse Area ratio: " << "," << inv_area_ratio << "," << " Inv Area Ratio Contribution: " << "," << inv_area_rt_mod * inv_area_ratio << ",";
 #endif
+            score += inv_area_rt_mod * inv_area_ratio;
+
+            if(inv_hull_perim == 0) inv_hull_perim = 1;
+            double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
+
+            double inv_perim_rt_mod = -3*100*static_cast<double>(inverse_frontiers.size());
+            // inv_perim_rt_mod = 0;
+
+#ifndef INV_HULL_PERIM
+
+            inv_perim_rt_mod = 0;
+#endif
+
+            
+            score += inv_perim_rt_mod * inv_perim_ratio;
+
+#ifdef COST_VEC_PRINT   
+            *this->output << "Inverse Perim ratio: " << "," << inv_perim_ratio<< "," << " Inv Perim Contribution: " << "," << inv_perim_rt_mod * inv_perim_ratio << ",";
+#endif
+
         }
 
             
