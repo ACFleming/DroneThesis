@@ -247,11 +247,11 @@ void Grid::updateCertainty(){
 #endif
 
             // std::cout << "Old factor: " <<  (ping_counter)/(ping_counter+1.0) << " New factor: " << (1.0)/(ping_counter+1.0) << std::endl;
-            // double old_max = 0.0;
-            // cv::minMaxLoc(this->signal_likelihood, NULL, &old_max, NULL, NULL);
-            // double new_max = 0.0;
-            // cv::minMaxLoc(this->signal_ring.getCanvas(), NULL, &new_max, NULL, NULL);
-            // std::cout << "Old max: " << old_max << " New max : " << new_max << std::endl;
+            double old_max = 0.0;
+            cv::minMaxLoc(this->signal_likelihood, NULL, &old_max, NULL, NULL);
+            double new_max = 0.0;
+            cv::minMaxLoc(this->signal_ring.getCanvas(), NULL, &new_max, NULL, NULL);
+            std::cout << "Old max: " << old_max << " New max : " << new_max << std::endl;
 
 
 
@@ -265,10 +265,10 @@ void Grid::updateCertainty(){
 
 
 
-#ifdef SHOW_IMG
+// #ifdef SHOW_IMG
         cv::imshow(std::string("ring and weighted avg"), temp );
         cv::waitKey(WAITKEY_DELAY);
-#endif
+// #endif
 
 
 
@@ -278,7 +278,7 @@ void Grid::updateCertainty(){
         double max_first = 0.0;
         // cv::Point2i max_first_point(0,0);
         cv::minMaxLoc(temp, NULL, &max_first, NULL, NULL);
-        // std::cout << "MAX VALUE: " << max_first << std::endl;
+        std::cout << "MAX VALUE: " << max_first << std::endl;
 
 
 
@@ -301,12 +301,12 @@ void Grid::updateCertainty(){
                 cv::Scalar( 255, 0, 0));
 
         }
-#ifdef SHOW_IMG
+// #ifdef SHOW_IMG
 
         // cv::imshow("hist_img", hist_img );
         cv::imshow("hist result", hist_res );
         cv::waitKey(WAITKEY_DELAY);
-#endif
+// #endif
 
 
 
@@ -314,21 +314,26 @@ void Grid::updateCertainty(){
 
 
         cv::Mat one_std_dev = temp.clone();
-        cv::threshold(temp, one_std_dev, max_first-1, 255, cv::THRESH_BINARY);
+
+
+        cv::threshold(temp, one_std_dev, likely*exp(-0.5*pow(3/3,2))-1, 255, cv::THRESH_BINARY);
         BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);
 
-#ifdef SHOW_IMG
+// #ifdef SHOW_IMG
             cv::imshow(std::string(" 1 std dev"),one_std_dev );
             cv::waitKey(WAITKEY_DELAY);
-#endif
+// #endif
         this->signal_bounds= one_std_confidence;
         
 
 
         if(
-        one_std_confidence.getArea() <= (0.5*this->measurement_range*this->measurement_range*PI) 
-        || max_first > 180 ||
-        this->ping_counter > 10){
+        one_std_confidence.getArea() <= (0.1*this->measurement_range*this->measurement_range*PI) 
+        ||
+        max_first > 180 
+        ||
+        this->ping_counter > 10
+        ){
             this->found = true;
             this->signal_likelihood = temp;
             // BoundingPoints one_std_confidence = BoundingPoints(one_std_dev);

@@ -38,7 +38,7 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->field_x_rows = field_width;
     this->field_y_cols = field_length;
     this->scan_radius = scan_radius;
-    this->measurement_std_dev = measurement_std_dev*2; //Factor of safety
+    this->measurement_std_dev = measurement_std_dev; //Factor of safety
     this->speed = speed;
     
     this->certainty_grids = certainty_grids;
@@ -246,7 +246,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
 
         if(signal_frontiers.count(f) > 0 ){ //if its a signal frontier point;
-            double signal_mod = 500;
+            double signal_mod = 100;
             // signal_mod = 0;
             score += signal_mod;
         }
