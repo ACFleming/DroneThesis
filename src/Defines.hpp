@@ -27,8 +27,10 @@
 #define INV_HULL_PERIM
 #define CHAIN
 
-#define DOUBLE
+// #define DOUBLE
 
+
+// #define TRIPLE
 
 
 

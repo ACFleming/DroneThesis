@@ -34,8 +34,8 @@ int main (int argc, char* argv[]){
 
 
     int num_tests = 100;
-    int rand_seed_start = 4;
-    int source_start = 2;
+    int rand_seed_start = 0;
+    int source_start = 1;
     int max_sources = 5;
     for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){
         for (int source_count = source_start; source_count <= max_sources; source_count++){
@@ -65,17 +65,20 @@ int main (int argc, char* argv[]){
                 std::cout << "SHOWING Agents" << std::endl;
                 
                 Agent a1 = Agent("Drone1", 15 ,0, field_x_rows, field_y_cols, max_range, std_dev_noise,speed,  &certainty_grids);
+                a1.output = &output_agent;
 #ifdef DOUBLE
                 Agent a2 = Agent("Drone2", 0 , 15, field_x_rows, field_y_cols, max_range,std_dev_noise, speed, &certainty_grids);
+                a2.output = &output_agent;
 #endif
-                // Agent a3 = Agent("Drone2", 299 ,0, field_x_rows, field_y_cols, max_range,speed, &certainty_grids);
-                Agent::step_counter = 0;
-                // a1.output = &output_agent;
-#ifdef DOUBLE
-                // a2.output = &output_agent;
+                
+                
+                
+#ifdef TRIPLE
+                Agent a3 = Agent("Drone3", 0 , 30, field_x_rows, field_y_cols, max_range,std_dev_noise, speed, &certainty_grids);
+                a3.output = &output_agent;
 #endif
 
-                
+                Agent::step_counter = 0;
 
                 // RUN FUNCTION
                 cv::Mat map = cv::Mat::zeros(field_y_cols, field_x_rows, CV_8UC3);
@@ -92,16 +95,20 @@ int main (int argc, char* argv[]){
 
                 std::pair<int,int> a1_curr = a1.getCoords();    
                 cv::circle(map, a1.pair2Point(a1_curr),2,cv::Scalar(0,255,0));  
+                a1.updateCertainty(f);
 #ifdef DOUBLE
                 std::pair<int,int> a2_curr = a2.getCoords();
                 cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
+                a2.updateCertainty(f);
 #endif
                 cv::imshow("map", map);
                 cv::waitKey(WAITKEY_DELAY);
 
-                a1.updateCertainty(f);
-#ifdef DOUBLE
-                a2.updateCertainty(f);
+                
+#ifdef TRIPLE
+                std::pair<int,int> a3_curr = a3.getCoords();
+                cv::circle(map, a3.pair2Point(a3_curr),2,cv::Scalar(255,0,0));
+                a3.updateCertainty(f);
 #endif
 
                 while(true){
@@ -169,6 +176,43 @@ int main (int argc, char* argv[]){
 
                     // cv::waitKey(0);  
 #endif
+
+
+#ifdef TRIPLE
+                    //plot a3
+                    std::pair<int,int> a3_curr = a3.getCoords();
+                    // std::cout << "Drone 2 at: " << a3_curr.first << "," << a3_curr.second << std::endl;
+                    // std::cout << "Step: " << Agent::step_counter << std::endl;
+                     
+                    std::pair<int,int> a3_dest = a3.determineAction();
+                    if(a3_dest.first == -1 ){ //exploration complete
+                        break;
+                    }
+                    a3_dest = a3.moveToPosition(a3_dest);
+                    a3.updateCertainty(f);
+
+                    cv::line(map, a3.pair2Point(a3_dest), a3.pair2Point(a3_curr),cv::Scalar(255,0,0));
+                    cv::circle(map, a3.pair2Point(a3_curr),2,cv::Scalar(255,0,0));
+                    cert_grid = a3.getMap();
+                    cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
+                    cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
+// #ifdef SHOW_IMG
+                    cv::imshow("map", img);
+                    cv::waitKey(WAITKEY_DELAY);
+                    cv::bitwise_or(locations, a1.getSignalLocations(), img2);
+                    cv::imshow("locations", img2);
+                    cv::waitKey(WAITKEY_DELAY);
+// #endif
+
+                    // a3.updateMap();
+
+                    // cv::waitKey(0);  
+#endif
+
+
+
+
+
 
                 }
                 a1.logAgent();

@@ -371,7 +371,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
             double perim_diff = abs(ctr_perim/hull_perim);
 
-            double perim_mod = -30*100;
+            double perim_mod = -3*100;
 
 #ifndef HULL_PERIM
             perim_mod = 0;
