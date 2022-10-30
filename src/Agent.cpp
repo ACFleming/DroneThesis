@@ -679,8 +679,12 @@ std::pair<int,int> Agent::determineAction(){
 //         cv::imshow("done yet?",remaining);
 //         cv::waitKey(0);
 // #endif
+        
 
-        if(missed_spots.size() == 0){ //fully explored
+        //Might get rid of the missed pixel check and just check if any frontiers are left
+
+
+        if(missed_spots.size() <= 1){ //fully explored
             // *this->output <<"DONE!" << std::endl;
             return std::make_pair(-1,-1);
         }
@@ -833,8 +837,9 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
     
     cv::Mat tmp = cv::Mat::zeros(mask.size(), CV_8UC1);
     cv::circle(tmp, this->pair2Point(true_location), 1, cv::Scalar(255));
+    tmp.at<uint8_t>(this->pair2Point(true_location))= 255;
     int before = cv::countNonZero(tmp);
-    // tmp.at<uint8_t>(this->pair2Point(true_location))= 255;
+    
 
 // #ifdef SHOW_IMG
 //     cv::imshow("True location", tmp);

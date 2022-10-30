@@ -1585,7 +1585,7 @@ Point: ,64,75,Repeat score:,1, Repeat contribution: ,-1,Dist:,34, Dist contribut
 Point: ,59,75,Repeat score:,1, Repeat contribution: ,-1,Dist:,39, Dist contribution: ,-195, New scanned ratio: ,0.0248422, New Scanned Cells Contribution: ,12.4211,Area ratio: ,0.968413, Area ratio Contribution: ,290.524,Perim diff: ,1.05529, Perim diff Contribution: ,-316.586,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.941506, Inv Area Ratio Contribution: ,659.054,Inverse Perim ratio: ,1.04889, Inv Perim Contribution: ,-314.666, Final Score: ,134.748
 BEST Point:,78,76, Score: ,232.907
 COUNT COMMAND: 1
-Signal name: ,H79791, Signal value: ,14.4512
+Signal name: ,Y82GB5, Signal value: ,14.4512
 Total frontiers: ,104, Prioritised frontiers: ,31
 At: ,78,75,
 Point: ,112,95,Repeat score:,1, Repeat contribution: ,-1,Dist:,42.8019, Dist contribution: ,-214.009, New scanned ratio: ,0.0244081, New Scanned Cells Contribution: ,12.204,Area ratio: ,0.924448, Area ratio Contribution: ,277.334,Perim diff: ,1.06465, Perim diff Contribution: ,-319.396,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.935366, Inv Area Ratio Contribution: ,654.756,Inverse Perim ratio: ,1.05928, Inv Perim Contribution: ,-317.784, Final Score: ,92.1045
@@ -1621,7 +1621,7 @@ Point: ,49,86,Repeat score:,1, Repeat contribution: ,-1,Dist:,32.334, Dist contr
 Point: ,77,76,Repeat score:,1, Repeat contribution: ,-1,Dist:,1.64012, Dist contribution: ,-8.20061, New scanned ratio: ,0.0017565, New Scanned Cells Contribution: ,0.878252,Area ratio: ,0.96821, Area ratio Contribution: ,290.463,Perim diff: ,1.04819, Perim diff Contribution: ,-314.458,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.944976, Inv Area Ratio Contribution: ,661.483,Inverse Perim ratio: ,1.04159, Inv Perim Contribution: ,-312.476, Final Score: ,416.69
 BEST Point:,77,76, Score: ,416.69
 COUNT COMMAND: 1
-Signal name: ,H79791, Signal value: ,13.8331
+Signal name: ,Y82GB5, Signal value: ,13.8331
 Total frontiers: ,104, Prioritised frontiers: ,32
 At: ,77,76,
 Point: ,112,95,Repeat score:,1, Repeat contribution: ,-1,Dist:,42.838, Dist contribution: ,-214.19, New scanned ratio: ,0.0243653, New Scanned Cells Contribution: ,12.1826,Area ratio: ,0.926005, Area ratio Contribution: ,277.801,Perim diff: ,1.06814, Perim diff Contribution: ,-320.441,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.934612, Inv Area Ratio Contribution: ,654.229,Inverse Perim ratio: ,1.06181, Inv Perim Contribution: ,-318.544, Final Score: ,90.0378
@@ -1658,7 +1658,7 @@ Point: ,53,86,Repeat score:,1, Repeat contribution: ,-1,Dist:,27.2947, Dist cont
 Point: ,76,77,Repeat score:,1, Repeat contribution: ,-1,Dist:,1.64012, Dist contribution: ,-8.20061, New scanned ratio: ,0.00182648, New Scanned Cells Contribution: ,0.913242,Area ratio: ,0.964726, Area ratio Contribution: ,289.418,Perim diff: ,1.04903, Perim diff Contribution: ,-314.71,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.944215, Inv Area Ratio Contribution: ,660.951,Inverse Perim ratio: ,1.04273, Inv Perim Contribution: ,-312.819, Final Score: ,414.553
 BEST Point:,76,77, Score: ,414.553
 COUNT COMMAND: 1
-Signal name: ,H79791, Signal value: ,11.8596
+Signal name: ,Y82GB5, Signal value: ,11.8596
 Total frontiers: ,104, Prioritised frontiers: ,31
 At: ,76,77,
 Point: ,109,93,Repeat score:,1, Repeat contribution: ,-1,Dist:,39.0082, Dist contribution: ,-195.041, New scanned ratio: ,0.0214038, New Scanned Cells Contribution: ,10.7019,Area ratio: ,0.931456, Area ratio Contribution: ,279.437,Perim diff: ,1.06849, Perim diff Contribution: ,-320.547,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.935069, Inv Area Ratio Contribution: ,654.548,Inverse Perim ratio: ,1.0613, Inv Perim Contribution: ,-318.391, Final Score: ,109.707
@@ -1694,7 +1694,7 @@ Point: ,54,79,Repeat score:,1, Repeat contribution: ,-1,Dist:,22.1531, Dist cont
 Point: ,76,79,Repeat score:,1, Repeat contribution: ,-1,Dist:,2.6, Dist contribution: ,-13, New scanned ratio: ,0.00244303, New Scanned Cells Contribution: ,1.22151,Area ratio: ,0.95725, Area ratio Contribution: ,287.175,Perim diff: ,1.05164, Perim diff Contribution: ,-315.492,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.94315, Inv Area Ratio Contribution: ,660.205,Inverse Perim ratio: ,1.04555, Inv Perim Contribution: ,-313.665, Final Score: ,405.445
 BEST Point:,76,79, Score: ,405.445
 COUNT COMMAND: 1
-Signal name: ,H79791, Signal value: ,10.9643
+Signal name: ,Y82GB5, Signal value: ,10.9643
 Total frontiers: ,107, Prioritised frontiers: ,30
 At: ,76,79,
 Point: ,112,95,Repeat score:,1, Repeat contribution: ,-1,Dist:,41.5769, Dist contribution: ,-207.885, New scanned ratio: ,0.0242616, New Scanned Cells Contribution: ,12.1308,Area ratio: ,0.926448, Area ratio Contribution: ,277.934,Perim diff: ,1.07319, Perim diff Contribution: ,-321.957,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.932801, Inv Area Ratio Contribution: ,652.961,Inverse Perim ratio: ,1.06566, Inv Perim Contribution: ,-319.699, Final Score: ,92.4851
@@ -1729,8 +1729,8 @@ Point: ,39,75,Repeat score:,1, Repeat contribution: ,-1,Dist:,37.3636, Dist cont
 Point: ,38,74,Repeat score:,1, Repeat contribution: ,-1,Dist:,38.5519, Dist contribution: ,-192.76, New scanned ratio: ,0.0249891, New Scanned Cells Contribution: ,12.4945,Area ratio: ,0.961659, Area ratio Contribution: ,288.498,Perim diff: ,1.05843, Perim diff Contribution: ,-317.528,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.932596, Inv Area Ratio Contribution: ,652.817,Inverse Perim ratio: ,1.05555, Inv Perim Contribution: ,-316.666, Final Score: ,125.855
 BEST Point:,56,78, Score: ,222.714
 COUNT COMMAND: 1
-Signal name: ,H79791, Signal value: ,17.8688
-Signal name: ,TCZYB8, Signal value: ,14.0651
+Signal name: ,SFSRSG, Signal value: ,14.0651
+Signal name: ,Y82GB5, Signal value: ,17.8688
 Total frontiers: ,105, Prioritised frontiers: ,32
 At: ,56,78,
 Point: ,92,95,Repeat score:,1, Repeat contribution: ,-1,Dist:,42.2423, Dist contribution: ,-211.211, New scanned ratio: ,0.0216808, New Scanned Cells Contribution: ,10.8404,Area ratio: ,0.922993, Area ratio Contribution: ,276.898,Perim diff: ,1.06335, Perim diff Contribution: ,-319.006,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.92679, Inv Area Ratio Contribution: ,648.753,Inverse Perim ratio: ,1.06128, Inv Perim Contribution: ,-318.384, Final Score: ,86.8895
@@ -1767,8 +1767,8 @@ Point: ,26,81,Repeat score:,1, Repeat contribution: ,-1,Dist:,30.2524, Dist cont
 Point: ,56,80,Repeat score:,1, Repeat contribution: ,-1,Dist:,2.6, Dist contribution: ,-13, New scanned ratio: ,0.00214661, New Scanned Cells Contribution: ,1.07331,Area ratio: ,0.956111, Area ratio Contribution: ,286.833,Perim diff: ,1.04988, Perim diff Contribution: ,-314.965,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.935244, Inv Area Ratio Contribution: ,654.671,Inverse Perim ratio: ,1.04805, Inv Perim Contribution: ,-314.415, Final Score: ,399.197
 BEST Point:,56,80, Score: ,399.197
 COUNT COMMAND: 1
-Signal name: ,H79791, Signal value: ,17.1788
-Signal name: ,TCZYB8, Signal value: ,13.7789
+Signal name: ,SFSRSG, Signal value: ,13.7789
+Signal name: ,Y82GB5, Signal value: ,17.1788
 Total frontiers: ,107, Prioritised frontiers: ,34
 At: ,56,80,
 Point: ,92,95,Repeat score:,1, Repeat contribution: ,-1,Dist:,40.942, Dist contribution: ,-204.71, New scanned ratio: ,0.0216344, New Scanned Cells Contribution: ,10.8172,Area ratio: ,0.922146, Area ratio Contribution: ,276.644,Perim diff: ,1.06645, Perim diff Contribution: ,-319.935,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.925861, Inv Area Ratio Contribution: ,648.103,Inverse Perim ratio: ,1.064, Inv Perim Contribution: ,-319.201, Final Score: ,90.718
@@ -1807,8 +1807,8 @@ Point: ,32,74,Repeat score:,1, Repeat contribution: ,-1,Dist:,25.2357, Dist cont
 Point: ,55,82,Repeat score:,1, Repeat contribution: ,-1,Dist:,2.78568, Dist contribution: ,-13.9284, New scanned ratio: ,0.00299882, New Scanned Cells Contribution: ,1.49941,Area ratio: ,0.948775, Area ratio Contribution: ,284.632,Perim diff: ,1.05077, Perim diff Contribution: ,-315.23,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.933927, Inv Area Ratio Contribution: ,653.749,Inverse Perim ratio: ,1.05023, Inv Perim Contribution: ,-315.07, Final Score: ,394.652
 BEST Point:,55,82, Score: ,394.652
 COUNT COMMAND: 1
-Signal name: ,H79791, Signal value: ,16.3291
-Signal name: ,TCZYB8, Signal value: ,14.3363
+Signal name: ,SFSRSG, Signal value: ,14.3363
+Signal name: ,Y82GB5, Signal value: ,16.3291
 Total frontiers: ,106, Prioritised frontiers: ,33
 At: ,55,82,
 Point: ,92,95,Repeat score:,1, Repeat contribution: ,-1,Dist:,40.6769, Dist contribution: ,-203.384, New scanned ratio: ,0.0215697, New Scanned Cells Contribution: ,10.7848,Area ratio: ,0.92123, Area ratio Contribution: ,276.369,Perim diff: ,1.06824, Perim diff Contribution: ,-320.473,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.92456, Inv Area Ratio Contribution: ,647.192,Inverse Perim ratio: ,1.06608, Inv Perim Contribution: ,-319.823, Final Score: ,89.665
@@ -1846,8 +1846,8 @@ Point: ,31,82,Repeat score:,1, Repeat contribution: ,-1,Dist:,24, Dist contribut
 Point: ,55,82,Repeat score:,100, Repeat contribution: ,-100,Dist:,0, Dist contribution: ,-0, New scanned ratio: ,0, New Scanned Cells Contribution: ,0,Area ratio: ,0.948775, Area ratio Contribution: ,284.632,Perim diff: ,1.05077, Perim diff Contribution: ,-315.23,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.933927, Inv Area Ratio Contribution: ,653.749,Inverse Perim ratio: ,1.05023, Inv Perim Contribution: ,-315.07, Final Score: ,308.081
 BEST Point:,55,82, Score: ,308.081
 COUNT COMMAND: 2
-Signal name: ,H79791, Signal value: ,16.3709
-Signal name: ,TCZYB8, Signal value: ,15.5082
+Signal name: ,SFSRSG, Signal value: ,15.5082
+Signal name: ,Y82GB5, Signal value: ,16.3709
 Total frontiers: ,106, Prioritised frontiers: ,28
 At: ,55,82,
 Point: ,92,95,Repeat score:,1, Repeat contribution: ,-1,Dist:,40.6769, Dist contribution: ,-203.384, New scanned ratio: ,0.0215697, New Scanned Cells Contribution: ,10.7848,Area ratio: ,0.92123, Area ratio Contribution: ,276.369,Perim diff: ,1.06824, Perim diff Contribution: ,-320.473,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.92456, Inv Area Ratio Contribution: ,647.192,Inverse Perim ratio: ,1.06608, Inv Perim Contribution: ,-319.823, Final Score: ,89.665
@@ -1880,7 +1880,7 @@ Point: ,20,70,Repeat score:,1, Repeat contribution: ,-1,Dist:,38.3192, Dist cont
 Point: ,19,69,Repeat score:,1, Repeat contribution: ,-1,Dist:,39.7695, Dist contribution: ,-198.847, New scanned ratio: ,0.023029, New Scanned Cells Contribution: ,11.5145,Area ratio: ,0.955382, Area ratio Contribution: ,286.615,Perim diff: ,1.04961, Perim diff Contribution: ,-314.883,Frontier diff: ,-1, Frontier diff Contribution ,-300,Inverse Area ratio: ,0.954837, Inv Area Ratio Contribution: ,668.386,Inverse Perim ratio: ,1.04512, Inv Perim Contribution: ,-627.073, Final Score: ,-475.288
 BEST Point:,35,81, Score: ,210.723
 COUNT COMMAND: 1
-Signal name: ,TCZYB8, Signal value: ,6.58513
+Signal name: ,SFSRSG, Signal value: ,6.58513
 Total frontiers: ,106, Prioritised frontiers: ,26
 At: ,35,81,
 Point: ,0,62,Repeat score:,1, Repeat contribution: ,-1,Dist:,42.838, Dist contribution: ,-214.19, New scanned ratio: ,0.00889369, New Scanned Cells Contribution: ,4.44685,Area ratio: ,0.955343, Area ratio Contribution: ,286.603,Perim diff: ,1.05568, Perim diff Contribution: ,-316.703,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.950482, Inv Area Ratio Contribution: ,665.338,Inverse Perim ratio: ,1.04617, Inv Perim Contribution: ,-313.852, Final Score: ,110.643
@@ -2027,7 +2027,7 @@ Point: ,19,114,Repeat score:,1, Repeat contribution: ,-1,Dist:,39.7695, Dist con
 Point: ,18,115,Repeat score:,1, Repeat contribution: ,-1,Dist:,41.234, Dist contribution: ,-206.17, New scanned ratio: ,0.0211316, New Scanned Cells Contribution: ,10.5658,Area ratio: ,0.879275, Area ratio Contribution: ,263.783,Perim diff: ,1.05587, Perim diff Contribution: ,-316.762,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.974154, Inv Area Ratio Contribution: ,681.908,Inverse Perim ratio: ,1.0502, Inv Perim Contribution: ,-315.06, Final Score: ,117.265
 BEST Point:,75,99, Score: ,227.546
 COUNT COMMAND: 1
-Signal name: ,H79791, Signal value: ,11.938
+Signal name: ,Y82GB5, Signal value: ,11.938
 Total frontiers: ,108, Prioritised frontiers: ,28
 At: ,74,99,
 Point: ,112,95,Repeat score:,1, Repeat contribution: ,-1,Dist:,38.3541, Dist contribution: ,-191.771, New scanned ratio: ,0.0212869, New Scanned Cells Contribution: ,10.6435,Area ratio: ,0.940957, Area ratio Contribution: ,282.287,Perim diff: ,1.06031, Perim diff Contribution: ,-318.092,Frontier diff: ,0, Frontier diff Contribution ,0,Inverse Area ratio: ,0.963374, Inv Area Ratio Contribution: ,674.361,Inverse Perim ratio: ,1.05177, Inv Perim Contribution: ,-315.532, Final Score: ,140.898
@@ -6175,9 +6175,9 @@ Point: ,2,267,Repeat score:,1, Repeat contribution: ,-1,Dist:,27.9122, Dist cont
 BEST Point:,0,272, Score: ,-118.79
 COUNT COMMAND: 1
 Steps taken: ,236
-H79791,70 , 86
-Likelihood area: ,185
-TCZYB8,42 , 82
+SFSRSG,42 , 82
 Likelihood area: ,190
-Signal name: ,TCZYB8,x:,41,y:,78,Inside likelihood area? : ,True
-Signal name: ,H79791,x:,73,y:,88,Inside likelihood area? : ,True
+Y82GB5,70 , 86
+Likelihood area: ,185
+Signal name: ,SFSRSG,x:,41,y:,78,Inside likelihood area? : ,True
+Signal name: ,Y82GB5,x:,73,y:,88,Inside likelihood area? : ,True

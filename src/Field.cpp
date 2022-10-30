@@ -55,7 +55,7 @@ std::vector<std::pair<std::string,double>> Field::getMeasurements(std::pair<int,
         
 
         double dist_with_noise = distribution(generator);
-        // double dist_with_noise = true_distance;
+        // dist_with_noise = true_distance;
 
         // std::cout << " Noisy: " <<  dist_with_noise << std::endl;
 

@@ -21,11 +21,11 @@
 
 #define DIST
 #define SEEN
-#define HULL_AREA
-#define HULL_PERIM
-#define INV_HULL_AREA
-#define INV_HULL_PERIM
-#define CHAIN
+// #define HULL_AREA
+// #define HULL_PERIM
+// #define INV_HULL_AREA
+// #define INV_HULL_PERIM
+// #define CHAIN
 
 // #define DOUBLE
 

@@ -30,7 +30,7 @@ int main (int argc, char* argv[]){
 
     //ARE THE HASH DEFINES SET CORRECTLY????!!!
     std::string number_of_agents = std::string("single/");
-    std::string type_of_test = std::string("full");
+    std::string type_of_test = std::string("seen_dist");
 
 
     int num_tests = 100;
