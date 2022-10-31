@@ -30,15 +30,15 @@ int main (int argc, char* argv[]){
 
     //ARE THE HASH DEFINES SET CORRECTLY????!!!
     std::string number_of_agents = std::string("single/");
-    std::string type_of_test = std::string("seen_dist");
+    std::string type_of_test = std::string("null");
 
 
-    int num_tests = 100;
-    int rand_seed_start = 0;
+    int rand_seed_start = 1;
+    int rand_seed_end = 100;
     int source_start = 1;
-    int max_sources = 5;
-    for(int test = rand_seed_start; test < rand_seed_start + num_tests; test ++){
-        for (int source_count = source_start; source_count <= max_sources; source_count++){
+    int source_end = 5;
+    for(int test = rand_seed_start; test <= rand_seed_end; test ++){
+        for (int source_count = source_start; source_count <= source_end; source_count++){
                 // cv::waitKey(0);
                 tic();
 
@@ -101,9 +101,10 @@ int main (int argc, char* argv[]){
                 cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
                 a2.updateCertainty(f);
 #endif
+#ifdef SHOW_IMG
                 cv::imshow("map", map);
                 cv::waitKey(WAITKEY_DELAY);
-
+#endif
                 
 #ifdef TRIPLE
                 std::pair<int,int> a3_curr = a3.getCoords();

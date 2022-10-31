@@ -47,6 +47,22 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     
     this->certainty_grids->insert(std::pair<std::string, Grid>(MAP, Grid(MAP,  this->field_x_rows, this->field_y_cols)));
     
+
+    std::pair<int,int> map_centre = this->certainty_grids->at(BASE).getCentroid();
+    double vertical_incentive = (this->coords.second-map_centre.second);
+    double horizontal_incentive = (this->coords.first-map_centre.first);
+    double gradient = vertical_incentive/horizontal_incentive;
+    // double normalise_factor = hypot(horizontal_incentive, vertical_incentive);
+    // vertical_incentive = vertical_incentive/normalise_factor;
+    // horizontal_incentive = horizontal_incentive/normalise_factor;
+
+    // vertical_incentive = -1/vertical_incentive;
+    // horizontal_incentive = -1/horizontal_incentive;
+
+
+    this->distance_incentive = gradient;
+
+
     this->output = &std::cout;
     *this->output << name << " fininshed loading" << std::endl;
 
@@ -261,8 +277,9 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         // double dist = this->dist(this->coords, this->point2Pair(f));
         double horizontal_dist = abs(this->coords.first - f.x);
         double vertical_dist = abs(this->coords.second - f.y); 
-        double horiz_mod = 1;
-        double vert_mod = 1.3;
+        double vert_mod = 1.0;
+        double horiz_mod= 1.0;
+
         double distance = hypot(horiz_mod*horizontal_dist, vert_mod*vertical_dist);
 
 
@@ -307,7 +324,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         //hyperbolic scoring for seen
 
         
-        double scanned_mod = 5*100;
+        double scanned_mod = 2*100;
 
 #ifndef SEEN
         scanned_mod = 0;
@@ -670,46 +687,54 @@ std::pair<int,int> Agent::determineAction(){
 
     
     if(best_score < -10000){ 
-        // *this->output << "SHOULD BE DONE!" << std::endl;
-        std::vector<cv::Point2i> missed_spots;
-        cv::Mat remaining = this->certainty_grids->at(BASE).getLikelihood().clone();
-        cv::threshold(this->certainty_grids->at(BASE).getLikelihood(), remaining, searching-1, 255, cv::THRESH_BINARY);
-        cv::findNonZero(remaining,missed_spots);
-// #ifdef SHOW_IMG
-//         cv::imshow("done yet?",remaining);
-//         cv::waitKey(0);
-// #endif
-        
-
-        //Might get rid of the missed pixel check and just check if any frontiers are left
 
 
-        if(missed_spots.size() <= 1){ //fully explored
-            // *this->output <<"DONE!" << std::endl;
-            return std::make_pair(-1,-1);
-        }
+
         *this->output << "Checking reserve frontiers" << std::endl;
         this->costFunction(reserve_frontiers, signal_frontiers, hole_centres,  best_point,best_score);
 
 
 
+        if(best_score < -10000){
+            return std::make_pair(-1,-1);
+            // *this->output << "Checking for remaining cells" << std::endl;
+            // std::vector<cv::Point2i> missed_spots;
+            // cv::Mat remaining = this->certainty_grids->at(BASE).getLikelihood().clone();
+            // cv::threshold(this->certainty_grids->at(BASE).getLikelihood(), remaining, searching-1, 255, cv::THRESH_BINARY);
+            // cv::findNonZero(remaining,missed_spots);
 
-        if(best_score < -100000){ 
-            *this->output << "Checking for remaining cells" << std::endl;
-            double missed_p_dist = this->field_x_rows*this->field_x_rows + this->field_y_cols*this->field_y_cols;
-            for(auto &p: missed_spots){
-                if(missed_p_dist > this->dist(this->coords, this->point2Pair(p))){
-                    best_point = p;
-                    best_score = 0;
-                    missed_p_dist = this->dist(this->coords, this->point2Pair(p));
-                }
-            }
+
+            // double missed_p_dist = this->field_x_rows*this->field_x_rows + this->field_y_cols*this->field_y_cols;
+            // for(auto &p: missed_spots){
+            //     if(missed_p_dist > this->dist(this->coords, this->point2Pair(p))){
+            //         best_point = p;
+            //         best_score = 0;
+            //         missed_p_dist = this->dist(this->coords, this->point2Pair(p));
+            //     }
+            // }
+
+
+
+            // *this->output << "SHOULD BE DONE!" << std::endl;
+
+// #ifdef SHOW_IMG
+    //         cv::imshow("done yet?",remaining);
+    //         cv::waitKey(0);
+// #endif
         }
-        
-        
 
 
         
+
+        // //Might get rid of the missed pixel check and just check if any frontiers are left
+
+
+        // if(missed_spots.size() <= 1){ //fully explored
+        //     // *this->output <<"DONE!" << std::endl;
+        //     
+        // }
+
+            
 
     }
 
@@ -783,6 +808,8 @@ std::pair<int,int> Agent::getCoords(){
 cv::Mat Agent::getMap(){
     return this->certainty_grids->at(BASE).getLikelihood();
 }
+
+
 
 cv::Mat Agent::getSignalLocations() {
     cv::Mat confirmed = cv::Mat::zeros(this->field_y_cols, this->field_x_rows, CV_8UC3);

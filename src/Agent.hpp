@@ -38,6 +38,8 @@ private:
     double measurement_std_dev;
     double speed;
 
+    double distance_incentive;
+
     
     
 

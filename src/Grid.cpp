@@ -23,7 +23,7 @@ std::vector<std::vector<cv::Point2i>> Grid::getImageFrontiers(cv::Mat frontier_i
     std::vector<std::vector<cv::Point2i>> ctr_approx;
     for(auto &e: contours){
         std::vector<cv::Point2i> a;
-        cv::approxPolyDP(e, a, 0.5, true);
+        cv::approxPolyDP(e, a, 0.2, true);
         ctr_approx.push_back(a);
     }
 
@@ -66,10 +66,10 @@ Grid::Grid(std::string name, int field_x_rows, int field_y_cols){
     this->signal_ring = Ring();
     this->signal_likelihood = cv::Mat(Grid::field_y_cols, Grid::field_x_rows, CV_8UC1, cv::Scalar(empty));
     
-    // boundary.push_back(cv::Point2i(0.1*field_x_rows,0.1*field_y_cols));
-    // boundary.push_back(cv::Point2i(0.3*field_x_rows,0.8*field_y_cols));
-    // boundary.push_back(cv::Point2i(0.7*field_x_rows,0.8*field_y_cols));
-    // boundary.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
+    this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.1*field_y_cols));
+    this->edge_of_map.push_back(cv::Point2i(0.3*field_x_rows,0.8*field_y_cols));
+    this->edge_of_map.push_back(cv::Point2i(0.7*field_x_rows,0.8*field_y_cols));
+    this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
 
 
     // this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.1*field_y_cols));
@@ -77,10 +77,10 @@ Grid::Grid(std::string name, int field_x_rows, int field_y_cols){
     // this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.9*field_y_cols));
     // this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
 
-    this->edge_of_map.push_back(cv::Point2i(0,0));
-    this->edge_of_map.push_back(cv::Point2i(0,field_y_cols-1));
-    this->edge_of_map.push_back(cv::Point2i(field_x_rows-1,field_y_cols-1));
-    this->edge_of_map.push_back(cv::Point2i(field_x_rows-1,0));
+    // this->edge_of_map.push_back(cv::Point2i(0,0));
+    // this->edge_of_map.push_back(cv::Point2i(0,field_y_cols-1));
+    // this->edge_of_map.push_back(cv::Point2i(field_x_rows-1,field_y_cols-1));
+    // this->edge_of_map.push_back(cv::Point2i(field_x_rows-1,0));
 
 
     // this->edge_of_map.push_back(cv::Point2i(40,260));
@@ -96,6 +96,10 @@ Grid::Grid(std::string name, int field_x_rows, int field_y_cols){
     // this->edge_of_map.push_back(cv::Point2i(160, 180));
     // this->edge_of_map.push_back(cv::Point2i(240, 120));
     // this->edge_of_map.push_back(cv::Point2i(60,20));
+ 
+    
+
+
 
 
 
@@ -104,6 +108,16 @@ Grid::Grid(std::string name, int field_x_rows, int field_y_cols){
     //     cv::line(this->signal_likelihood, boundary[i],boundary[(i+1)%4], cv::Scalar(occupied));
     // }
     cv::fillConvexPoly(this->signal_likelihood, this->edge_of_map, cv::Scalar(searching));
+
+
+    cv::Moments m = cv::moments(this->edge_of_map);
+
+    int centre_x = m.m10/m.m00;
+    int centre_y = m.m01/m.m00;
+    this->centroid = std::make_pair(centre_x, centre_y);
+
+
+
     if(this->name == MAP){
         for(int i = 0; i < this->edge_of_map.size(); i++){
             cv::line(this->signal_likelihood, this->edge_of_map[i],this->edge_of_map[(i+1)%this->edge_of_map.size()], cv::Scalar(occupied));
@@ -265,10 +279,10 @@ void Grid::updateCertainty(){
 
 
 
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
         cv::imshow(std::string("ring and weighted avg"), temp );
         cv::waitKey(WAITKEY_DELAY);
-// #endif
+#endif
 
 
 
@@ -322,10 +336,10 @@ void Grid::updateCertainty(){
         cv::threshold(temp, max_region, max_val-1, 255, cv::THRESH_BINARY);
         BoundingPoints max_confidence = BoundingPoints(max_region);
 
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
             cv::imshow(std::string("max_region"),max_region );
             cv::waitKey(WAITKEY_DELAY);
-// #endif
+#endif
         this->signal_bounds= max_confidence;
         
         if(this->signal_bounds.getArea() > 1){
@@ -381,7 +395,7 @@ void Grid::updateCertainty(){
 
 
 
-int Grid::getTruncMax(cv::Mat img, int iterations){
+double Grid::getTruncMax(cv::Mat img, int iterations){
         cv::Mat thresh = img.clone();
         double max = 0.0;
 // #ifdef SHOW_IMG
@@ -412,10 +426,14 @@ std::vector<std::vector<cv::Point2i>> Grid::getImageFrontiers() {
 bool Grid::isUpdated()  { return this->updated;   }
 bool Grid::isFound()    { return this->found;     }
 
-BoundingPoints Grid::getSignalBounds()  { 
-    return this->signal_bounds; 
-}
+BoundingPoints Grid::getSignalBounds()  { return this->signal_bounds; }
+
+
 cv::Mat Grid::getLikelihood() { return this->signal_likelihood;}
+
+
+
+std::pair<int,int> Grid::getCentroid() {return this->centroid;}
 
 
 cv::Mat Grid::getSignalLocation(){

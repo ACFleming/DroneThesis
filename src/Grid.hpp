@@ -24,6 +24,7 @@ protected:
     static int field_y_cols;
 
     std::vector<cv::Point2i> edge_of_map;
+    std::pair<int,int> centroid;
 
     std::pair<int,int> measurement_point;
     int measurement_range;
@@ -68,10 +69,11 @@ public:
     BoundingPoints getSignalBounds();
     cv::Mat getLikelihood();
     cv::Mat getSignalLocation();
+    std::pair<int,int> getCentroid();
 
     std::vector<cv::Point2i> getMapEdges();
 
-    int getTruncMax(cv::Mat img, int iterations);
+    double getTruncMax(cv::Mat img, int iterations);
 
 
 };
