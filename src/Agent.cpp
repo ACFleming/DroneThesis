@@ -306,13 +306,26 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         double old_scanned_count = cv::countNonZero(seen);
         double new_scanned_count = cv::countNonZero(new_cells);
 
+
+        cv::Mat possible_seen_img = this->rangeMask(f.x, f.y, 255);
+
+        // cv::imshow("possible_seen", possible_seen_img);
+        // cv::waitKey(0);
+
+        double possible_seen = cv::countNonZero(possible_seen_img);
+
+
+        // double new_scanned_ratio = (new_scanned_count-old_scanned_count)/(possible_seen);
         double new_scanned_ratio = (new_scanned_count-old_scanned_count)/(this->scan_radius*this->scan_radius*PI);
         
+
+
+
 
         //hyperbolic scoring for seen
 
         
-        double scanned_mod = 2*100;
+        double scanned_mod = 2.5*100;
 
 #ifndef SEEN
         scanned_mod = 0;
@@ -359,26 +372,32 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             h.push_back(hull_points);
             cv::drawContours(hull_img, h, -1, cv::Scalar(255,0,0));
 
+
+            // cv::fillConvexPoly(hull_img, nf, cv::Scalar(100,100,0));
+
 #ifdef SHOW_IMG
             cv::imshow("hull_img", hull_img);
             cv::waitKey(WAITKEY_DELAY);
 #endif
-            double area_rt = (ctr_area)/hull_area;
+            // double area_rt = ctr_area/hull_area;
+            // double area_rt_mod = 7*100;
 
-            double area_rt_mod = 7*100;
+            double area_rt = hull_area/ctr_area;
+            double area_rt_mod = -3*100;
+
 #ifndef HULL_AREA
             area_rt_mod = 0;
 #endif
             score += area_rt_mod * area_rt;
-#ifdef COST_VEC_PRINT
+#ifdef COST_VEC_PRINT 
             *this->output << "Area ratio: " << "," << area_rt << "," << " Area ratio Contribution: " << "," << area_rt_mod * area_rt << ",";
 #endif
 
             // double perim_rt = (ctr_perim/hull_perim);
             // double perim_mod = -7*100;
 
-            double perim_rt = (hull_perim/ctr_perim);
-            double perim_mod = 7*100;
+            double perim_rt = ctr_perim/hull_perim;
+            double perim_mod = -7*100;
 
 #ifndef HULL_PERIM
             perim_mod = 0;
@@ -435,15 +454,15 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
         int frontier_chain_diff = frontier_chains - inverse_frontiers.size();
 
-        int old_frontier_count = 0;
-        for(auto & o_f: this->frontiers){
-            old_frontier_count+=o_f.size();
-        }
+        // int old_frontier_count = 0;
+        // for(auto & o_f: this->frontiers){
+        //     old_frontier_count+=o_f.size();
+        // }
 
-        int new_frontier_count = 0;
-        for(auto & n_f: inverse_frontiers){
-            new_frontier_count+=n_f.size();
-        }   
+        // int new_frontier_count = 0;
+        // for(auto & n_f: inverse_frontiers){
+        //     new_frontier_count+=n_f.size();
+        // }   
 
         // frontier_chain_diff 
 
@@ -451,7 +470,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         // std::cout << "old_frontier_count: " << old_frontier_count << " new_frontier_count: " << new_frontier_count << std::endl;
 
 
-        double chain_diff_mod = 100;
+        double chain_diff_mod = 1000;
 #ifndef CHAIN
         chain_diff_mod = 0;
 #endif
@@ -499,8 +518,11 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         // std::cout << inv_ctr_area << " & " << inv_hull_area << std::endl;
 
 
-            double inv_area_ratio = inv_ctr_area/inv_hull_area;
-            double inv_area_rt_mod = 7*100;
+            // double inv_area_ratio = inv_ctr_area/inv_hull_area;
+            // double inv_area_rt_mod = 7*100;
+
+            double inv_area_ratio = inv_hull_area/inv_ctr_area;
+            double inv_area_rt_mod = -3*100;
 
 #ifndef INV_HULL_AREA
 

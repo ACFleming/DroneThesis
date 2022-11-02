@@ -30,12 +30,12 @@ int main (int argc, char* argv[]){
 
     //ARE THE HASH DEFINES SET CORRECTLY????!!!
     std::string number_of_agents = std::string("double/");
-    std::string type_of_test = std::string("full");
+    std::string type_of_test = std::string("null");
 
 
-    int rand_seed_start = 4;
+    int rand_seed_start = 0;
     int rand_seed_end = 100;
-    int source_start = 0;
+    int source_start = 1;
     int source_end = 5;
     for(int test = rand_seed_start; test <= rand_seed_end; test ++){
         for (int source_count = source_start; source_count <= source_end; source_count++){
@@ -65,10 +65,10 @@ int main (int argc, char* argv[]){
                 // std::cout << "SHOWING Agents" << std::endl;
                 
                 Agent a1 = Agent("Drone1", 15 ,0, field_x_rows, field_y_cols, max_range, std_dev_noise,speed,  &certainty_grids);
-                a1.output = &output_agent;
+                // a1.output = &output_agent;
 #ifdef DOUBLE
                 Agent a2 = Agent("Drone2", 0 , 15, field_x_rows, field_y_cols, max_range,std_dev_noise, speed, &certainty_grids);
-                a2.output = &output_agent;
+                // a2.output = &output_agent;
 #endif
                 
                 

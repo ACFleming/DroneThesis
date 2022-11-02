@@ -24,7 +24,7 @@ std::vector<std::vector<cv::Point2i>> Grid::getImageFrontiers(cv::Mat frontier_i
     std::vector<std::vector<cv::Point2i>> ctr_approx;
     for(auto &e: contours){
         std::vector<cv::Point2i> a;
-        cv::approxPolyDP(e, a, 0.2, true);
+        cv::approxPolyDP(e, a, 0.3, true);
         ctr_approx.push_back(a);
     }
 
