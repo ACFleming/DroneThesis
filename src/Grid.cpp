@@ -15,6 +15,7 @@ std::vector<std::vector<cv::Point2i>> Grid::getImageFrontiers(cv::Mat frontier_i
     if(contours.size() > 1){ //sorting by size. Could change this to check if the current point is inside or not, but may require point passing. 
         // std::cout << contours.size();
         std::sort(contours.begin(), contours.end(), [](const std::vector<cv::Point2i> &a, const std::vector<cv::Point2i> &b){ return a.size() > b.size(); });
+        
     }
   
     
@@ -66,10 +67,10 @@ Grid::Grid(std::string name, int field_x_rows, int field_y_cols){
     this->signal_ring = Ring();
     this->signal_likelihood = cv::Mat(Grid::field_y_cols, Grid::field_x_rows, CV_8UC1, cv::Scalar(empty));
     
-    this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.1*field_y_cols));
-    this->edge_of_map.push_back(cv::Point2i(0.3*field_x_rows,0.8*field_y_cols));
-    this->edge_of_map.push_back(cv::Point2i(0.7*field_x_rows,0.8*field_y_cols));
-    this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
+    // this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.1*field_y_cols));
+    // this->edge_of_map.push_back(cv::Point2i(0.3*field_x_rows,0.8*field_y_cols));
+    // this->edge_of_map.push_back(cv::Point2i(0.7*field_x_rows,0.8*field_y_cols));
+    // this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
 
 
     // this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.1*field_y_cols));
@@ -77,10 +78,10 @@ Grid::Grid(std::string name, int field_x_rows, int field_y_cols){
     // this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.9*field_y_cols));
     // this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
 
-    // this->edge_of_map.push_back(cv::Point2i(0,0));
-    // this->edge_of_map.push_back(cv::Point2i(0,field_y_cols-1));
-    // this->edge_of_map.push_back(cv::Point2i(field_x_rows-1,field_y_cols-1));
-    // this->edge_of_map.push_back(cv::Point2i(field_x_rows-1,0));
+    this->edge_of_map.push_back(cv::Point2i(0,0));
+    this->edge_of_map.push_back(cv::Point2i(0,field_y_cols-1));
+    this->edge_of_map.push_back(cv::Point2i(field_x_rows-1,field_y_cols-1));
+    this->edge_of_map.push_back(cv::Point2i(field_x_rows-1,0));
 
 
     // this->edge_of_map.push_back(cv::Point2i(40,260));
@@ -344,7 +345,7 @@ void Grid::updateCertainty(){
         
         if(this->signal_bounds.getArea() > 1){
             this->signal_likelihood = temp;
-            if(max_val > 170 || this->ping_counter > 10){
+            if((max_val > 170  && this->signal_bounds.getArea() <= (0.25*this->measurement_range*this->measurement_range*PI))|| this->ping_counter > 10){
                 this->found = true;
     
             }else{

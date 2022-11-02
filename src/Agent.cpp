@@ -48,19 +48,7 @@ Agent::Agent(std::string name, int x_coord, int y_coord, int field_width, int fi
     this->certainty_grids->insert(std::pair<std::string, Grid>(MAP, Grid(MAP,  this->field_x_rows, this->field_y_cols)));
     
 
-    std::pair<int,int> map_centre = this->certainty_grids->at(BASE).getCentroid();
-    double vertical_incentive = (this->coords.second-map_centre.second);
-    double horizontal_incentive = (this->coords.first-map_centre.first);
-    double gradient = vertical_incentive/horizontal_incentive;
-    // double normalise_factor = hypot(horizontal_incentive, vertical_incentive);
-    // vertical_incentive = vertical_incentive/normalise_factor;
-    // horizontal_incentive = horizontal_incentive/normalise_factor;
 
-    // vertical_incentive = -1/vertical_incentive;
-    // horizontal_incentive = -1/horizontal_incentive;
-
-
-    this->distance_incentive = gradient;
 
 
     this->output = &std::cout;
@@ -318,7 +306,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         double old_scanned_count = cv::countNonZero(seen);
         double new_scanned_count = cv::countNonZero(new_cells);
 
-        double new_scanned_ratio = (new_scanned_count-old_scanned_count)/old_scanned_count;
+        double new_scanned_ratio = (new_scanned_count-old_scanned_count)/(this->scan_radius*this->scan_radius*PI);
         
 
         //hyperbolic scoring for seen
@@ -377,7 +365,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 #endif
             double area_rt = (ctr_area)/hull_area;
 
-            double area_rt_mod = 3*100;
+            double area_rt_mod = 7*100;
 #ifndef HULL_AREA
             area_rt_mod = 0;
 #endif
@@ -386,16 +374,18 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             *this->output << "Area ratio: " << "," << area_rt << "," << " Area ratio Contribution: " << "," << area_rt_mod * area_rt << ",";
 #endif
 
-            double perim_diff = abs(ctr_perim/hull_perim);
+            // double perim_rt = (ctr_perim/hull_perim);
+            // double perim_mod = -7*100;
 
-            double perim_mod = -3*100;
+            double perim_rt = (hull_perim/ctr_perim);
+            double perim_mod = 7*100;
 
 #ifndef HULL_PERIM
             perim_mod = 0;
 #endif
-            score += perim_mod * perim_diff;
+            score += perim_mod * perim_rt;
 #ifdef COST_VEC_PRINT
-            *this->output << "Perim diff: " << "," << perim_diff << "," << " Perim diff Contribution: " << "," << perim_mod * perim_diff << ",";
+            *this->output << "Perim rt: " << "," << perim_rt << "," << " Perim diff Contribution: " << "," << perim_mod * perim_rt << ",";
 #endif
 
         }
@@ -434,95 +424,122 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 //             *this->output << "Frontier contour count: " << "," << inverse_frontiers.size()-1 << "," << " Hole count Contribution " << ","<< f_chain_mod * frontier_chain_penalty << ",";
 // #endif
 
-        if(inverse_frontiers.size() > 0){
-            double inv_ctr_perim = 0;
-            double inv_hull_perim = 0;
-            double inv_ctr_area = 0;
-            double inv_hull_area = 0;
-            // if(inverse_frontiers.size() > 1){
-            //     NO_OP;
-            // }
+        double inv_ctr_perim = 0;
+        double inv_hull_perim = 0;
+        double inv_ctr_area = 0;
+        double inv_hull_area = 0;
+        // if(inverse_frontiers.size() > 1){
+        //     NO_OP;
+        // }
 
 
-            int frontier_chain_diff = frontier_chains - inverse_frontiers.size();
-            double chain_diff_mod = 300;
+        int frontier_chain_diff = frontier_chains - inverse_frontiers.size();
+
+        int old_frontier_count = 0;
+        for(auto & o_f: this->frontiers){
+            old_frontier_count+=o_f.size();
+        }
+
+        int new_frontier_count = 0;
+        for(auto & n_f: inverse_frontiers){
+            new_frontier_count+=n_f.size();
+        }   
+
+        // frontier_chain_diff 
+
+
+        // std::cout << "old_frontier_count: " << old_frontier_count << " new_frontier_count: " << new_frontier_count << std::endl;
+
+
+        double chain_diff_mod = 100;
 #ifndef CHAIN
-            chain_diff_mod = 0;
+        chain_diff_mod = 0;
 #endif
-            score += chain_diff_mod * frontier_chain_diff;
+        score += chain_diff_mod * frontier_chain_diff;
 
 
 #ifdef COST_VEC_PRINT   
-            *this->output << "Frontier diff: " << "," << frontier_chain_diff << "," << " Frontier diff Contribution " << ","<< chain_diff_mod * frontier_chain_diff << ",";
+        *this->output << "Frontier diff: " << "," << frontier_chain_diff << "," << " Frontier diff Contribution " << ","<< chain_diff_mod * frontier_chain_diff << ",";
 #endif
 
-            
+        
 
 
-            for(auto &iif : inverse_frontiers){
-                inv_ctr_area += cv::contourArea(iif);
-                inv_ctr_perim += cv::arcLength(iif, true);
-               std::vector<cv::Point2i> inv_hull_points;
+        for(auto &iif : inverse_frontiers){
+            inv_ctr_area += cv::contourArea(iif);
+            inv_ctr_perim += cv::arcLength(iif, true);
+            std::vector<cv::Point2i> inv_hull_points;
 
-                cv::convexHull(iif, inv_hull_points);
-                inv_hull_area += cv::contourArea(inv_hull_points);
-                inv_hull_perim += cv::arcLength(inv_hull_points, true);
-                // std::cout << "arc closed: " << cv::arcLength(inv_hull_points, true) << " arc open: " << cv::arcLength(inv_hull_points, false) << std::endl;
-                if(inv_hull_area == 0){
-                    // *this->output << "HUH?" << std::endl;
-                    inv_hull_area = 1;  
-                }
+            cv::convexHull(iif, inv_hull_points);
+            inv_hull_area += cv::contourArea(inv_hull_points);
+            inv_hull_perim += cv::arcLength(inv_hull_points, true);
+            // std::cout << "arc closed: " << cv::arcLength(inv_hull_points, true) << " arc open: " << cv::arcLength(inv_hull_points, false) << std::endl;
+            if(inv_hull_area == 0){
+                // *this->output << "HUH?" << std::endl;
+                inv_hull_area = 1;  
+            }
 
 // #ifdef COST_VEC_PRINT   
 //                 *this->output << "Small frontier Contribution: " << "," << small_frontier_mod << ",";
 // #endif
 
-                cv::Mat inv_hull_img = cv::Mat::zeros(this->field_y_cols, this->field_x_rows, CV_8UC3);
-                cv::drawContours(inv_hull_img, inverse_frontiers, -1, cv::Scalar(0,0,255));
-                
-                std::vector<std::vector<cv::Point2i>> inv_h = std::vector<std::vector<cv::Point2i>>();
-                inv_h.push_back(inv_hull_points);
-                cv::drawContours(inv_hull_img, inv_h, -1, cv::Scalar(255,0,0));
+            cv::Mat inv_hull_img = cv::Mat::zeros(this->field_y_cols, this->field_x_rows, CV_8UC3);
+            cv::drawContours(inv_hull_img, inverse_frontiers, -1, cv::Scalar(0,0,255));
+            
+            std::vector<std::vector<cv::Point2i>> inv_h = std::vector<std::vector<cv::Point2i>>();
+            inv_h.push_back(inv_hull_points);
+            cv::drawContours(inv_hull_img, inv_h, -1, cv::Scalar(255,0,0));
 
 #ifdef SHOW_IMG
-                cv::imshow("inv_hull_img", inv_hull_img);
-                cv::waitKey(WAITKEY_DELAY);
+            cv::imshow("inv_hull_img", inv_hull_img);
+            cv::waitKey(WAITKEY_DELAY);
 #endif
-            }
+        }
 
 
-            double inv_area_ratio = inv_ctr_area/inv_hull_area;
+        double inv_area_ratio = inv_ctr_area/inv_hull_area;
 
-            double inv_area_rt_mod = 7*100;
+
+
+        double inv_area_rt_mod = 7*100;
 
 #ifndef INV_HULL_AREA
 
-            inv_area_rt_mod = 0;
+        inv_area_rt_mod = 0;
 #endif
+
+
+
+        score += inv_area_rt_mod * inv_area_ratio;
+
 #ifdef COST_VEC_PRINT   
-            *this->output << "Inverse Area ratio: " << "," << inv_area_ratio << "," << " Inv Area Ratio Contribution: " << "," << inv_area_rt_mod * inv_area_ratio << ",";
+        *this->output << "Inverse Area ratio: " << "," << inv_area_ratio << "," << " Inv Area Ratio Contribution: " << "," << inv_area_rt_mod * inv_area_ratio << ",";
 #endif
-            score += inv_area_rt_mod * inv_area_ratio;
 
-            if(inv_hull_perim == 0) inv_hull_perim = 1;
-            double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
 
-            double inv_perim_rt_mod = -3*100*static_cast<double>(inverse_frontiers.size());
-            // inv_perim_rt_mod = 0;
+
+
+
+        
+
+        if(inv_hull_perim == 0) inv_hull_perim = 1;
+        double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
+
+        double inv_perim_rt_mod = -7*100*static_cast<double>(inverse_frontiers.size());
 
 #ifndef INV_HULL_PERIM
 
-            inv_perim_rt_mod = 0;
+        inv_perim_rt_mod = 0;
 #endif
 
-            
-            score += inv_perim_rt_mod * inv_perim_ratio;
+        
+        score += inv_perim_rt_mod * inv_perim_ratio;
 
 #ifdef COST_VEC_PRINT   
-            *this->output << "Inverse Perim ratio: " << "," << inv_perim_ratio<< "," << " Inv Perim Contribution: " << "," << inv_perim_rt_mod * inv_perim_ratio << ",";
+        *this->output << "Inverse Perim ratio: " << "," << inv_perim_ratio<< "," << " Inv Perim Contribution: " << "," << inv_perim_rt_mod * inv_perim_ratio << ",";
 #endif
 
-        }
+        
 
             
 
@@ -674,10 +691,10 @@ std::pair<int,int> Agent::determineAction(){
     *this->output << "Total frontiers: " << "," << this->frontiers[0].size() << "," << " Prioritised frontiers: " << "," << priority_frontiers.size() << std::endl;
     
     
-// #ifdef SHOW_IMG
+#ifdef SHOW_IMG
     cv::imshow("Filtered Frontiers", priority_img);
     cv::waitKey(WAITKEY_DELAY);
-// #endif
+#endif
     
 
     this->costFunction(priority_frontiers, signal_frontiers,hole_centres,  best_point,best_score);
