@@ -13,7 +13,7 @@ SignalSource::SignalSource(int field_width, int field_length) {
     this->x_coord = x_min + std::rand()%((x_max - x_min + 1));
     this->y_coord = y_min + std::rand()%((y_max - y_min + 1));;
     this->id = this->randomString(6);
-    std::cout << "ID: " << this->id << " X: " << this->x_coord << " Y: " << this->y_coord << std::endl;
+    // std::cout << "ID: " << this->id << " X: " << this->x_coord << " Y: " << this->y_coord << std::endl;
 
 }
 

@@ -15,9 +15,9 @@
 
 
 
-#define COST_VEC_PRINT
+// #define COST_VEC_PRINT
 // #define SHOW_IMG
-// #define SHOW_MAP
+#define SHOW_MAP
 
 
 #define DIST

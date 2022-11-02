@@ -29,13 +29,13 @@ int main (int argc, char* argv[]){
 
 
     //ARE THE HASH DEFINES SET CORRECTLY????!!!
-    std::string number_of_agents = std::string("single/");
-    std::string type_of_test = std::string("null");
+    std::string number_of_agents = std::string("double/");
+    std::string type_of_test = std::string("full");
 
 
-    int rand_seed_start = 1;
+    int rand_seed_start = 4;
     int rand_seed_end = 100;
-    int source_start = 1;
+    int source_start = 0;
     int source_end = 5;
     for(int test = rand_seed_start; test <= rand_seed_end; test ++){
         for (int source_count = source_start; source_count <= source_end; source_count++){
@@ -62,7 +62,7 @@ int main (int argc, char* argv[]){
                 std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
                 
                 Field f = Field(field_x_rows,field_y_cols,num_sources, std_dev_noise, max_range);  
-                std::cout << "SHOWING Agents" << std::endl;
+                // std::cout << "SHOWING Agents" << std::endl;
                 
                 Agent a1 = Agent("Drone1", 15 ,0, field_x_rows, field_y_cols, max_range, std_dev_noise,speed,  &certainty_grids);
                 a1.output = &output_agent;
@@ -101,16 +101,19 @@ int main (int argc, char* argv[]){
                 cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
                 a2.updateCertainty(f);
 #endif
-#ifdef SHOW_IMG
-                cv::imshow("map", map);
-                cv::waitKey(WAITKEY_DELAY);
-#endif
-                
+
 #ifdef TRIPLE
                 std::pair<int,int> a3_curr = a3.getCoords();
                 cv::circle(map, a3.pair2Point(a3_curr),2,cv::Scalar(255,0,0));
                 a3.updateCertainty(f);
 #endif
+
+#if defined(SHOW_IMG) || defined(SHOW_MAP);
+                cv::imshow("map", map);
+                cv::waitKey(WAITKEY_DELAY);
+#endif
+                
+
 
                 while(true){
                     // cv::waitKey(0);
@@ -132,13 +135,13 @@ int main (int argc, char* argv[]){
                     cv::Mat cert_grid = a1.getMap();
                     cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
                     cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
-// #ifdef SHOW_IMG
+#if defined(SHOW_IMG) || defined(SHOW_MAP);
                     cv::imshow("map", img);
                     cv::waitKey(WAITKEY_DELAY);
                     cv::bitwise_or(locations, a1.getSignalLocations(), img2);
                     cv::imshow("locations", img2);
                     cv::waitKey(WAITKEY_DELAY);
-// #endif
+#endif
 
 
 
@@ -165,13 +168,13 @@ int main (int argc, char* argv[]){
                     cert_grid = a2.getMap();
                     cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
                     cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
-// #ifdef SHOW_IMG
+#if defined(SHOW_IMG) || defined(SHOW_MAP);
                     cv::imshow("map", img);
                     cv::waitKey(WAITKEY_DELAY);
                     cv::bitwise_or(locations, a1.getSignalLocations(), img2);
                     cv::imshow("locations", img2);
                     cv::waitKey(WAITKEY_DELAY);
-// #endif
+#endif
 
                     // a2.updateMap();
 
@@ -197,13 +200,13 @@ int main (int argc, char* argv[]){
                     cert_grid = a3.getMap();
                     cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
                     cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
-// #ifdef SHOW_IMG
+#if defined(SHOW_IMG) || defined(SHOW_MAP);
                     cv::imshow("map", img);
                     cv::waitKey(WAITKEY_DELAY);
                     cv::bitwise_or(locations, a1.getSignalLocations(), img2);
                     cv::imshow("locations", img2);
                     cv::waitKey(WAITKEY_DELAY);
-// #endif
+#endif
 
                     // a3.updateMap();
 

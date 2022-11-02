@@ -494,26 +494,25 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             cv::imshow("inv_hull_img", inv_hull_img);
             cv::waitKey(WAITKEY_DELAY);
 #endif
-        }
+        
+
+        // std::cout << inv_ctr_area << " & " << inv_hull_area << std::endl;
 
 
-        double inv_area_ratio = inv_ctr_area/inv_hull_area;
-
-
-
-        double inv_area_rt_mod = 7*100;
+            double inv_area_ratio = inv_ctr_area/inv_hull_area;
+            double inv_area_rt_mod = 7*100;
 
 #ifndef INV_HULL_AREA
 
-        inv_area_rt_mod = 0;
+            inv_area_rt_mod = 0;
 #endif
 
 
 
-        score += inv_area_rt_mod * inv_area_ratio;
+            score += inv_area_rt_mod * inv_area_ratio;
 
 #ifdef COST_VEC_PRINT   
-        *this->output << "Inverse Area ratio: " << "," << inv_area_ratio << "," << " Inv Area Ratio Contribution: " << "," << inv_area_rt_mod * inv_area_ratio << ",";
+            *this->output << "Inverse Area ratio: " << "," << inv_area_ratio << "," << " Inv Area Ratio Contribution: " << "," << inv_area_rt_mod * inv_area_ratio << ",";
 #endif
 
 
@@ -522,24 +521,28 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
         
 
-        if(inv_hull_perim == 0) inv_hull_perim = 1;
-        double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
+            if(inv_hull_perim == 0) inv_hull_perim = 1;
 
-        double inv_perim_rt_mod = -7*100*static_cast<double>(inverse_frontiers.size());
+            double inv_perim_ratio = inv_ctr_perim/inv_hull_perim;
+            double inv_perim_rt_mod = -7*100*static_cast<double>(inverse_frontiers.size());
+
+            // double inv_perim_ratio = inv_hull_perim/inv_ctr_perim;
+            // double inv_perim_rt_mod = 7*100*static_cast<double>(inverse_frontiers.size());
+
 
 #ifndef INV_HULL_PERIM
 
-        inv_perim_rt_mod = 0;
+            inv_perim_rt_mod = 0;
 #endif
 
-        
-        score += inv_perim_rt_mod * inv_perim_ratio;
+            
+            score += inv_perim_rt_mod * inv_perim_ratio;
 
 #ifdef COST_VEC_PRINT   
-        *this->output << "Inverse Perim ratio: " << "," << inv_perim_ratio<< "," << " Inv Perim Contribution: " << "," << inv_perim_rt_mod * inv_perim_ratio << ",";
+            *this->output << "Inverse Perim ratio: " << "," << inv_perim_ratio<< "," << " Inv Perim Contribution: " << "," << inv_perim_rt_mod * inv_perim_ratio << ",";
 #endif
 
-        
+        }
 
             
 
@@ -573,17 +576,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 std::pair<int,int> Agent::determineAction(){
  
 
-    std::vector<cv::Point2i> missed_spots;
-    cv::Mat missed_map = this->certainty_grids->at(BASE).getLikelihood().clone();
-    cv::threshold(this->certainty_grids->at(BASE).getLikelihood(), missed_map, searching-1, 255, cv::THRESH_BINARY);
-    cv::findNonZero(missed_map,missed_spots);
-    
 
-
-    if(missed_spots.size() == 0){ //fully explored
-        // *this->output <<"DONE!" << std::endl;
-        return std::make_pair(-1,-1);
-    }
 
 
     std::pair<int,int> next_position = this->coords;
@@ -629,7 +622,8 @@ std::pair<int,int> Agent::determineAction(){
     int frontier_chains = this->frontiers.size();
     if(frontier_chains == 0){
         //pixels remaining but no frontiers???
-        exit(7);
+        // std::cout << "No frontiers left"<< std::endl;
+        return std::make_pair(-1,-1);
     }
 
 
@@ -691,7 +685,7 @@ std::pair<int,int> Agent::determineAction(){
     *this->output << "Total frontiers: " << "," << this->frontiers[0].size() << "," << " Prioritised frontiers: " << "," << priority_frontiers.size() << std::endl;
     
     
-#ifdef SHOW_IMG
+#if defined(SHOW_IMG) || defined(SHOW_MAP);
     cv::imshow("Filtered Frontiers", priority_img);
     cv::waitKey(WAITKEY_DELAY);
 #endif
@@ -708,52 +702,16 @@ std::pair<int,int> Agent::determineAction(){
 
 
         *this->output << "Checking reserve frontiers" << std::endl;
-        this->costFunction(reserve_frontiers, signal_frontiers, hole_centres,  best_point,best_score);
-
-
-
-        if(best_score < -10000){
+        if(reserve_frontiers.size() > 0){
+            this->costFunction(reserve_frontiers, signal_frontiers, hole_centres,  best_point,best_score);
+        }else{
             return std::make_pair(-1,-1);
-            // *this->output << "Checking for remaining cells" << std::endl;
-            // std::vector<cv::Point2i> missed_spots;
-            // cv::Mat remaining = this->certainty_grids->at(BASE).getLikelihood().clone();
-            // cv::threshold(this->certainty_grids->at(BASE).getLikelihood(), remaining, searching-1, 255, cv::THRESH_BINARY);
-            // cv::findNonZero(remaining,missed_spots);
-
-
-            // double missed_p_dist = this->field_x_rows*this->field_x_rows + this->field_y_cols*this->field_y_cols;
-            // for(auto &p: missed_spots){
-            //     if(missed_p_dist > this->dist(this->coords, this->point2Pair(p))){
-            //         best_point = p;
-            //         best_score = 0;
-            //         missed_p_dist = this->dist(this->coords, this->point2Pair(p));
-            //     }
-            // }
-
-
-
-            // *this->output << "SHOULD BE DONE!" << std::endl;
-
-// #ifdef SHOW_IMG
-    //         cv::imshow("done yet?",remaining);
-    //         cv::waitKey(0);
-// #endif
         }
-
-
         
-
-        // //Might get rid of the missed pixel check and just check if any frontiers are left
-
-
-        // if(missed_spots.size() <= 1){ //fully explored
-        //     // *this->output <<"DONE!" << std::endl;
-        //     
-        // }
-
-            
-
     }
+
+
+
 
 
 
@@ -766,7 +724,7 @@ std::pair<int,int> Agent::determineAction(){
     cv::waitKey(WAITKEY_DELAY);
 #endif
     this->recordCommand(this->point2Pair(best_point));
-    *this->output << "COUNT COMMAND: " << this->countCommand(this->point2Pair(best_point)) << std::endl;
+    // *this->output << "COUNT COMMAND: " << this->countCommand(this->point2Pair(best_point)) << std::endl;
     return this->point2Pair(best_point);
 
 
@@ -900,7 +858,7 @@ bool Agent::verifySignalLocations(std::string name, std::pair<int,int> true_loca
 
     int remaining = cv::countNonZero(tmp);
 
-    std::cout << remaining - before << std::endl;
+    // std::cout << remaining - before << std::endl;
 
     if(remaining < before){
         *this->output << "Signal name: " << "," << name << "," <<  "x:"  << "," <<  true_location.first << "," << "y:" << "," << true_location.second  << "," << "Inside likelihood area? : " << "," << "True" << std::endl;
