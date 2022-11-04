@@ -29,7 +29,7 @@ int main (int argc, char* argv[]){
 
 
     //ARE THE HASH DEFINES SET CORRECTLY????!!!
-    std::string number_of_agents = std::string("double/");
+    std::string number_of_agents = std::string("single/");
     std::string type_of_test = std::string("null");
 
 
@@ -65,10 +65,10 @@ int main (int argc, char* argv[]){
                 // std::cout << "SHOWING Agents" << std::endl;
                 
                 Agent a1 = Agent("Drone1", 15 ,0, field_x_rows, field_y_cols, max_range, std_dev_noise,speed,  &certainty_grids);
-                // a1.output = &output_agent;
+                a1.output = &output_agent;
 #ifdef DOUBLE
                 Agent a2 = Agent("Drone2", 0 , 15, field_x_rows, field_y_cols, max_range,std_dev_noise, speed, &certainty_grids);
-                // a2.output = &output_agent;
+                a2.output = &output_agent;
 #endif
                 
                 
@@ -96,20 +96,35 @@ int main (int argc, char* argv[]){
                 std::pair<int,int> a1_curr = a1.getCoords();    
                 cv::circle(map, a1.pair2Point(a1_curr),2,cv::Scalar(0,255,0));  
                 a1.updateCertainty(f);
+                cv::line(map, a1.pair2Point(a1_curr), a1.pair2Point(a1_curr),cv::Scalar(0,255,0));
+                cv::circle(map, a1.pair2Point(a1_curr),2,cv::Scalar(0,255,0));
+                cv::Mat cert_grid = a1.getMap();
+                cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
+                cv::addWeighted(map, 1, cert_grid, 1, 0, img);
 #ifdef DOUBLE
                 std::pair<int,int> a2_curr = a2.getCoords();
                 cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
                 a2.updateCertainty(f);
+                cv::line(map, a2.pair2Point(a2_curr), a2.pair2Point(a2_curr),cv::Scalar(0,0,255));
+                cv::circle(map, a2.pair2Point(a2_curr),2,cv::Scalar(0,0,255));
+                cert_grid = a2.getMap();
+                cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
+                cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
 #endif
 
 #ifdef TRIPLE
                 std::pair<int,int> a3_curr = a3.getCoords();
                 cv::circle(map, a3.pair2Point(a3_curr),2,cv::Scalar(255,0,0));
                 a3.updateCertainty(f);
+                cv::line(map, a3.pair2Point(a3_curr), a3.pair2Point(a3_curr),cv::Scalar(255,0,0));
+                cv::circle(map, a3.pair2Point(a3_curr),2,cv::Scalar(255,0,0));
+                cert_grid = a3.getMap();
+                cv::cvtColor(cert_grid, cert_grid, cv::COLOR_GRAY2BGR);
+                cv::addWeighted(map, 1, cert_grid, 0.5, 0, img);
 #endif
 
 #if defined(SHOW_IMG) || defined(SHOW_MAP);
-                cv::imshow("map", map);
+                cv::imshow("map", img);
                 cv::waitKey(WAITKEY_DELAY);
 #endif
                 
@@ -210,7 +225,7 @@ int main (int argc, char* argv[]){
 
                     // a3.updateMap();
 
-                    // cv::waitKey(0);  
+                    cv::waitKey(0);  
 #endif
 
 
@@ -219,6 +234,7 @@ int main (int argc, char* argv[]){
 
 
                 }
+                
                 a1.logAgent();
                 for(auto &s: f.getSources()){
                     a1.verifySignalLocations(s.getId(), s.getCoords());
