@@ -31,7 +31,7 @@
 #define DOUBLE
 
 
-// #define TRIPLE
+#define TRIPLE
 
 
 

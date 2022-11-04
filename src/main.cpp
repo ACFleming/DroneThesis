@@ -35,7 +35,7 @@ int main (int argc, char* argv[]){
 
     int rand_seed_start = 0;
     int rand_seed_end = 100;
-    int source_start = 1;
+    int source_start = 0;
     int source_end = 5;
     for(int test = rand_seed_start; test <= rand_seed_end; test ++){
         for (int source_count = source_start; source_count <= source_end; source_count++){
@@ -225,7 +225,7 @@ int main (int argc, char* argv[]){
 
                     // a3.updateMap();
 
-                    cv::waitKey(0);  
+                    // cv::waitKey(0);  
 #endif
 
 
