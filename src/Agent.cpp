@@ -489,7 +489,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             // double perim_mod = -7*100;
 
             double perim_rt = ctr_perim/hull_perim;
-            double perim_mod = -2*100;
+            double perim_mod = -7*100;
 
 #ifndef HULL_PERIM
             perim_mod = 0;
@@ -562,7 +562,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         // std::cout << "old_frontier_count: " << old_frontier_count << " new_frontier_count: " << new_frontier_count << std::endl;
 
 
-        double chain_diff_mod = 100;
+        double chain_diff_mod = 300;
 #ifndef CHAIN
         chain_diff_mod = 0;
 #endif
@@ -615,7 +615,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             // double inv_area_rt_mod = 7*100;
 
             double inv_area_ratio = inv_hull_area/inv_ctr_area;
-            double inv_area_rt_mod = -2*100;
+            double inv_area_rt_mod = -7*100;
 
 #ifndef INV_HULL_AREA
 
