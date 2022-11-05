@@ -1,456 +1,503 @@
-Total frontiers: ,36, Prioritised frontiers: ,33
-BEST Point:,27,17, Score: ,1317.97
-Total frontiers: ,47, Prioritised frontiers: ,23
-BEST Point:,11,32, Score: ,1306.56
-Total frontiers: ,51, Prioritised frontiers: ,43
-BEST Point:,47,16, Score: ,1301.69
-Total frontiers: ,62, Prioritised frontiers: ,34
-BEST Point:,28,41, Score: ,1286.56
-Total frontiers: ,62, Prioritised frontiers: ,36
-BEST Point:,54,35, Score: ,1285.53
-Total frontiers: ,69, Prioritised frontiers: ,37
-BEST Point:,17,58, Score: ,1272.3
-Total frontiers: ,75, Prioritised frontiers: ,53
-BEST Point:,47,54, Score: ,1264.17
-Total frontiers: ,80, Prioritised frontiers: ,32
-BEST Point:,17,78, Score: ,1264.54
-Total frontiers: ,89, Prioritised frontiers: ,56
-BEST Point:,46,73, Score: ,1261
-Total frontiers: ,88, Prioritised frontiers: ,32
-BEST Point:,17,98, Score: ,1259.55
-Total frontiers: ,97, Prioritised frontiers: ,51
-BEST Point:,46,93, Score: ,1248.31
-Total frontiers: ,99, Prioritised frontiers: ,32
-BEST Point:,17,118, Score: ,1248.26
-Total frontiers: ,108, Prioritised frontiers: ,53
-BEST Point:,46,113, Score: ,1234.94
-Total frontiers: ,110, Prioritised frontiers: ,32
-BEST Point:,17,138, Score: ,1237.81
-Total frontiers: ,119, Prioritised frontiers: ,55
-BEST Point:,46,133, Score: ,1222.96
-Total frontiers: ,121, Prioritised frontiers: ,32
-BEST Point:,17,158, Score: ,1228.03
-Total frontiers: ,130, Prioritised frontiers: ,55
-BEST Point:,46,153, Score: ,1211.86
-Total frontiers: ,132, Prioritised frontiers: ,32
-BEST Point:,17,178, Score: ,1218.64
-Total frontiers: ,141, Prioritised frontiers: ,55
-BEST Point:,46,173, Score: ,1201.34
-Total frontiers: ,143, Prioritised frontiers: ,32
-BEST Point:,17,198, Score: ,1209.49
-Total frontiers: ,152, Prioritised frontiers: ,55
-BEST Point:,46,193, Score: ,1191.2
-Total frontiers: ,154, Prioritised frontiers: ,32
-BEST Point:,17,218, Score: ,1200.47
-Total frontiers: ,163, Prioritised frontiers: ,55
-BEST Point:,46,213, Score: ,1181.33
-Total frontiers: ,165, Prioritised frontiers: ,32
-BEST Point:,17,238, Score: ,1191.54
-Total frontiers: ,174, Prioritised frontiers: ,55
-BEST Point:,46,233, Score: ,1171.64
-Total frontiers: ,176, Prioritised frontiers: ,32
-BEST Point:,17,258, Score: ,1182.63
-Total frontiers: ,185, Prioritised frontiers: ,55
-BEST Point:,46,253, Score: ,1162.07
-Total frontiers: ,187, Prioritised frontiers: ,32
-BEST Point:,17,278, Score: ,1173.73
-Total frontiers: ,196, Prioritised frontiers: ,55
-BEST Point:,46,273, Score: ,1152.56
-Total frontiers: ,198, Prioritised frontiers: ,32
-BEST Point:,16,297, Score: ,1151.51
-Total frontiers: ,182, Prioritised frontiers: ,50
-BEST Point:,47,292, Score: ,1231.84
-Total frontiers: ,168, Prioritised frontiers: ,0
-Checking reserve frontiers
-BEST Point:,64,281, Score: ,1054.01
-Total frontiers: ,168, Prioritised frontiers: ,25
-BEST Point:,64,282, Score: ,1203.02
-Total frontiers: ,174, Prioritised frontiers: ,0
-Checking reserve frontiers
-BEST Point:,64,261, Score: ,1076.55
-Total frontiers: ,174, Prioritised frontiers: ,38
-BEST Point:,70,263, Score: ,1176.63
-Total frontiers: ,177, Prioritised frontiers: ,26
-BEST Point:,65,240, Score: ,1087.06
-Total frontiers: ,174, Prioritised frontiers: ,48
-BEST Point:,73,243, Score: ,1171.24
+Total frontiers: ,34, Prioritised frontiers: ,31
+BEST Point:,26,17, Score: ,-2.39482
+Total frontiers: ,41, Prioritised frontiers: ,38
+BEST Point:,9,33, Score: ,-2.37815
+Total frontiers: ,43, Prioritised frontiers: ,40
+BEST Point:,42,5, Score: ,-2.40893
+Total frontiers: ,47, Prioritised frontiers: ,44
+BEST Point:,28,36, Score: ,-2.4768
+Total frontiers: ,50, Prioritised frontiers: ,47
+BEST Point:,52,22, Score: ,-2.42687
+Total frontiers: ,55, Prioritised frontiers: ,52
+BEST Point:,16,52, Score: ,-2.46299
+Total frontiers: ,64, Prioritised frontiers: ,61
+BEST Point:,68,10, Score: ,-2.44782
+Total frontiers: ,67, Prioritised frontiers: ,58
+BEST Point:,5,68, Score: ,-2.49163
+Total frontiers: ,71, Prioritised frontiers: ,56
+BEST Point:,85,1, Score: ,-2.52652
+Total frontiers: ,74, Prioritised frontiers: ,51
+BEST Point:,4,87, Score: ,-2.60869
+Total frontiers: ,81, Prioritised frontiers: ,50
+BEST Point:,104,0, Score: ,-2.70245
+Total frontiers: ,87, Prioritised frontiers: ,53
+BEST Point:,23,79, Score: ,-2.77158
+Total frontiers: ,91, Prioritised frontiers: ,46
+BEST Point:,123,1, Score: ,-2.79602
+Total frontiers: ,100, Prioritised frontiers: ,66
+BEST Point:,39,68, Score: ,-2.79442
+Total frontiers: ,106, Prioritised frontiers: ,45
+BEST Point:,142,1, Score: ,-2.81534
+Total frontiers: ,115, Prioritised frontiers: ,78
+BEST Point:,55,57, Score: ,-2.73232
+Total frontiers: ,109, Prioritised frontiers: ,48
+BEST Point:,161,1, Score: ,-2.77561
+Total frontiers: ,118, Prioritised frontiers: ,83
+BEST Point:,72,48, Score: ,-2.7373
+Total frontiers: ,120, Prioritised frontiers: ,49
+BEST Point:,180,1, Score: ,-2.77743
+Total frontiers: ,129, Prioritised frontiers: ,88
+BEST Point:,88,37, Score: ,-2.69803
+Total frontiers: ,116, Prioritised frontiers: ,50
+BEST Point:,113,18, Score: ,94.9666
+Total frontiers: ,122, Prioritised frontiers: ,82
+BEST Point:,105,28, Score: ,97.3822
+Total frontiers: ,114, Prioritised frontiers: ,63
+BEST Point:,145,20, Score: ,-2.63733
+Total frontiers: ,124, Prioritised frontiers: ,82
+BEST Point:,121,39, Score: ,-2.53003
+Total frontiers: ,116, Prioritised frontiers: ,74
+BEST Point:,164,26, Score: ,-2.59801
+Total frontiers: ,122, Prioritised frontiers: ,83
+BEST Point:,140,39, Score: ,-2.61362
+Total frontiers: ,116, Prioritised frontiers: ,67
+BEST Point:,183,24, Score: ,-2.59362
+Total frontiers: ,120, Prioritised frontiers: ,81
+BEST Point:,157,47, Score: ,-2.68666
+Total frontiers: ,128, Prioritised frontiers: ,72
+BEST Point:,200,15, Score: ,-2.65
+Total frontiers: ,128, Prioritised frontiers: ,87
+BEST Point:,176,45, Score: ,-2.71292
+Total frontiers: ,127, Prioritised frontiers: ,59
+BEST Point:,219,14, Score: ,-2.65329
+Total frontiers: ,134, Prioritised frontiers: ,84
+BEST Point:,195,44, Score: ,-2.71329
+Total frontiers: ,140, Prioritised frontiers: ,58
+BEST Point:,238,13, Score: ,-2.6891
+Total frontiers: ,147, Prioritised frontiers: ,85
+BEST Point:,214,43, Score: ,-2.72232
+Total frontiers: ,147, Prioritised frontiers: ,58
+BEST Point:,257,12, Score: ,-2.70359
+Total frontiers: ,153, Prioritised frontiers: ,84
+BEST Point:,233,42, Score: ,-2.7364
+Total frontiers: ,153, Prioritised frontiers: ,57
+BEST Point:,276,11, Score: ,-2.7181
+Total frontiers: ,159, Prioritised frontiers: ,78
+BEST Point:,252,41, Score: ,-2.75076
+Total frontiers: ,159, Prioritised frontiers: ,56
+BEST Point:,294,18, Score: ,-2.73692
+Total frontiers: ,151, Prioritised frontiers: ,64
+BEST Point:,271,42, Score: ,-2.68847
+Total frontiers: ,145, Prioritised frontiers: ,39
+BEST Point:,294,37, Score: ,-2.69093
+Total frontiers: ,137, Prioritised frontiers: ,44
+BEST Point:,281,58, Score: ,-2.74332
+Total frontiers: ,144, Prioritised frontiers: ,42
+BEST Point:,299,64, Score: ,-3.26738
+Total frontiers: ,139, Prioritised frontiers: ,43
+BEST Point:,260,59, Score: ,-2.76292
+Total frontiers: ,141, Prioritised frontiers: ,39
+BEST Point:,296,75, Score: ,-2.80253
+Total frontiers: ,149, Prioritised frontiers: ,61
+BEST Point:,261,78, Score: ,-2.80999
+Signal name: ,DXOD95, Signal value: ,16.6105
+Total frontiers: ,156, Prioritised frontiers: ,59
+BEST Point:,282,55, Score: ,96.8473
+Total frontiers: ,156, Prioritised frontiers: ,73
+BEST Point:,257,80, Score: ,97.8294
+Signal name: ,DXOD95, Signal value: ,16.0679
+Total frontiers: ,160, Prioritised frontiers: ,68
+BEST Point:,281,78, Score: ,96.9938
+Total frontiers: ,154, Prioritised frontiers: ,71
+BEST Point:,251,87, Score: ,97.5844
+Signal name: ,DXOD95, Signal value: ,15.7532
+Total frontiers: ,160, Prioritised frontiers: ,69
+BEST Point:,272,94, Score: ,97.0264
+Total frontiers: ,170, Prioritised frontiers: ,89
+BEST Point:,244,84, Score: ,97.5935
+Signal name: ,DXOD95, Signal value: ,9.54431
+Total frontiers: ,175, Prioritised frontiers: ,85
+BEST Point:,253,97, Score: ,96.9751
+Total frontiers: ,176, Prioritised frontiers: ,98
+BEST Point:,239,82, Score: ,97.6747
+Signal name: ,DXOD95, Signal value: ,5.89669
+Total frontiers: ,185, Prioritised frontiers: ,102
+BEST Point:,238,83, Score: ,96.8777
+Signal name: ,DXOD95, Signal value: ,5.6872
+Total frontiers: ,183, Prioritised frontiers: ,107
+BEST Point:,238,83, Score: ,97.8226
+Signal name: ,DXOD95, Signal value: ,5.25382
+Total frontiers: ,183, Prioritised frontiers: ,102
+BEST Point:,228,65, Score: ,-2.97313
+Signal name: ,DXOD95, Signal value: ,15.4998
+Total frontiers: ,165, Prioritised frontiers: ,84
+BEST Point:,220,92, Score: ,-2.89618
+Total frontiers: ,178, Prioritised frontiers: ,103
+BEST Point:,208,66, Score: ,-2.91226
+Total frontiers: ,170, Prioritised frontiers: ,97
+BEST Point:,200,92, Score: ,-2.87649
+Total frontiers: ,176, Prioritised frontiers: ,92
+BEST Point:,188,66, Score: ,-2.88841
+Total frontiers: ,169, Prioritised frontiers: ,87
+BEST Point:,180,92, Score: ,-2.84789
+Total frontiers: ,175, Prioritised frontiers: ,91
+BEST Point:,168,66, Score: ,-2.87103
+Total frontiers: ,167, Prioritised frontiers: ,86
+BEST Point:,160,92, Score: ,-2.82397
+Total frontiers: ,173, Prioritised frontiers: ,89
+BEST Point:,148,66, Score: ,-2.84648
+Total frontiers: ,168, Prioritised frontiers: ,88
+BEST Point:,140,92, Score: ,-2.82729
+Total frontiers: ,174, Prioritised frontiers: ,86
+BEST Point:,128,66, Score: ,-2.81293
+Total frontiers: ,165, Prioritised frontiers: ,82
+BEST Point:,120,92, Score: ,-2.80917
+Total frontiers: ,171, Prioritised frontiers: ,85
+BEST Point:,108,66, Score: ,-2.75113
+Total frontiers: ,164, Prioritised frontiers: ,84
+BEST Point:,100,90, Score: ,-2.7563
+Total frontiers: ,171, Prioritised frontiers: ,87
+BEST Point:,89,72, Score: ,-2.70609
+Total frontiers: ,155, Prioritised frontiers: ,80
+BEST Point:,80,89, Score: ,-2.6712
+Total frontiers: ,163, Prioritised frontiers: ,83
+BEST Point:,69,72, Score: ,-2.67927
+Total frontiers: ,145, Prioritised frontiers: ,72
+BEST Point:,60,90, Score: ,-2.57379
+Total frontiers: ,142, Prioritised frontiers: ,64
+BEST Point:,40,88, Score: ,96.7505
+Total frontiers: ,142, Prioritised frontiers: ,63
+BEST Point:,43,100, Score: ,-2.57505
+Total frontiers: ,142, Prioritised frontiers: ,59
+BEST Point:,61,109, Score: ,-3.10343
+Total frontiers: ,144, Prioritised frontiers: ,61
+BEST Point:,25,108, Score: ,-2.57398
+Total frontiers: ,145, Prioritised frontiers: ,66
+BEST Point:,74,110, Score: ,-2.61657
+Total frontiers: ,152, Prioritised frontiers: ,61
+BEST Point:,8,118, Score: ,-2.57689
+Total frontiers: ,145, Prioritised frontiers: ,72
+BEST Point:,93,110, Score: ,-2.58567
+Total frontiers: ,146, Prioritised frontiers: ,42
+BEST Point:,9,137, Score: ,-2.61399
+Total frontiers: ,155, Prioritised frontiers: ,78
+BEST Point:,110,118, Score: ,-2.66674
+Total frontiers: ,163, Prioritised frontiers: ,51
+BEST Point:,28,135, Score: ,-2.68666
+Total frontiers: ,169, Prioritised frontiers: ,92
+BEST Point:,129,118, Score: ,-2.68946
+Total frontiers: ,170, Prioritised frontiers: ,67
+BEST Point:,47,134, Score: ,-2.59105
+Total frontiers: ,159, Prioritised frontiers: ,82
+BEST Point:,148,118, Score: ,-2.61528
+Total frontiers: ,160, Prioritised frontiers: ,63
+BEST Point:,66,133, Score: ,-2.60973
+Total frontiers: ,160, Prioritised frontiers: ,84
+BEST Point:,167,118, Score: ,-2.60101
+Total frontiers: ,161, Prioritised frontiers: ,72
+BEST Point:,83,142, Score: ,-2.58572
+Signal name: ,1FQ90T, Signal value: ,14.7259
+Total frontiers: ,161, Prioritised frontiers: ,91
+BEST Point:,111,133, Score: ,95.5159
+Total frontiers: ,161, Prioritised frontiers: ,83
+BEST Point:,83,143, Score: ,98.159
+Signal name: ,1FQ90T, Signal value: ,12.4866
+Total frontiers: ,163, Prioritised frontiers: ,85
+BEST Point:,108,141, Score: ,96.2615
+Total frontiers: ,165, Prioritised frontiers: ,87
+BEST Point:,86,147, Score: ,98.0055
+Signal name: ,1FQ90T, Signal value: ,7.90416
+Total frontiers: ,167, Prioritised frontiers: ,97
+BEST Point:,106,141, Score: ,97.1052
+Total frontiers: ,152, Prioritised frontiers: ,75
+BEST Point:,88,148, Score: ,98.1607
+Signal name: ,1FQ90T, Signal value: ,7.47192
+Total frontiers: ,155, Prioritised frontiers: ,85
+BEST Point:,103,147, Score: ,97.7142
+Signal name: ,1FQ90T, Signal value: ,15.4947
+Total frontiers: ,153, Prioritised frontiers: ,76
+BEST Point:,86,148, Score: ,98.1528
+Signal name: ,1FQ90T, Signal value: ,7.41576
+Total frontiers: ,155, Prioritised frontiers: ,78
+BEST Point:,97,157, Score: ,97.6845
+Signal name: ,1FQ90T, Signal value: ,9.61986
+Total frontiers: ,164, Prioritised frontiers: ,82
+BEST Point:,69,159, Score: ,-2.69425
+Signal name: ,1FQ90T, Signal value: ,16.8207
+Total frontiers: ,170, Prioritised frontiers: ,86
+BEST Point:,116,164, Score: ,-2.75979
+Total frontiers: ,180, Prioritised frontiers: ,94
+BEST Point:,49,159, Score: ,-2.78068
+Total frontiers: ,180, Prioritised frontiers: ,91
+BEST Point:,133,154, Score: ,-2.78346
+Total frontiers: ,177, Prioritised frontiers: ,68
+BEST Point:,31,167, Score: ,-2.76873
+Total frontiers: ,184, Prioritised frontiers: ,90
+BEST Point:,152,153, Score: ,-2.79657
+Total frontiers: ,186, Prioritised frontiers: ,69
+BEST Point:,11,167, Score: ,-2.73089
+Total frontiers: ,171, Prioritised frontiers: ,91
+BEST Point:,171,152, Score: ,-2.72619
+Total frontiers: ,174, Prioritised frontiers: ,40
+BEST Point:,10,186, Score: ,-2.73142
+Total frontiers: ,183, Prioritised frontiers: ,95
+BEST Point:,188,143, Score: ,-2.78036
+Total frontiers: ,187, Prioritised frontiers: ,48
+BEST Point:,9,205, Score: ,-2.82704
+Total frontiers: ,193, Prioritised frontiers: ,96
+BEST Point:,198,126, Score: ,-2.76722
 Total frontiers: ,180, Prioritised frontiers: ,47
-BEST Point:,71,223, Score: ,1097.82
-Total frontiers: ,175, Prioritised frontiers: ,49
-BEST Point:,72,218, Score: ,1166.27
+BEST Point:,8,224, Score: ,-2.78813
+Total frontiers: ,188, Prioritised frontiers: ,86
+BEST Point:,217,127, Score: ,-2.77501
+Total frontiers: ,189, Prioritised frontiers: ,50
+BEST Point:,7,243, Score: ,-2.81906
+Total frontiers: ,195, Prioritised frontiers: ,91
+BEST Point:,236,125, Score: ,-2.79046
 Total frontiers: ,180, Prioritised frontiers: ,50
-BEST Point:,71,203, Score: ,1109.53
-Total frontiers: ,178, Prioritised frontiers: ,51
-BEST Point:,74,197, Score: ,1165.18
-Total frontiers: ,182, Prioritised frontiers: ,52
-BEST Point:,91,216, Score: ,1116.24
-Total frontiers: ,191, Prioritised frontiers: ,63
-BEST Point:,82,185, Score: ,1163.81
-Total frontiers: ,195, Prioritised frontiers: ,50
-BEST Point:,94,235, Score: ,1106.17
-Total frontiers: ,199, Prioritised frontiers: ,57
-BEST Point:,80,165, Score: ,1149.9
-Signal name: ,49ZXLO, Signal value: ,14.0871
-Total frontiers: ,200, Prioritised frontiers: ,61
-BEST Point:,99,254, Score: ,1125.86
-Total frontiers: ,206, Prioritised frontiers: ,66
-BEST Point:,81,163, Score: ,1227.24
-Signal name: ,49ZXLO, Signal value: ,11.498
-Total frontiers: ,208, Prioritised frontiers: ,62
-BEST Point:,98,274, Score: ,1121.68
-Total frontiers: ,214, Prioritised frontiers: ,68
-BEST Point:,81,158, Score: ,1215.49
-Signal name: ,49ZXLO, Signal value: ,7.091
-Total frontiers: ,215, Prioritised frontiers: ,61
-BEST Point:,92,293, Score: ,1117.8
-Total frontiers: ,194, Prioritised frontiers: ,66
-BEST Point:,80,157, Score: ,1275.56
-Signal name: ,49ZXLO, Signal value: ,7.84552
-Total frontiers: ,193, Prioritised frontiers: ,27
-BEST Point:,112,288, Score: ,1144.88
-Total frontiers: ,199, Prioritised frontiers: ,65
-BEST Point:,80,156, Score: ,1275.52
-Signal name: ,49ZXLO, Signal value: ,8.13999
-Total frontiers: ,200, Prioritised frontiers: ,38
-BEST Point:,122,271, Score: ,1120.05
-Total frontiers: ,204, Prioritised frontiers: ,66
-BEST Point:,66,147, Score: ,1206.89
-Total frontiers: ,195, Prioritised frontiers: ,48
-BEST Point:,138,282, Score: ,1149.06
-Total frontiers: ,200, Prioritised frontiers: ,42
-BEST Point:,73,128, Score: ,-465.417
-Total frontiers: ,201, Prioritised frontiers: ,44
-BEST Point:,146,299, Score: ,1181.9
-Total frontiers: ,200, Prioritised frontiers: ,48
-BEST Point:,79,109, Score: ,1158.73
-Total frontiers: ,206, Prioritised frontiers: ,30
-BEST Point:,162,287, Score: ,1092.66
-Total frontiers: ,216, Prioritised frontiers: ,57
-BEST Point:,77,89, Score: ,1105.11
-Total frontiers: ,215, Prioritised frontiers: ,40
-BEST Point:,154,268, Score: ,1073.5
-Total frontiers: ,223, Prioritised frontiers: ,54
-BEST Point:,77,68, Score: ,1079.02
-Total frontiers: ,225, Prioritised frontiers: ,59
-BEST Point:,147,249, Score: ,1067.05
-Total frontiers: ,237, Prioritised frontiers: ,56
-BEST Point:,83,49, Score: ,1039.37
-Total frontiers: ,236, Prioritised frontiers: ,66
-BEST Point:,130,237, Score: ,1087.99
-Total frontiers: ,223, Prioritised frontiers: ,54
-BEST Point:,81,29, Score: ,1057.33
-Total frontiers: ,228, Prioritised frontiers: ,57
-BEST Point:,124,217, Score: ,1076.27
-Total frontiers: ,228, Prioritised frontiers: ,56
-BEST Point:,75,9, Score: ,1076.99
-Total frontiers: ,210, Prioritised frontiers: ,60
-BEST Point:,117,198, Score: ,1163.46
-Total frontiers: ,202, Prioritised frontiers: ,24
-BEST Point:,95,14, Score: ,1094.63
-Total frontiers: ,208, Prioritised frontiers: ,55
-BEST Point:,117,177, Score: ,1147.18
-Total frontiers: ,207, Prioritised frontiers: ,36
-BEST Point:,105,30, Score: ,1093.36
-Total frontiers: ,210, Prioritised frontiers: ,59
-BEST Point:,116,158, Score: ,1114.67
-Total frontiers: ,212, Prioritised frontiers: ,48
-BEST Point:,110,49, Score: ,1077.46
-Total frontiers: ,221, Prioritised frontiers: ,63
-BEST Point:,109,139, Score: ,1105.55
-Total frontiers: ,217, Prioritised frontiers: ,59
-BEST Point:,110,68, Score: ,1103.18
-Total frontiers: ,217, Prioritised frontiers: ,59
-BEST Point:,110,119, Score: ,1137.32
-Total frontiers: ,214, Prioritised frontiers: ,74
-BEST Point:,110,87, Score: ,1228.83
-Total frontiers: ,183, Prioritised frontiers: ,38
-BEST Point:,128,112, Score: ,1218.86
-Total frontiers: ,190, Prioritised frontiers: ,34
-BEST Point:,128,79, Score: ,1182.27
-Total frontiers: ,192, Prioritised frontiers: ,48
-BEST Point:,137,130, Score: ,1184.5
-Total frontiers: ,194, Prioritised frontiers: ,47
-BEST Point:,137,61, Score: ,1149.5
-Total frontiers: ,200, Prioritised frontiers: ,51
-BEST Point:,146,147, Score: ,1135.22
-Total frontiers: ,204, Prioritised frontiers: ,54
-BEST Point:,136,40, Score: ,1112.54
-Total frontiers: ,210, Prioritised frontiers: ,52
-BEST Point:,151,166, Score: ,1113.28
-Total frontiers: ,214, Prioritised frontiers: ,58
-BEST Point:,135,21, Score: ,1085.67
-Total frontiers: ,222, Prioritised frontiers: ,59
-BEST Point:,150,186, Score: ,1094.01
-Total frontiers: ,221, Prioritised frontiers: ,61
-BEST Point:,128,2, Score: ,1097.58
-Total frontiers: ,195, Prioritised frontiers: ,58
-BEST Point:,151,205, Score: ,1187.5
-Signal name: ,7WZA86, Signal value: ,13.1873
-Signal name: ,IQ2AQO, Signal value: ,17.1662
-Total frontiers: ,188, Prioritised frontiers: ,31
-BEST Point:,148,5, Score: ,1127.97
-Total frontiers: ,189, Prioritised frontiers: ,66
-BEST Point:,151,206, Score: ,1280.93
-Signal name: ,7WZA86, Signal value: ,12.2969
-Signal name: ,IQ2AQO, Signal value: ,16.5486
-Total frontiers: ,189, Prioritised frontiers: ,38
-BEST Point:,164,16, Score: ,1140.72
+BEST Point:,6,262, Score: ,-2.82472
+Total frontiers: ,186, Prioritised frontiers: ,75
+BEST Point:,255,124, Score: ,-2.89792
+Total frontiers: ,187, Prioritised frontiers: ,47
+BEST Point:,7,281, Score: ,-2.88505
+Total frontiers: ,190, Prioritised frontiers: ,70
+BEST Point:,274,125, Score: ,-2.96351
+Total frontiers: ,194, Prioritised frontiers: ,43
+BEST Point:,25,287, Score: ,-3.01047
 Total frontiers: ,196, Prioritised frontiers: ,68
-BEST Point:,145,230, Score: ,1184.81
-Signal name: ,7WZA86, Signal value: ,7.72021
-Total frontiers: ,185, Prioritised frontiers: ,52
-BEST Point:,163,36, Score: ,1178.13
-Total frontiers: ,185, Prioritised frontiers: ,50
-BEST Point:,157,226, Score: ,1276.62
-Signal name: ,7WZA86, Signal value: ,10.9382
-Total frontiers: ,182, Prioritised frontiers: ,63
-BEST Point:,163,56, Score: ,1165.61
-Total frontiers: ,184, Prioritised frontiers: ,55
-BEST Point:,159,223, Score: ,1272.22
-Signal name: ,7WZA86, Signal value: ,10.4313
-Total frontiers: ,185, Prioritised frontiers: ,64
-BEST Point:,162,75, Score: ,1163.27
-Total frontiers: ,190, Prioritised frontiers: ,56
-BEST Point:,159,213, Score: ,1221.79
-Signal name: ,7WZA86, Signal value: ,9.79752
-Signal name: ,IQ2AQO, Signal value: ,14.5853
-Total frontiers: ,188, Prioritised frontiers: ,59
-BEST Point:,156,94, Score: ,1196.3
-Total frontiers: ,181, Prioritised frontiers: ,44
-BEST Point:,177,204, Score: ,1143.34
-Signal name: ,IQ2AQO, Signal value: ,10.3488
-Total frontiers: ,193, Prioritised frontiers: ,47
-BEST Point:,162,113, Score: ,1169.38
-Total frontiers: ,192, Prioritised frontiers: ,57
-BEST Point:,177,184, Score: ,1154.72
-Signal name: ,IQ2AQO, Signal value: ,15.0974
-Total frontiers: ,192, Prioritised frontiers: ,50
-BEST Point:,171,130, Score: ,1164.44
-Total frontiers: ,191, Prioritised frontiers: ,64
-BEST Point:,177,164, Score: ,1202.94
-Total frontiers: ,178, Prioritised frontiers: ,42
-BEST Point:,189,136, Score: ,1182.13
-Total frontiers: ,186, Prioritised frontiers: ,39
-BEST Point:,196,165, Score: ,1151.24
-Total frontiers: ,189, Prioritised frontiers: ,46
-BEST Point:,194,115, Score: ,1121.66
-Total frontiers: ,200, Prioritised frontiers: ,48
-BEST Point:,206,181, Score: ,1082.44
-Total frontiers: ,207, Prioritised frontiers: ,60
-BEST Point:,194,95, Score: ,1095.2
-Total frontiers: ,203, Prioritised frontiers: ,59
-BEST Point:,206,200, Score: ,1060.27
-Total frontiers: ,207, Prioritised frontiers: ,54
-BEST Point:,194,75, Score: ,1059.69
-Total frontiers: ,208, Prioritised frontiers: ,57
-BEST Point:,195,217, Score: ,1032.48
-Total frontiers: ,210, Prioritised frontiers: ,55
-BEST Point:,194,55, Score: ,1039.39
-Total frontiers: ,210, Prioritised frontiers: ,54
-BEST Point:,188,235, Score: ,1024.71
-Total frontiers: ,215, Prioritised frontiers: ,55
-BEST Point:,194,35, Score: ,1015.11
-Total frontiers: ,215, Prioritised frontiers: ,59
-BEST Point:,182,254, Score: ,1076.51
-Total frontiers: ,200, Prioritised frontiers: ,55
-BEST Point:,187,15, Score: ,1105.55
-Total frontiers: ,186, Prioritised frontiers: ,46
-BEST Point:,181,281, Score: ,1144.94
-Total frontiers: ,180, Prioritised frontiers: ,27
-BEST Point:,207,16, Score: ,1172.27
-Total frontiers: ,184, Prioritised frontiers: ,39
-BEST Point:,193,289, Score: ,1203.43
-Signal name: ,I0QU68, Signal value: ,17.4622
-Total frontiers: ,180, Prioritised frontiers: ,40
-BEST Point:,226,16, Score: ,1184.43
-Total frontiers: ,191, Prioritised frontiers: ,34
-BEST Point:,194,281, Score: ,1258.69
-Signal name: ,I0QU68, Signal value: ,16.2207
-Total frontiers: ,193, Prioritised frontiers: ,49
-BEST Point:,225,36, Score: ,1164.74
-Total frontiers: ,194, Prioritised frontiers: ,40
-BEST Point:,202,266, Score: ,1235.46
-Total frontiers: ,197, Prioritised frontiers: ,61
-BEST Point:,225,56, Score: ,1147.19
-Total frontiers: ,197, Prioritised frontiers: ,51
-BEST Point:,215,282, Score: ,1209.5
-Signal name: ,I0QU68, Signal value: ,5.7002
-Total frontiers: ,202, Prioritised frontiers: ,62
-BEST Point:,225,76, Score: ,1117.58
-Signal name: ,XP6V 7, Signal value: ,14.8175
-Total frontiers: ,202, Prioritised frontiers: ,55
-BEST Point:,215,283, Score: ,1216.63
-Signal name: ,I0QU68, Signal value: ,5.04608
-Total frontiers: ,201, Prioritised frontiers: ,67
-BEST Point:,227,76, Score: ,1214.06
-Signal name: ,XP6V 7, Signal value: ,12.8209
-Total frontiers: ,203, Prioritised frontiers: ,51
-BEST Point:,210,288, Score: ,1176.51
-Signal name: ,I0QU68, Signal value: ,1.95444
-Total frontiers: ,203, Prioritised frontiers: ,64
-BEST Point:,229,82, Score: ,1206.05
-Signal name: ,XP6V 7, Signal value: ,12.2661
-Total frontiers: ,204, Prioritised frontiers: ,39
-BEST Point:,235,284, Score: ,1041.1
-Signal name: ,I0QU68, Signal value: ,16.4303
-Total frontiers: ,211, Prioritised frontiers: ,64
-BEST Point:,228,82, Score: ,1167.42
-Signal name: ,XP6V 7, Signal value: ,13.1962
-Total frontiers: ,211, Prioritised frontiers: ,47
-BEST Point:,249,283, Score: ,1037.97
-Total frontiers: ,220, Prioritised frontiers: ,64
-BEST Point:,213,96, Score: ,1092.94
-Total frontiers: ,212, Prioritised frontiers: ,51
-BEST Point:,268,284, Score: ,1022.53
-Total frontiers: ,223, Prioritised frontiers: ,46
-BEST Point:,234,94, Score: ,1038.5
-Signal name: ,XP6V 7, Signal value: ,18.0983
-Total frontiers: ,227, Prioritised frontiers: ,45
-BEST Point:,287,284, Score: ,993.99
-Total frontiers: ,220, Prioritised frontiers: ,55
-BEST Point:,214,115, Score: ,-841.019
-Total frontiers: ,222, Prioritised frontiers: ,30
-BEST Point:,287,263, Score: ,-842.111
-Total frontiers: ,227, Prioritised frontiers: ,52
-BEST Point:,208,136, Score: ,-790.914
-Total frontiers: ,225, Prioritised frontiers: ,38
-BEST Point:,265,263, Score: ,-887.34
-Total frontiers: ,225, Prioritised frontiers: ,47
-BEST Point:,212,147, Score: ,-751.602
-Total frontiers: ,219, Prioritised frontiers: ,47
-BEST Point:,240,264, Score: ,-747.357
-Total frontiers: ,222, Prioritised frontiers: ,43
-BEST Point:,219,165, Score: ,-817.724
-Total frontiers: ,224, Prioritised frontiers: ,55
-BEST Point:,214,249, Score: ,-734.663
-Total frontiers: ,213, Prioritised frontiers: ,48
-BEST Point:,225,183, Score: ,-816.712
-Total frontiers: ,215, Prioritised frontiers: ,57
-BEST Point:,221,234, Score: ,-673.284
-Total frontiers: ,194, Prioritised frontiers: ,58
-BEST Point:,225,205, Score: ,-573.081
-Total frontiers: ,182, Prioritised frontiers: ,34
-BEST Point:,240,227, Score: ,-544.476
-Total frontiers: ,181, Prioritised frontiers: ,38
-BEST Point:,244,200, Score: ,-621.761
-Total frontiers: ,183, Prioritised frontiers: ,40
-BEST Point:,259,228, Score: ,-565.596
-Total frontiers: ,176, Prioritised frontiers: ,44
-BEST Point:,244,180, Score: ,-677.662
-Total frontiers: ,179, Prioritised frontiers: ,50
-BEST Point:,271,243, Score: ,-614.244
-Total frontiers: ,172, Prioritised frontiers: ,51
-BEST Point:,238,160, Score: ,-638.258
-Total frontiers: ,173, Prioritised frontiers: ,39
-BEST Point:,287,231, Score: ,-637.212
-Total frontiers: ,161, Prioritised frontiers: ,52
-BEST Point:,232,127, Score: ,-3609.61
-Total frontiers: ,154, Prioritised frontiers: ,31
-BEST Point:,299,247, Score: ,-543.2
-Total frontiers: ,154, Prioritised frontiers: ,47
-BEST Point:,236,119, Score: ,-388.104
-Total frontiers: ,145, Prioritised frontiers: ,18
-BEST Point:,299,215, Score: ,-473.942
-Total frontiers: ,145, Prioritised frontiers: ,44
-BEST Point:,249,105, Score: ,-504.654
-Total frontiers: ,153, Prioritised frontiers: ,25
-BEST Point:,275,214, Score: ,-555.698
-Total frontiers: ,149, Prioritised frontiers: ,56
-BEST Point:,252,131, Score: ,-3933.55
-Total frontiers: ,148, Prioritised frontiers: ,37
-BEST Point:,268,199, Score: ,-473.691
-Total frontiers: ,138, Prioritised frontiers: ,53
-BEST Point:,254,144, Score: ,-616.301
-Total frontiers: ,138, Prioritised frontiers: ,43
-BEST Point:,262,172, Score: ,-460.776
-Total frontiers: ,130, Prioritised frontiers: ,40
-BEST Point:,266,159, Score: ,-476.005
-Total frontiers: ,128, Prioritised frontiers: ,34
-BEST Point:,287,191, Score: ,-471.355
-Total frontiers: ,117, Prioritised frontiers: ,42
-BEST Point:,286,167, Score: ,-3482.39
-Total frontiers: ,102, Prioritised frontiers: ,15
-BEST Point:,298,196, Score: ,-236.475
-Total frontiers: ,102, Prioritised frontiers: ,25
-BEST Point:,283,144, Score: ,-386.497
-Total frontiers: ,95, Prioritised frontiers: ,0
-Checking reserve frontiers
-BEST Point:,283,124, Score: ,-636.55
-Total frontiers: ,95, Prioritised frontiers: ,27
-BEST Point:,283,124, Score: ,-379.715
-Total frontiers: ,87, Prioritised frontiers: ,0
-Checking reserve frontiers
-BEST Point:,268,111, Score: ,-591.076
-Total frontiers: ,87, Prioritised frontiers: ,29
-BEST Point:,268,111, Score: ,-350.12
-Total frontiers: ,84, Prioritised frontiers: ,0
-Checking reserve frontiers
-BEST Point:,299,112, Score: ,-474.635
-Total frontiers: ,84, Prioritised frontiers: ,39
-BEST Point:,289,105, Score: ,-339.831
-Total frontiers: ,80, Prioritised frontiers: ,0
-Checking reserve frontiers
-BEST Point:,299,88, Score: ,-537.541
-Total frontiers: ,80, Prioritised frontiers: ,29
-BEST Point:,299,88, Score: ,-398.274
-Total frontiers: ,84, Prioritised frontiers: ,13
-BEST Point:,267,91, Score: ,-502.102
-Total frontiers: ,83, Prioritised frontiers: ,27
-BEST Point:,267,85, Score: ,-497.045
-Total frontiers: ,86, Prioritised frontiers: ,41
-BEST Point:,257,87, Score: ,-411.07
-Total frontiers: ,77, Prioritised frontiers: ,41
-BEST Point:,253,72, Score: ,-411.241
-Total frontiers: ,69, Prioritised frontiers: ,35
-BEST Point:,245,61, Score: ,-376.08
-Signal name: ,XP6V 7, Signal value: ,13.4795
-Total frontiers: ,65, Prioritised frontiers: ,42
-BEST Point:,245,52, Score: ,-400.676
-Total frontiers: ,60, Prioritised frontiers: ,35
-BEST Point:,245,39, Score: ,-452.72
-Total frontiers: ,61, Prioritised frontiers: ,42
-BEST Point:,245,32, Score: ,-451.284
-Total frontiers: ,57, Prioritised frontiers: ,38
-BEST Point:,245,16, Score: ,-351.086
-Total frontiers: ,55, Prioritised frontiers: ,40
-BEST Point:,245,11, Score: ,-290.197
-Total frontiers: ,47, Prioritised frontiers: ,31
-BEST Point:,252,0, Score: ,-314.386
-Total frontiers: ,49, Prioritised frontiers: ,27
-BEST Point:,266,0, Score: ,-384.224
-Total frontiers: ,49, Prioritised frontiers: ,25
-BEST Point:,280,5, Score: ,-518.732
-Total frontiers: ,54, Prioritised frontiers: ,28
-BEST Point:,289,7, Score: ,-400.238
-Total frontiers: ,58, Prioritised frontiers: ,34
-BEST Point:,299,6, Score: ,-418.749
-Total frontiers: ,49, Prioritised frontiers: ,24
-BEST Point:,267,27, Score: ,-502.119
-Total frontiers: ,51, Prioritised frontiers: ,22
-BEST Point:,299,23, Score: ,-432.808
-Total frontiers: ,48, Prioritised frontiers: ,33
-BEST Point:,266,43, Score: ,-584.916
-Total frontiers: ,40, Prioritised frontiers: ,20
-BEST Point:,299,42, Score: ,-531.05
-Total frontiers: ,32, Prioritised frontiers: ,29
-BEST Point:,286,58, Score: ,1406.27
-Total frontiers: ,8, Prioritised frontiers: ,8
-BEST Point:,299,63, Score: ,1390.8
-Total frontiers: ,1, Prioritised frontiers: ,0
-Checking reserve frontiers
-Steps taken: ,202
-49ZXLO,85 , 161
-Likelihood area: ,337
-7WZA86,152 , 218
-Likelihood area: ,161
-I0QU68,211 , 288
-Likelihood area: ,92
-IQ2AQO,169 , 200
-Likelihood area: ,91
-XP6V 7,240 , 79
-Likelihood area: ,206
-Signal name: ,XP6V 7,x:,240,y:,77,Inside likelihood area? : ,True
-Signal name: ,I0QU68,x:,211,y:,286,Inside likelihood area? : ,True
-Signal name: ,IQ2AQO,x:,167,y:,198,Inside likelihood area? : ,True
-Signal name: ,7WZA86,x:,150,y:,218,Inside likelihood area? : ,True
-Signal name: ,49ZXLO,x:,88,y:,155,Inside likelihood area? : ,True
+BEST Point:,286,108, Score: ,-2.96213
+Total frontiers: ,179, Prioritised frontiers: ,43
+BEST Point:,33,268, Score: ,-2.90418
+Total frontiers: ,185, Prioritised frontiers: ,42
+BEST Point:,296,125, Score: ,-2.96812
+Total frontiers: ,178, Prioritised frontiers: ,56
+BEST Point:,33,248, Score: ,-2.91174
+Total frontiers: ,178, Prioritised frontiers: ,32
+BEST Point:,294,144, Score: ,-2.92871
+Total frontiers: ,185, Prioritised frontiers: ,74
+BEST Point:,33,228, Score: ,-2.9716
+Total frontiers: ,185, Prioritised frontiers: ,42
+BEST Point:,276,152, Score: ,-2.97814
+Total frontiers: ,189, Prioritised frontiers: ,88
+BEST Point:,39,209, Score: ,-3.00436
+Total frontiers: ,195, Prioritised frontiers: ,58
+BEST Point:,256,152, Score: ,-3.0146
+Total frontiers: ,193, Prioritised frontiers: ,99
+BEST Point:,49,192, Score: ,-2.88568
+Total frontiers: ,175, Prioritised frontiers: ,63
+BEST Point:,236,152, Score: ,-2.89144
+Total frontiers: ,174, Prioritised frontiers: ,79
+BEST Point:,68,193, Score: ,-2.87761
+Total frontiers: ,176, Prioritised frontiers: ,69
+BEST Point:,218,160, Score: ,-2.81279
+Total frontiers: ,169, Prioritised frontiers: ,85
+BEST Point:,87,191, Score: ,-2.75992
+Total frontiers: ,158, Prioritised frontiers: ,68
+BEST Point:,200,168, Score: ,-2.78704
+Total frontiers: ,159, Prioritised frontiers: ,78
+BEST Point:,106,192, Score: ,-2.76858
+Total frontiers: ,154, Prioritised frontiers: ,70
+BEST Point:,183,178, Score: ,-2.81253
+Total frontiers: ,158, Prioritised frontiers: ,87
+BEST Point:,125,190, Score: ,-2.83653
+Total frontiers: ,168, Prioritised frontiers: ,90
+BEST Point:,165,186, Score: ,-2.87568
+Signal name: ,Y41AEV, Signal value: ,13.6794
+Total frontiers: ,177, Prioritised frontiers: ,109
+BEST Point:,140,170, Score: ,96.8939
+Total frontiers: ,155, Prioritised frontiers: ,84
+BEST Point:,168,188, Score: ,97.9685
+Signal name: ,Y41AEV, Signal value: ,10.6733
+Total frontiers: ,156, Prioritised frontiers: ,83
+BEST Point:,143,182, Score: ,97.665
+Total frontiers: ,148, Prioritised frontiers: ,78
+BEST Point:,163,189, Score: ,97.9391
+Signal name: ,Y41AEV, Signal value: ,10.5423
+Total frontiers: ,148, Prioritised frontiers: ,75
+BEST Point:,146,182, Score: ,98.0291
+Total frontiers: ,150, Prioritised frontiers: ,79
+BEST Point:,167,199, Score: ,97.674
+Signal name: ,Y41AEV, Signal value: ,2.4939
+Total frontiers: ,160, Prioritised frontiers: ,88
+BEST Point:,157,199, Score: ,97.1641
+Signal name: ,Y41AEV, Signal value: ,10.4895
+Total frontiers: ,154, Prioritised frontiers: ,82
+BEST Point:,166,198, Score: ,98.0691
+Signal name: ,Y41AEV, Signal value: ,0.58512
+Total frontiers: ,154, Prioritised frontiers: ,84
+BEST Point:,158,199, Score: ,98.0299
+Signal name: ,Y41AEV, Signal value: ,10.2263
+Total frontiers: ,154, Prioritised frontiers: ,77
+BEST Point:,187,198, Score: ,-2.83105
+Signal name: ,Y41AEV, Signal value: ,17.6255
+Total frontiers: ,156, Prioritised frontiers: ,81
+BEST Point:,149,217, Score: ,-2.81136
+Signal name: ,32 1MH, Signal value: ,1.86237
+Total frontiers: ,167, Prioritised frontiers: ,93
+BEST Point:,154,207, Score: ,96.3725
+Signal name: ,Y41AEV, Signal value: ,4.28383
+Total frontiers: ,167, Prioritised frontiers: ,94
+BEST Point:,147,218, Score: ,97.9075
+Signal name: ,32 1MH, Signal value: ,2.94708
+Total frontiers: ,169, Prioritised frontiers: ,98
+BEST Point:,155,220, Score: ,97.0258
+Signal name: ,32 1MH, Signal value: ,4.41498
+Total frontiers: ,173, Prioritised frontiers: ,98
+BEST Point:,148,220, Score: ,97.8953
+Signal name: ,32 1MH, Signal value: ,1.93146
+Total frontiers: ,173, Prioritised frontiers: ,100
+BEST Point:,154,220, Score: ,97.9275
+Signal name: ,32 1MH, Signal value: ,5.21776
+Total frontiers: ,174, Prioritised frontiers: ,98
+BEST Point:,143,221, Score: ,97.7623
+Signal name: ,32 1MH, Signal value: ,6.60491
+Total frontiers: ,175, Prioritised frontiers: ,96
+BEST Point:,173,228, Score: ,-2.99304
+Total frontiers: ,183, Prioritised frontiers: ,105
+BEST Point:,123,222, Score: ,-2.97941
+Total frontiers: ,177, Prioritised frontiers: ,96
+BEST Point:,192,228, Score: ,-3.05472
+Total frontiers: ,182, Prioritised frontiers: ,87
+BEST Point:,103,222, Score: ,-3.08182
+Total frontiers: ,184, Prioritised frontiers: ,88
+BEST Point:,209,218, Score: ,-3.16248
+Total frontiers: ,191, Prioritised frontiers: ,95
+BEST Point:,83,222, Score: ,-3.19639
+Total frontiers: ,188, Prioritised frontiers: ,97
+BEST Point:,217,200, Score: ,-3.20429
+Total frontiers: ,186, Prioritised frontiers: ,84
+BEST Point:,63,227, Score: ,-3.04586
+Total frontiers: ,167, Prioritised frontiers: ,99
+BEST Point:,233,189, Score: ,-2.96617
+Total frontiers: ,163, Prioritised frontiers: ,60
+BEST Point:,64,246, Score: ,-2.92444
+Total frontiers: ,162, Prioritised frontiers: ,81
+BEST Point:,250,180, Score: ,-2.88872
+Total frontiers: ,154, Prioritised frontiers: ,62
+BEST Point:,83,246, Score: ,-2.87905
+Total frontiers: ,159, Prioritised frontiers: ,63
+BEST Point:,269,181, Score: ,-2.86938
+Total frontiers: ,157, Prioritised frontiers: ,76
+BEST Point:,102,246, Score: ,-2.91824
+Total frontiers: ,160, Prioritised frontiers: ,58
+BEST Point:,288,179, Score: ,-2.70775
+Total frontiers: ,146, Prioritised frontiers: ,87
+BEST Point:,121,246, Score: ,-2.75087
+Total frontiers: ,148, Prioritised frontiers: ,38
+BEST Point:,288,199, Score: ,-2.7724
+Total frontiers: ,156, Prioritised frontiers: ,90
+BEST Point:,140,244, Score: ,-2.83381
+Total frontiers: ,149, Prioritised frontiers: ,51
+BEST Point:,267,200, Score: ,-2.84753
+Total frontiers: ,150, Prioritised frontiers: ,76
+BEST Point:,159,243, Score: ,-2.88531
+Total frontiers: ,144, Prioritised frontiers: ,56
+BEST Point:,249,208, Score: ,-2.80208
+Total frontiers: ,140, Prioritised frontiers: ,75
+BEST Point:,176,252, Score: ,-2.87988
+Total frontiers: ,145, Prioritised frontiers: ,66
+BEST Point:,240,225, Score: ,-2.8138
+Total frontiers: ,144, Prioritised frontiers: ,80
+BEST Point:,195,250, Score: ,-2.91329
+Total frontiers: ,149, Prioritised frontiers: ,76
+BEST Point:,229,241, Score: ,-2.92916
+Total frontiers: ,144, Prioritised frontiers: ,83
+BEST Point:,212,259, Score: ,-3.04197
+Total frontiers: ,144, Prioritised frontiers: ,83
+BEST Point:,231,260, Score: ,-3.14447
+Total frontiers: ,145, Prioritised frontiers: ,84
+BEST Point:,195,271, Score: ,-3.27102
+Total frontiers: ,152, Prioritised frontiers: ,91
+BEST Point:,248,250, Score: ,-3.36478
+Total frontiers: ,151, Prioritised frontiers: ,88
+BEST Point:,175,272, Score: ,-3.48964
+Total frontiers: ,153, Prioritised frontiers: ,71
+BEST Point:,258,233, Score: ,-3.57042
+Total frontiers: ,159, Prioritised frontiers: ,74
+BEST Point:,156,264, Score: ,-3.63493
+Total frontiers: ,159, Prioritised frontiers: ,69
+BEST Point:,274,222, Score: ,-3.64195
+Total frontiers: ,152, Prioritised frontiers: ,74
+BEST Point:,136,265, Score: ,-3.72947
+Total frontiers: ,151, Prioritised frontiers: ,52
+BEST Point:,291,231, Score: ,-3.29039
+Total frontiers: ,142, Prioritised frontiers: ,77
+BEST Point:,116,265, Score: ,-3.4346
+Total frontiers: ,142, Prioritised frontiers: ,39
+BEST Point:,283,249, Score: ,-3.21295
+Total frontiers: ,139, Prioritised frontiers: ,82
+BEST Point:,96,265, Score: ,-3.37741
+Total frontiers: ,138, Prioritised frontiers: ,45
+BEST Point:,282,268, Score: ,-3.40631
+Total frontiers: ,142, Prioritised frontiers: ,76
+BEST Point:,69,265, Score: ,-3.64792
+Total frontiers: ,140, Prioritised frontiers: ,52
+BEST Point:,262,266, Score: ,-3.42167
+Total frontiers: ,138, Prioritised frontiers: ,63
+BEST Point:,58,273, Score: ,-2.91557
+Total frontiers: ,125, Prioritised frontiers: ,57
+BEST Point:,244,275, Score: ,-3.07318
+Total frontiers: ,127, Prioritised frontiers: ,46
+BEST Point:,57,292, Score: ,-3.0333
+Total frontiers: ,109, Prioritised frontiers: ,69
+BEST Point:,221,277, Score: ,-3.31006
+Signal name: ,IH1ID0, Signal value: ,16.5198
+Total frontiers: ,103, Prioritised frontiers: ,32
+BEST Point:,202,254, Score: ,90.3116
+Total frontiers: ,99, Prioritised frontiers: ,78
+BEST Point:,224,276, Score: ,97.7461
+Signal name: ,IH1ID0, Signal value: ,15.8402
+Total frontiers: ,99, Prioritised frontiers: ,33
+BEST Point:,212,277, Score: ,90.876
+Total frontiers: ,93, Prioritised frontiers: ,77
+BEST Point:,212,277, Score: ,97.011
+Signal name: ,IH1ID0, Signal value: ,10.5519
+Total frontiers: ,92, Prioritised frontiers: ,39
+BEST Point:,217,276, Score: ,91.4742
+Total frontiers: ,87, Prioritised frontiers: ,79
+BEST Point:,217,276, Score: ,97.2124
+Signal name: ,IH1ID0, Signal value: ,11.9583
+Total frontiers: ,87, Prioritised frontiers: ,41
+BEST Point:,211,278, Score: ,92.5821
+Total frontiers: ,82, Prioritised frontiers: ,84
+BEST Point:,211,278, Score: ,97.0266
+Signal name: ,IH1ID0, Signal value: ,6.9154
+Total frontiers: ,80, Prioritised frontiers: ,45
+BEST Point:,151,290, Score: ,-3.37277
+Total frontiers: ,63, Prioritised frontiers: ,61
+BEST Point:,185,289, Score: ,-3.25572
+Signal name: ,IH1ID0, Signal value: ,18.3494
+Total frontiers: ,43, Prioritised frontiers: ,24
+BEST Point:,168,298, Score: ,97.1801
+Total frontiers: ,43, Prioritised frontiers: ,29
+BEST Point:,207,299, Score: ,-2.78194
+Signal name: ,IH1ID0, Signal value: ,13.2404
+Total frontiers: ,37, Prioritised frontiers: ,13
+BEST Point:,226,299, Score: ,-4.62315
+Total frontiers: ,37, Prioritised frontiers: ,29
+BEST Point:,226,299, Score: ,-2.6727
+Signal name: ,IH1ID0, Signal value: ,17.0103
+Total frontiers: ,28, Prioritised frontiers: ,12
+BEST Point:,245,297, Score: ,-4.65776
+Signal name: ,IH1ID0, Signal value: ,13.1428
+Total frontiers: ,28, Prioritised frontiers: ,27
+BEST Point:,245,297, Score: ,-2.70901
+Total frontiers: ,26, Prioritised frontiers: ,18
+BEST Point:,262,288, Score: ,-4.37473
+Signal name: ,IH1ID0, Signal value: ,17.0044
+Total frontiers: ,26, Prioritised frontiers: ,25
+BEST Point:,264,296, Score: ,-2.52439
+Total frontiers: ,16, Prioritised frontiers: ,15
+BEST Point:,283,290, Score: ,97.7809
+Total frontiers: ,16, Prioritised frontiers: ,15
+BEST Point:,283,290, Score: ,99.6408
+Total frontiers: ,2, Prioritised frontiers: ,2
+BEST Point:,299,279, Score: ,97.7862
+Total frontiers: ,2, Prioritised frontiers: ,2
+BEST Point:,299,279, Score: ,99.5885
+Steps taken: ,223
+1FQ90T,88 , 153
+Likelihood area: ,177
+32 1MH,149 , 220
+Likelihood area: ,57
+DXOD95,241 , 76
+Likelihood area: ,89
+IH1ID0,213 , 287
+Likelihood area: ,127
+Y41AEV,166 , 198
+Likelihood area: ,121
+Signal name: ,DXOD95,x:,240,y:,77,Inside likelihood area? : ,True
+Signal name: ,IH1ID0,x:,211,y:,286,Inside likelihood area? : ,True
+Signal name: ,Y41AEV,x:,167,y:,198,Inside likelihood area? : ,True
+Signal name: ,32 1MH,x:,150,y:,218,Inside likelihood area? : ,True
+Signal name: ,1FQ90T,x:,88,y:,155,Inside likelihood area? : ,True

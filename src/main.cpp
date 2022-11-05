@@ -29,8 +29,8 @@ int main (int argc, char* argv[]){
 
 
     //ARE THE HASH DEFINES SET CORRECTLY????!!!
-    std::string number_of_agents = std::string("single/");
-    std::string type_of_test = std::string("null");
+    std::string number_of_agents = std::string("triple/");
+    std::string type_of_test = std::string("full");
 
 
     int rand_seed_start = 0;

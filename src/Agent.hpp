@@ -40,7 +40,7 @@ private:
 
     std::pair<double,double> distance_incentive;
 
-    
+    std::vector<double> measures;
     
 
 
