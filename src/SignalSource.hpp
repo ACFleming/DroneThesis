@@ -3,6 +3,8 @@
 #include <string>
 #include <iostream>
 #include <random>
+#include <opencv2/opencv.hpp>
+#include "Zone.hpp"
 
 class SignalSource
 {

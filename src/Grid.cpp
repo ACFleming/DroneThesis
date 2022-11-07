@@ -42,12 +42,12 @@ std::vector<std::vector<cv::Point2i>> Grid::getImageFrontiers(cv::Mat frontier_i
 }
 
 
-int Grid::field_x_rows;
-int Grid::field_y_cols;
+int Grid::field_x_cols;
+int Grid::field_y_rows;
 
 
 cv::Mat Grid::rangeMask(std::pair<int,int> point, int radius, int value){
-    cv::Mat mask = cv::Mat::zeros(Grid::field_y_cols,Grid::field_x_rows, CV_8UC1);
+    cv::Mat mask = cv::Mat::zeros(Grid::field_y_rows,Grid::field_x_cols, CV_8UC1);
     cv::Point centre(point.first, point.second);
     cv::circle(mask, centre, radius, cv::Scalar(value,value,value), -1);
     return mask;
@@ -59,44 +59,15 @@ Grid::Grid(){
 }
 
 
-Grid::Grid(std::string name, int field_x_rows, int field_y_cols){
+Grid::Grid(std::string name, int field_x_cols, int field_y_rows){
 
-    Grid::field_x_rows = field_x_rows;
-    Grid::field_y_cols = field_y_cols;
+    Grid::field_x_cols = field_x_cols;
+    Grid::field_y_rows = field_y_rows;
     this->name = name;
     this->signal_ring = Ring();
-    this->signal_likelihood = cv::Mat(Grid::field_y_cols, Grid::field_x_rows, CV_8UC1, cv::Scalar(empty));
-    
-    // this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.1*field_y_cols));
-    // this->edge_of_map.push_back(cv::Point2i(0.3*field_x_rows,0.8*field_y_cols));
-    // this->edge_of_map.push_back(cv::Point2i(0.7*field_x_rows,0.8*field_y_cols));
-    // this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
-
-
-    // this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.1*field_y_cols));
-    // this->edge_of_map.push_back(cv::Point2i(0.1*field_x_rows,0.9*field_y_cols));
-    // this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.9*field_y_cols));
-    // this->edge_of_map.push_back(cv::Point2i(0.9*field_x_rows,0.1*field_y_cols));
-
-    this->edge_of_map.push_back(cv::Point2i(0,0));
-    this->edge_of_map.push_back(cv::Point2i(0,field_y_cols-1));
-    this->edge_of_map.push_back(cv::Point2i(field_x_rows-1,field_y_cols-1));
-    this->edge_of_map.push_back(cv::Point2i(field_x_rows-1,0));
-
-
-    // this->edge_of_map.push_back(cv::Point2i(40,260));
-    // this->edge_of_map.push_back(cv::Point2i(140,280));
-    // this->edge_of_map.push_back(cv::Point2i(240,260));
-    // this->edge_of_map.push_back(cv::Point2i(280, 100));
-    // this->edge_of_map.push_back(cv::Point2i(220, 20));
-    // this->edge_of_map.push_back(cv::Point2i(60,20));
-
-    // this->edge_of_map.push_back(cv::Point2i(60,120));
-    // this->edge_of_map.push_back(cv::Point2i(60,260));
-    // this->edge_of_map.push_back(cv::Point2i(240,260));
-    // this->edge_of_map.push_back(cv::Point2i(160, 180));
-    // this->edge_of_map.push_back(cv::Point2i(240, 120));
-    // this->edge_of_map.push_back(cv::Point2i(60,20));
+    this->signal_likelihood = cv::Mat(Grid::field_y_rows, Grid::field_x_cols, CV_8UC1, cv::Scalar(empty));
+    Zone z = Zone(field_x_cols, field_y_rows);
+    this->edge_of_map = z.getZoneEdges();
  
     
 
@@ -168,7 +139,7 @@ void Grid::receiveMeasurement(double measurement, double std_dev) {
     
     // std::cout << this->name << " @ dist " << measurement << std::endl;
     // std::cout << "Measured from: " << this->measurement_point.first << "," << this->measurement_point.second << std::endl; 
-    this->signal_ring = Ring(this->field_x_rows, this->field_y_cols, this->measurement_point.first, this->measurement_point.second, measurement,std_dev);
+    this->signal_ring = Ring(this->field_x_cols, this->field_y_rows, this->measurement_point.first, this->measurement_point.second, measurement,std_dev);
     this->signal_ring.drawRing();
     this->updated = true;
 
@@ -230,7 +201,7 @@ void Grid::updateCertainty(){
 // #endif
 
         if(this->updated == false){ //i.e no new info  
-            this->signal_ring = Ring(this->field_x_rows, this->field_y_cols, this->measurement_point.first, this->measurement_point.second, this->measurement_range,-1);
+            this->signal_ring = Ring(this->field_x_cols, this->field_y_rows, this->measurement_point.first, this->measurement_point.second, this->measurement_range,-1);
             this->signal_ring.drawRing();
 // #ifdef SHOW_IMG
 //             cv::imshow("negative measurement", this->signal_ring.getCanvas());

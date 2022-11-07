@@ -9,6 +9,7 @@
 #include <set>
 #include "Ring.hpp"
 #include "BoundingPoints.hpp"
+#include "Zone.hpp"
 
 
 
@@ -20,8 +21,8 @@ class Grid
 {
 protected:
 
-    static int field_x_rows;
-    static int field_y_cols;
+    static int field_x_cols;
+    static int field_y_rows;
 
     std::vector<cv::Point2i> edge_of_map;
     std::pair<int,int> centroid;

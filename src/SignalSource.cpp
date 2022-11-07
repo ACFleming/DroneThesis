@@ -10,9 +10,17 @@ SignalSource::SignalSource(int field_width, int field_length) {
 
     // min + rand() % (( max + 1 ) - min);
 
-    this->x_coord = x_min + std::rand()%((x_max - x_min + 1));
-    this->y_coord = y_min + std::rand()%((y_max - y_min + 1));;
-    this->id = this->randomString(6);
+    Zone z = Zone(field_width, field_length);
+
+
+    do
+    {
+        this->x_coord = x_min + std::rand()%((x_max - x_min + 1));
+        this->y_coord = y_min + std::rand()%((y_max - y_min + 1));;
+        this->id = this->randomString(6);
+    } while (!z.inZone(cv::Point2i(x_coord, y_coord)));
+    
+
     // std::cout << "ID: " << this->id << " X: " << this->x_coord << " Y: " << this->y_coord << std::endl;
 
 }

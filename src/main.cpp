@@ -29,13 +29,13 @@ int main (int argc, char* argv[]){
 
 
     //ARE THE HASH DEFINES SET CORRECTLY????!!!
-    std::string number_of_agents = std::string("triple/");
-    std::string type_of_test = std::string("full");
+    std::string number_of_agents = std::string("single/");
+    std::string type_of_test = std::string("null");
 
 
     int rand_seed_start = 0;
     int rand_seed_end = 100;
-    int source_start = 0;
+    int source_start = 3;
     int source_end = 5;
     for(int test = rand_seed_start; test <= rand_seed_end; test ++){
         for (int source_count = source_start; source_count <= source_end; source_count++){
@@ -56,8 +56,8 @@ int main (int argc, char* argv[]){
                 int field_y_cols = 300;
                 int num_sources = source_count;
                 double std_dev_noise = 3;
-                double max_range = 20;
-                double speed = 20;
+                double max_range = 15;
+                double speed = 15;
                 srand((unsigned int)(test));
                 std::map<std::string, Grid> certainty_grids = std::map<std::string, Grid>();
                 

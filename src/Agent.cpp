@@ -202,19 +202,20 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 #ifdef COST_VEC_PRINT
     *this->output << "At: " << ","  << this->coords.first << "," << this->coords.second << "," << std::endl;
 #endif
-    for(auto &f: points ){
-        // tic();
-#ifdef COST_VEC_PRINT
-        *this->output << "Point: " << ","  << f.x << "," << f.y << ",";
-#endif
-        
+
+// // #ifdef SHOW_IMG
+//         cv::imshow("cert", this->certainty_grids->at(BASE).getLikelihood());
+//         cv::waitKey(0);
+// // #endif
+
+
         cv::Mat seen = cv::Mat::zeros(this->field_y_cols,this->field_x_rows,CV_8UC3); 
         // cv::threshold(this->certainty_grids->at(BASE).getLikelihood(), seen,searching-1, 255, cv::THRESH_BINARY_INV);
         cv::inRange(this->certainty_grids->at(BASE).getLikelihood(),cleared, cleared, seen);
 
 // // #ifdef SHOW_IMG
 //         cv::imshow("seen", seen);
-//         cv::waitKey(WAITKEY_DELAY);
+//         cv::waitKey(0);
 // // #endif
 
         cv::Mat remaining = cv::Mat::zeros(this->field_y_cols,this->field_x_rows,CV_8UC3); 
@@ -223,26 +224,26 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
 // // #ifdef SHOW_IMG
 //         cv::imshow("remaining", remaining);
-//         cv::waitKey(WAITKEY_DELAY);
+//         cv::waitKey(0);
 // // #endif
 
 
-        std::vector<cv::Point2i> seen_hull_points;
-        std::vector<cv::Point2i> remaining_hull_points;
+        // std::vector<cv::Point2i> seen_hull_points;
+        // std::vector<cv::Point2i> remaining_hull_points;
 
         
-        std::vector<std::vector<cv::Point2i>> seen_frontiers = Grid::getImageFrontiers(seen);
-        std::vector<std::vector<cv::Point2i>> remaining_frontiers = Grid::getImageFrontiers(remaining);
+        // std::vector<std::vector<cv::Point2i>> seen_frontiers = Grid::getImageFrontiers(seen);
+        // std::vector<std::vector<cv::Point2i>> remaining_frontiers = Grid::getImageFrontiers(remaining);
 
-        cv::convexHull(seen_frontiers[0], seen_hull_points);
-        cv::convexHull(remaining_frontiers[0], remaining_hull_points);
+        // cv::convexHull(seen_frontiers[0], seen_hull_points);
+        // cv::convexHull(remaining_frontiers[0], remaining_hull_points);
 
-        cv::Mat seen_hull_img = cv::Mat::zeros(this->field_y_cols, this->field_x_rows, CV_8UC3);
-        cv::Mat remaining_hull_img = cv::Mat::zeros(this->field_y_cols, this->field_x_rows, CV_8UC3);
+        // cv::Mat seen_hull_img = cv::Mat::zeros(this->field_y_cols, this->field_x_rows, CV_8UC3);
+        // cv::Mat remaining_hull_img = cv::Mat::zeros(this->field_y_cols, this->field_x_rows, CV_8UC3);
 
 
-        std::vector<std::vector<cv::Point2i>> h;
-        h.push_back(seen_hull_points);
+        // std::vector<std::vector<cv::Point2i>> h;
+        // h.push_back(seen_hull_points);
 
 // // #ifdef SHOW_IMG
 //         cv::drawContours(seen_hull_img, seen_frontiers, -1, cv::Scalar(0,0,255));
@@ -253,8 +254,8 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
 
 
-        h.clear();
-        h.push_back(remaining_hull_points);
+        // h.clear();
+        // h.push_back(remaining_hull_points);
 
 // // #ifdef SHOW_IMG
 //         cv::drawContours(remaining_hull_img, remaining_frontiers, -1, cv::Scalar(0,0,255));
@@ -305,13 +306,12 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
 
 
-
-
-
-
-
-
-
+    for(auto &f: points ){
+        // tic();
+#ifdef COST_VEC_PRINT
+        *this->output << "Point: " << ","  << f.x << "," << f.y << ",";
+#endif
+        
 
 
 
@@ -354,7 +354,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
 
         signal_score = 0;
         if(signal_frontiers.count(f) > 0 ){ //if its a signal frontier point;
-            double signal_mod = 100;
+            double signal_mod = 50;
             // signal_mod = 0;
             signal_score = 1*signal_mod;
             score += signal_score;
@@ -419,7 +419,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         //hyperbolic scoring for seen
 
         
-        double scanned_mod = 0.3;
+        double scanned_mod = 0.7;
 
 
         seen_score = scanned_mod*scanned_amount;
@@ -481,11 +481,13 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             cv::imshow("hull_img", hull_img);
             cv::waitKey(WAITKEY_DELAY);
 #endif
-            // double area_rt = ctr_area/hull_area;
-            // double area_rt_mod = 7*100;
+
 
             double area_diff = ctr_area/hull_area;
-            double area_mod = 1.3;
+            double area_mod = 1.5;
+
+            // double area_diff = hull_area/ctr_area;
+            // double area_mod = -1.3;
 
 #ifndef HULL_AREA
             area_mod = 0;
@@ -498,11 +500,12 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             *this->output << "Area diff: " << "," << area_diff << "," << " Area ratio Contribution: " << "," << area_score << ",";
 #endif
 
-            // double perim_rt = (ctr_perim/hull_perim);
-            // double perim_mod = -7*100;
-
             double perim_diff = hull_perim/ctr_perim;
-            double perim_mod = 1.3;
+            double perim_mod = 1.5;
+
+
+            // double perim_diff = ctr_perim/hull_perim;
+            // double perim_mod = -1.3;
 
 #ifndef HULL_PERIM
             perim_mod = 0;
@@ -559,30 +562,30 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
         // }
 
 
-        int frontier_chain_diff = frontier_chains - inverse_frontiers.size();
+        // 
 
-        // int old_frontier_count = 0;
-        // for(auto & o_f: this->frontiers){
-        //     old_frontier_count+=o_f.size();
-        // }
+        int old_frontier_count = 0;
+        for(auto & o_f: this->frontiers){
+            old_frontier_count+=o_f.size();
+        }
 
-        // int new_frontier_count = 0;
-        // for(auto & n_f: inverse_frontiers){
-        //     new_frontier_count+=n_f.size();
-        // }   
+        int new_frontier_count = 0;
+        for(auto & n_f: inverse_frontiers){
+            new_frontier_count+=n_f.size();
+        }   
 
-        // frontier_chain_diff 
+        int frontier_chain_diff = old_frontier_count - new_frontier_count;
 
 
         // std::cout << "old_frontier_count: " << old_frontier_count << " new_frontier_count: " << new_frontier_count << std::endl;
 
 
-        double chain_diff_mod = 100;
+        double chain_diff_mod = 0.01;
 #ifndef CHAIN
         chain_diff_mod = 0;
 #endif
 
-        chain_score = chain_diff_mod * frontier_chain_diff;
+        chain_score = chain_diff_mod * pow(frontier_chain_diff, inverse_frontiers.size());
         score += chain_diff_mod * frontier_chain_diff;
 
 
@@ -634,7 +637,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             // double inv_area_rt_mod = 7*100;
 
             double inv_area_diff = inv_hull_area/inv_ctr_area;
-            double inv_area_mod = -1;
+            double inv_area_mod = -1.5;
 
 #ifndef INV_HULL_AREA
 
@@ -657,7 +660,7 @@ void Agent::costFunction(std::vector<cv::Point2i> points, std::unordered_set<cv:
             if(inv_hull_perim == 0) inv_hull_perim = 1;
 
             // double inv_perim_diff = inv_ctr_perim-inv_hull_perim;
-            double inv_perim_mod = -1;
+            double inv_perim_mod = -1.5;
 
             double inv_perim_diff = inv_ctr_perim/inv_hull_perim;
             // double inv_perim_rt_mod = 7*100*static_cast<double>(inverse_frontiers.size());
